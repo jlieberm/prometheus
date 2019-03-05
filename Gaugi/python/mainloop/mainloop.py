@@ -3,9 +3,11 @@ __all__ = ['EventATLASLoop', 'EventSimulatorLoop', 'job']
 
 from Gaugi import EventATLAS
 from Gaugi import EventSimulator
+from Gaugi import StatusCode
 from Gaugi import checkForUnusedVars, retrieve_kw, progressbar, LoggingLevel, Logger
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.enumerations import StatusTool, StatusWatchDog
+from Gaugi.messenger.macros import *
 import ROOT
 
 
@@ -13,8 +15,8 @@ import ROOT
 # main loop for atlas analysis
 class EventSimulatorLoop( EventSimulator ):
 
-  def __init__(self, **kw):
-    EventSimulator.__init__(self, **kw)
+  def __init__(self, name, **kw):
+    EventSimulator.__init__(self, name, **kw)
     self._alg_tools = NotSet
     self._level = retrieve_kw(kw, 'level', LoggingLevel.INFO)
     # For parallel process
@@ -24,7 +26,6 @@ class EventSimulatorLoop( EventSimulator ):
     self._initialized = StatusTool.NOT_INITIALIZED
     self._finalized = StatusTool.NOT_FINALIZED
     MSG_INFO( self, 'Created with id (%d)',self._id)
-
 
 
   def initialize( self ):
@@ -156,8 +157,8 @@ class EventSimulatorLoop( EventSimulator ):
 # main loop for atlas analysis
 class EventATLASLoop( EventATLAS ):
 
-  def __init__(self, **kw):
-    EventATLAS.__init__(self, **kw)
+  def __init__(self, name, **kw):
+    EventATLAS.__init__(self, name, **kw)
     self._alg_tools = list()
     self._level = retrieve_kw(kw, 'level', LoggingLevel.INFO)
     # For parallel process
@@ -178,6 +179,8 @@ class EventATLASLoop( EventATLAS ):
     MSG_INFO( self, 'Initializing all tools...')
     # XXX This is just a hack to avoid reimplementing everything
     from Gaugi import ToolSvc as toolSvc
+    toolSvc.level = self._level
+    toolSvc.enable()
     self._alg_tools = toolSvc.getTools()
     for alg in self._alg_tools:
       if alg.status is StatusTool.DISABLE:
@@ -193,6 +196,7 @@ class EventATLASLoop( EventATLAS ):
       if alg.initialize().isFailure():
         MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
     self._init_lock()
+    return StatusCode.SUCCESS
  
 
   def execute( self ):
@@ -202,9 +206,7 @@ class EventATLASLoop( EventATLAS ):
     ### Loop over events
     if not self._mute_progressbar:
       step = int(entries/100) if int(entries/100) > 0 else 1
-      for entry in progressbar(range(self._entries), self._entries, 
-                   step = step, logger = self._logger,
-                   prefix = "Looping over entries "):
+      for entry in progressbar(range(self._entries), "Looping over entries", 60): 
         if self.nov < entry:
           break
         self.process(entry)
@@ -213,6 +215,7 @@ class EventATLASLoop( EventATLAS ):
         if self.nov < entry:
           break
         self.process(entry)
+    return StatusCode.SUCCESS
 
 
   def process(self, entry):
@@ -242,6 +245,7 @@ class EventATLASLoop( EventATLAS ):
         # reset the watchdog since this was used
         alg.wtd = StatusWatchDog.DISABLE
         break
+    return StatusCode.SUCCESS
 
 
   def finalize( self ):
@@ -254,6 +258,7 @@ class EventATLASLoop( EventATLAS ):
         continue
       if alg.finalize().isFailure():
         MSG_ERROR( self, 'The tool %s return status code different of SUCCESS',alg.name)
+    return StatusCode.SUCCESS
 
   def push_back( self, alg ):
     if isinstance(alg, (list,tuple,) ):
@@ -298,28 +303,34 @@ class Job(Logger):
   
   def initialize(self):
     from Gaugi import ToolMgr as manager
+    print manager
     for evt in manager:
-      if evt.initialize().IsFailure():
+      if evt.initialize().isFailure():
         MSG_FATAL( self, "Can not initialize the event %s", evt.name() )
 
 
   def execute(self):
     from Gaugi import ToolMgr as manager
     from Gaugi import ToolSvc as toolSvc
+    
+    # enable all tools as default
+
+    manager.resume()
+    toolSvc.resume()
     for evt in manager:
-      for tool in toolSvc:
-        # check if the current tool is allow to run in this event
-        if tool.checkId( evt.id() ):
-          tool.enable()
-        else: # if not disable te tool
-          tool.disable()
-      if not evt.isInitialized():
-        evt.setStoreSvc(self._eventStack[0].getStoreSvc())
-        evt.level = self._level
-        evt.setContext( self.getContext() )
-        evt.setStoreGateSvc( self.getStoreGateSvc() )
-        if evt.initialize().IsFaiulure():
-          MSG_FATAL(self, "Can not initialize the event %s", evt.name())
+      #for tool in toolSvc:
+      #  # check if the current tool is allow to run in this event
+      #  if tool.checkId( evt.id() ):
+      #    tool.enable()
+      #  else: # if not disable te tool
+      #    tool.disable()
+      #if not evt.isInitialized():
+      #  evt.setStoreSvc(self._eventStack[0].getStoreSvc())
+      #  evt.level = self._level
+      #  evt.setContext( self.getContext() )
+      #  evt.setStoreGateSvc( self.getStoreGateSvc() )
+      #  if evt.initialize().isFaiulure():
+      #    MSG_FATAL(self, "Can not initialize the event %s", evt.name())
       # execute the event loop
       evt.execute()
     # loop over event reader object

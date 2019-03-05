@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import types
+__all__.extend(types.__all__)
+from .types import *
+
 from . import messenger
 __all__.extend(messenger.__all__)
 from .messenger import *
@@ -16,6 +20,10 @@ from .StatusCode import *
 from . import Algorithm
 __all__.extend(Algorithm.__all__)
 from .Algorithm import *
+
+from . import Service
+__all__.extend(Service.__all__)
+from .Service import *
 
 from . import EventSimulator
 __all__.extend(EventSimulator.__all__)

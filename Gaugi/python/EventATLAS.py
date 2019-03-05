@@ -2,9 +2,10 @@
 __all__ = ['EventATLAS']
 
 from Gaugi.messenger import Logger, LoggingLevel
-from Gaugi.enumerations import Dataframe as DataframeEnum
-from Gaugi.statuscode   import StatusCode
 from Gaugi.messenger.macros import *
+from Gaugi.enumerations import Dataframe as DataframeEnum
+from Gaugi import StatusCode
+from Gaugi.types import NotSet
 
 # Import all root classes
 import ROOT
@@ -24,34 +25,34 @@ unique_sequence = uniqueid()
 # manager the storegate and histogram services for all classes.
 class EventATLAS( Logger ):
     
-  def __init__(self, **kw):
+  def __init__(self, name , **kw):
     # Retrieve all information needed
+    Logger.__init__(self, **kw)
     from Gaugi.utilities import retrieve_kw
     self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                      )
     self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"               )
     self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                      )
     self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.SkimmedNtuple )
-    self.name        = retrieve_kw( kw, 'name' ,      ''                          )
     self._nov        = retrieve_kw( kw, 'nov'       , -1                          )
-    
-    if self.name:
-      self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
-      kw['logger'] = retrieve_kw(kw, 'logger', Logger.getModuleLogger(self.name, LoggingLevel.retrieve( self.level ) ) )
-    Logger.__init__(self, kw)
+    self._name       = name
+    self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
+    #kw['logger'] = retrieve_kw(kw, 'logger', Logger.getModuleLogger(self.name, LoggingLevel.retrieve( self._level ) ) )
     if self._fList:
       from Gaugi.utilities import csvStr2List, expandFolders
       self._fList = csvStr2List ( self._fList )
       self._fList = expandFolders( self._fList )
     
     # Loading libraries
-    if ROOT.gSystem.Load('libprometheus') < 0:
+    if ROOT.gSystem.Load('libEventAtlasLib') < 0:
        MSG_FATAL( self, "Could not load prometheus library", ImportError)
 
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
     self._id = unique_sequence.next()
- 
+
+  def name(self):
+    return self._name
 
   def __getRunNumber(self,d):
     from ROOT import TFile
@@ -74,16 +75,15 @@ class EventATLAS( Logger ):
 
     ### Prepare to loop:
     self._t = ROOT.TChain()
-    for inputFile in progressbar(self._fList, len(self._fList),
-                                 logger = self._logger,
-                                 prefix = "Creating collection tree "):
+    from Gaugi.utilities import progressbar
+    for inputFile in progressbar(self._fList, "Creating collection tree...", 60):
       # Check if file exists
       self._f  = ROOT.TFile.Open(inputFile, 'read')
       if not self._f or self._f.IsZombie():
         self._warning('Couldn''t open file: %s', inputFile)
         continue
       # Inform user whether TTree exists, and which options are available:
-      self._debug("Adding file: %s", inputFile)
+      MSG_DEBUG( self, "Adding file: %s", inputFile)
       try: 
         # Custon directory token
         if '*' in self._treePath:
@@ -111,16 +111,15 @@ class EventATLAS( Logger ):
     # Turn all branches off.
     self._t.SetBranchStatus("*", False)
 
-    from ROOT import Gaugi
-
+    from ROOT import edm
     # RingerPhysVal hold the address of required branches
     if self._dataframe is DataframeEnum.SkimmedNtuple:
-      self._event = Gaugi.SkimmedNtuple()
+      self._event = edm.SkimmedNtuple()
     elif self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._event = Gaugi.SkimmedNtuple_v2()
+      self._event = edm.SkimmedNtuple_v2()
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       #self._event = ROOT.RingerPhysVal()
-      self._event = Gaugi.RingerPhysVal_v2()
+      self._event = edm.RingerPhysVal_v2()
     else:
       return StatusCode.FATAL
 
@@ -131,15 +130,15 @@ class EventATLAS( Logger ):
 
     MSG_INFO( self, "Creating containers...")
     # Allocating containers
-    from Events.atlas import Electron
-    from Events.atlas import FastCalo
-    from Events.atlas import FastElectron
-    from Events.atlas import CaloCluster
-    from Events.atlas import TrackParticle
-    from Events.atlas import EmTauRoI
-    from Events.atlas import EventInfo
-    from Events.atlas import MonteCarlo
-    from Events.atlas import TDT 
+    from EventAtlas import Electron
+    from EventAtlas import FastCalo
+    from EventAtlas import FastElectron
+    from EventAtlas import CaloCluster
+    from EventAtlas import TrackParticle
+    from EventAtlas import EmTauRoI
+    from EventAtlas import EventInfo
+    from EventAtlas import MonteCarlo
+    from EventAtlas import TDT 
     # Initialize the base of this container. 
     # Do not change this key names!
     self._containersSvc  = {
@@ -205,7 +204,7 @@ class EventATLAS( Logger ):
     if not self._storegateSvc:
       MSG_INFO( self, "Creating StoreGate...")
       from Gaugi.storage import StoreGate
-      self._storegateSvc = StoreGate( self._ofile)
+      self._storegateSvc = StoreGate( self._ofile , level = self._level)
     else:
       MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
 

@@ -4,7 +4,7 @@ __all__ = ['Algorithm']
 from Gaugi.messenger import  Logger
 from Gaugi.messenger.macros import *
 from Gaugi import EnumStringification, NotSet
-from Gaugi.statuscode import StatusCode
+from Gaugi import StatusCode
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.enumerations import StatusTool, StatusWatchDog
 
@@ -13,7 +13,6 @@ from Gaugi.enumerations import StatusTool, StatusWatchDog
 class Algorithm( Logger ):
 
   def __init__(self, name):
-    from prometheus.core.EnumCollection import StatusTool, StatusWatchDog
     Logger.__init__(self)
     self._name = name
     self._wtd  = StatusWatchDog.DISABLE
@@ -26,7 +25,6 @@ class Algorithm( Logger ):
     self._storegateSvc = NotSet
     self._dataframe = NotSet
 
-  @property
   def name(self):
     return self._name
 

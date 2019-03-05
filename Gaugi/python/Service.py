@@ -1,8 +1,8 @@
 
 
-__init__ = ["ToolSvc", "ToolMgr"]
+__all__ = ["ToolSvc", "ToolMgr"]
 
-from Gaudi.messenger import Logger
+from Gaugi.messenger import Logger
 from Gaugi.messenger.macros import *
 
 class Service( Logger ):
@@ -12,14 +12,20 @@ class Service( Logger ):
     import collections
     self._name = name
     self._tools = collections.OrderedDict()
-    MSG_INFO("Creating %s as Service...", name)
+    MSG_INFO( self, "Creating %s as Service...", name)
+
+  def name(self):
+    return self._name
 
   def get(self, name):
     return self._tools[name]
 
   def put(self, tool):
     self._tools[ tool.name() ] =  tool
-
+  
+  def __iter__(self):
+    for name, tool in self._tools.iteritems():
+      yield tool
 
   def disable(self):
     for name, tool in self._tools.iteritems():
@@ -31,12 +37,12 @@ class Service( Logger ):
       MSG_DEBUG( self, "Enable %s tool", name)
       tool.enable()
 
-  def __iter__(self):
-    for name, tool in self._tools.iteritems():
-      yield tool 
+  def push_back(self, tool):
+    self._tools[ tool.name() ] = tool
 
   def __add__(self, tool):
     self._tools[ tool.name() ] =  tool
+    return self
 
   def clear(self):
     self._tools.clear()
@@ -45,7 +51,9 @@ class Service( Logger ):
     MSG_INFO( self, "Service: %s", self.name())
     for name, tool in self._tools.iteritems():
       MSG_INFO( self, " * %s as tool", tool.name())
-    
+   
+  def getTools(self):
+    return [ tool for _, tool in self._tools.iteritems() ] 
 
 # Use this to attach all tools 
 ToolSvc = Service("ToolSvc")

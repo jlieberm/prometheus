@@ -9,7 +9,7 @@ import numpy as np
 class StoreGate( Logger ) :
 
   def __init__( self, outputFile, **kw ):
-    Logger.__init__(self,kw)
+    Logger.__init__(self,**kw)
     if not outputFile.endswith('.root'):
       outputFile += '.root'
     from Gaugi.utilities import retrieve_kw
@@ -18,7 +18,7 @@ class StoreGate( Logger ) :
     filterDirs=retrieve_kw(kw,'filterDirs', None)
     #Create TFile object to hold everything
     from ROOT import TFile
-    from Gaugi.storage.FileIO import expandPath
+    from Gaugi.utilities import expandPath
     outputFile = expandPath( outputFile )
     if self._restoreStoreGate:
       import os.path
@@ -54,7 +54,6 @@ class StoreGate( Logger ) :
     gc.collect()
     if not self._restoreStoreGate:
       self._file.Close()
-    print "deleted"
 
   def write(self):
     self._file.Write()

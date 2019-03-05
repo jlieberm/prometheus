@@ -2,7 +2,7 @@
 __all__ = [ 'Dataframe', 'StatusTool','StatusWatchDog' ]
 
 
-from Gaugi.Types import EnumStringification
+from Gaugi import EnumStringification
 
 class Dataframe(EnumStringification):
   

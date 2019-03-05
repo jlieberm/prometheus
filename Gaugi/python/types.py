@@ -55,6 +55,7 @@ class EnumStringification( object ):
     Retrieve int value and check if it is a valid enumeration string or int on
     this enumeration class.
     """
+    from Gaugi.utilities import get_attributes
     allowedValues = [attr for attr in get_attributes(cls) if not attr[0].startswith('_')]
     try:
       # Convert integer string values to integer, if possible:
