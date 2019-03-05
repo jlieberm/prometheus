@@ -1,11 +1,9 @@
 
-#include "Events/MuonPhysVal.h"
-#include "Events/RingerPhysVal.h"
-#include "Events/RingerPhysVal_v2.h"
-#include "Events/SkimmedNtuple.h"
-#include "Events/SkimmedNtuple_v2.h"
-#include "Events/Generic.h"
-#include "Events/Delphes.h"
+#include "EventAtlas/MuonPhysVal.h"
+#include "EventAtlas/RingerPhysVal.h"
+#include "EventAtlas/RingerPhysVal_v2.h"
+#include "EventAtlas/SkimmedNtuple.h"
+#include "EventAtlas/SkimmedNtuple_v2.h"
 
 #ifdef __CINT__
 
@@ -20,7 +18,5 @@
 #pragma link C++ class edm::MuonPhysVal+;
 #pragma link C++ class edm::SkimmedNtuple+;
 #pragma link C++ class edm::SkimmedNtuple_v2+;
-#pragma link C++ class edm::Generic+;
-#pragma link C++ class edm::Delphes+;
 
 #endif

@@ -119,7 +119,7 @@ def printArgs(args, fcn = None):
 
 
 def progressbar(it, count ,prefix="", size=60, step=1, disp=True, logger = None, level = None,
-                nRCM_GRID_ENV or sys.stdout.isatty(), 
+                no_bl = sys.stdout.isatty(), 
                 measureTime = True):
   """
     Display progressbar.
