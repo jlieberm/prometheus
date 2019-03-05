@@ -3,38 +3,34 @@
 ################################################################################
 
 # Declare the package name:
-atlas_subdir( Events )
+atlas_subdir( EventAtlas )
 
 if( XAOD_STANDALONE )
-  # We don't install rDev on GRID if we are on XAOD_STANDALONE mode
-  if( NOT DEFINED $ENV{PanDA_TaskID} )
-    # Declare the package's dependencies:
-    atlas_depends_on_subdirs( PUBLIC
-                              AsgTools
-                              PathResolver
-                              PATCore
-                              PRIVATE
-                              #${extra_dep}
-                              )
+  # Declare the package's dependencies:
+  atlas_depends_on_subdirs( PUBLIC
+                            Gaugi
+                            EventCommon
+                            PRIVATE
+                            #${extra_dep}
+                            )
 
-    # External dependencies:
-		find_package( ROOT COMPONENTS Core Hist Tree RIO Hist )
+  # External dependencies:
+	find_package( ROOT COMPONENTS Core Hist Tree RIO Hist )
 
-    atlas_add_root_dictionary( Events EventsDictSource
-                              ROOT_HEADERS Events/*.h Root/LinkDef.h
-                              EXTERNAL_PACKAGES ROOT
-    )
+  atlas_add_root_dictionary( EventAtlas EventAtlasDictSource
+    ROOT_HEADERS EventAtlas/*.h Root/LinkDef.h
+    EXTERNAL_PACKAGES ROOT
+  )
   # Then we can proceed to a full installation:
-  atlas_add_library( Events
-        Root/*.cxx Root/*.h  ${EventsDictSource}
-                         PUBLIC_HEADERS Events
-                         INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
-                         LINK_LIBRARIES ${ROOT_LIBRARIES} AsgTools PathResolver PATCoreLib
-                       )
-  endif()
+  atlas_add_library( EventAtlas
+    Root/*.h  ${EventAtlasDictSource}
+    PUBLIC_HEADERS EventAtlas
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
+    LINK_LIBRARIES ${ROOT_LIBRARIES}
+  )
 endif()
 
 # Install files from the package:
-atlas_install_python_modules( python/*.py python/storage python/messenger python/mainloop )
+atlas_install_python_modules( python/*.py )
 
 

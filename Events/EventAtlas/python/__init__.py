@@ -1,10 +1,6 @@
 
 __all__ = []
 
-from . import EDM
-__all__.extend(EDM.__all__)
-from .EDM import *
-
 from . import TrackParticle
 __all__.extend(TrackParticle.__all__)
 from .TrackParticle import *
