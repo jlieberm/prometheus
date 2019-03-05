@@ -5,13 +5,41 @@ from . import EDM
 __all__.extend(EDM.__all__)
 from .EDM import *
 
-from . import atlas
-__all__.extend(atlas.__all__)
-from .atlas import *
+from . import TrackParticle
+__all__.extend(TrackParticle.__all__)
+from .TrackParticle import *
 
-from . import generic
-__all__.extend(generic.__all__)
-from .generic import *
+from . import Electron
+__all__.extend(Electron.__all__)
+from .Electron import *
+
+from . import FastElectron
+__all__.extend(FastElectron.__all__)
+from .FastElectron import *
+
+from . import FastCalo
+__all__.extend(FastCalo.__all__)
+from .FastCalo import *
+
+from . import EmTauRoI
+__all__.extend(EmTauRoI.__all__)
+from .EmTauRoI import *
+
+from . import CaloCluster
+__all__.extend(CaloCluster.__all__)
+from .CaloCluster import *
+
+from . import MonteCarlo
+__all__.extend(MonteCarlo.__all__)
+from .MonteCarlo import *
+
+from . import EventInfo
+__all__.extend(EventInfo.__all__)
+from .EventInfo import *
+
+from . import TDT
+__all__.extend(TDT.__all__)
+from .TDT import *
 
 
 
