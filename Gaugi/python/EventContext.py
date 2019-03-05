@@ -16,7 +16,7 @@ class EventContext(Logger):
 
   def setHandler(self, key, obj):
     if key in self._containers.keys():
-      PTH_MSG_ERROR(self, "Key %s exist into the event context. Attach is not possible...",key)
+      MSG_ERROR(self, "Key %s exist into the event context. Attach is not possible...",key)
     else:
       self._containers[key]=obj
 
@@ -38,7 +38,7 @@ class EventContext(Logger):
     self._tree.GetEntry( self.getEntry() )
     for key, edm in self._containers.iteritems():
       if edm.execute().isFailure():
-        PTH_MSG_WARNING(self,  'Can not execute the edm %s', key )
+        MSG_WARNING(self,  'Can not execute the edm %s', key )
     return StatusCode.SUCCESS
 
   def initialize(self):
@@ -54,7 +54,7 @@ class EventContext(Logger):
     try:
       return self._decoration[key]
     except KeyError:
-      PTH_MSG_ERROR(self, 'Decoration %s not found',key)
+      MSG_ERROR(self, 'Decoration %s not found',key)
 
   def clearDecorations(self):
     self._decoration = dict()

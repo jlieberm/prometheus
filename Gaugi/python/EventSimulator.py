@@ -43,7 +43,7 @@ class EventSimulator( Logger ):
     
     # Loading libraries
     if ROOT.gSystem.Load('libprometheus') < 0:
-       PTH_MSG_FATAL( self, "Could not load prometheus library", ImportError)
+       MSG_FATAL( self, "Could not load prometheus library", ImportError)
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
@@ -57,12 +57,12 @@ class EventSimulator( Logger ):
       f.Close(); del f
       return name
     except:
-      PTH_MSG_WARNING( self, 'Can not retrieve the run number')
+      MSG_WARNING( self, 'Can not retrieve the run number')
 
   # Initialize all services
   def initialize( self ):
 
-    PTH_MSG_INFO( self, 'Initializing EventReader...')
+    MSG_INFO( self, 'Initializing EventReader...')
 
     # Use this to hold the fist good 
     metadataInputFile = None
@@ -115,12 +115,12 @@ class EventSimulator( Logger ):
       try:
         ROOT.gSystem.Load("libDelphes")
       except:
-        PTH_MSG_FATAL( self, "Can not import Delphes library. You should install delphes before! Bye...")
+        MSG_FATAL( self, "Can not import Delphes library. You should install delphes before! Bye...")
       try:
         ROOT.gInterpreter.Declare('#include "classes/DelphesClasses.h"')
         ROOT.gInterpreter.Declare('#include "external/ExRootAnalysis/ExRootTreeReader.h"')
       except:
-        PTH_MSG_WARNING( self, "Can not include DelphesClasses/ExRootTreeReader.")
+        MSG_WARNING( self, "Can not include DelphesClasses/ExRootTreeReader.")
       self._event = NotSet
       self._t = ROOT.ExRootTreeReader(self._t)
       self._t.ReadEntry(0)
@@ -131,7 +131,7 @@ class EventSimulator( Logger ):
 
     ## Allocating memory for the number of entries
     self._entries = self._t.GetEntries()
-    PTH_MSG_INFO( self, "Creating containers...")
+    MSG_INFO( self, "Creating containers...")
     # Allocating containers
     if self._dataframe is DataframeEnum.Generic:
       from Simulator.dataframe.generic import CaloCells, CaloRings, ShowerShapes
@@ -170,16 +170,16 @@ class EventSimulator( Logger ):
       # If initializations is failed, we must remove this from the container 
       # service
       if(edm.initialize().isFailure()):
-        PTH_MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
+        MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
 
 
     # Create the StoreGate service
     if not self._storegateSvc:
-      PTH_MSG_INFO( self, "Creating StoreGate...")
+      MSG_INFO( self, "Creating StoreGate...")
       from Gaugi.storage import StoreGate
       self._storegateSvc = StoreGate( self._ofile )
     else:
-      PTH_MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
+      MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
 
     self.getContext().initialize()
 
@@ -188,11 +188,11 @@ class EventSimulator( Logger ):
   def execute(self):
     for key, edm in self._containersSvc.iteritems():
       if edm.execute().isFailure():
-        PTH_MSG_WARNING( self,  'Can not execute the edm %s', key )
+        MSG_WARNING( self,  'Can not execute the edm %s', key )
     return StatusCode.SUCCESS
 
   def finalize(self):
-    PTH_MSG_INFO( self, 'Finalizing StoreGate service...')
+    MSG_INFO( self, 'Finalizing StoreGate service...')
     self._storegateSvc.write()
     del self._storegateSvc
     self._f.Close()
