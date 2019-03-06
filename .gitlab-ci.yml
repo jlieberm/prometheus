@@ -51,8 +51,7 @@ job_build:
       ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
  
     script:
-        - ls /
-        - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+        - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
         - source setup_here.sh
         - source buildthis.sh
 
