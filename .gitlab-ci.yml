@@ -9,3 +9,5 @@ my_first_job:
         - python -c 'import this'
         - echo "My first CI produced file" > output.txt
         - ls
+        - source setup_here.sh
+        - source buildthis.sh
