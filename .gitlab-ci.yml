@@ -1,16 +1,40 @@
-build:
+#build:
+#  script:
+#    - echo "Hello World"
+#
+#
+#my_first_job:
+#    image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+#    script:
+#        - python -c 'import this'
+#        - echo "My first CI produced file" > output.txt
+#        - ls
+#        - ls /
+#        - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+#        - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+#        - source setup_here.sh
+#        - source buildthis.sh
+#
+myjob:
+  tags:
+    # Make you job be executed in a shared runner that has CVMFS mounted
+    - cvmfs
+  
+  variables:
+    # example base path for an Experiment environment
+    ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+  
   script:
-    - echo "Hello World"
+    # access CVMFS
+    - ls /cvmfs/atlas.cern.ch/
+    
+    # It is possible to load an Experiment environment from CVMFS as follows:
+    
+    # First, install any package required by the specific experiment script
+    # (exact list to be seen with maintainers of the experiment environment)
+    - yum install -y man 
+    # GitLab-CI sets the errexit option (set -e) so the build stops when a
+    # command fails, but environment setup scripts typically expect errexit off.
+    # Temporarily disable errexit when sourcing the setup script.
+    - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
 
-
-my_first_job:
-    image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
-    script:
-        - python -c 'import this'
-        - echo "My first CI produced file" > output.txt
-        - ls
-        - ls /
-        - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
-        - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
-        - source setup_here.sh
-        - source buildthis.sh
