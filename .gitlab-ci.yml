@@ -3,4 +3,9 @@ build:
     - echo "Hello World"
 
 
-
+my_first_job:
+    image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+    script:
+        - python -c 'import this'
+        - echo "My first CI produced file" > output.txt
+        - ls
