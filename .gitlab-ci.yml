@@ -9,5 +9,8 @@ my_first_job:
         - python -c 'import this'
         - echo "My first CI produced file" > output.txt
         - ls
+        - ls /
+        - export ATLAS_LOCAL_ROOT_BASE=/cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+        - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
         - source setup_here.sh
         - source buildthis.sh
