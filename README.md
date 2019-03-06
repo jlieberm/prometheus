@@ -1,4 +1,4 @@
-
+[![pipeline status](https://gitlab.cern.ch/jodafons/prometheus/badges/master/pipeline.svg)](https://gitlab.cern.ch/jodafons/prometheus/commits/master)
 ## The prometheus framwork
 
 The analysis and simulator framework
