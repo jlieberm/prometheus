@@ -15,7 +15,8 @@
 #        - source setup_here.sh
 #        - source buildthis.sh
 #
-myjob:
+
+job_cvmfs:
   tags:
     # Make you job be executed in a shared runner that has CVMFS mounted
     - cvmfs
@@ -37,4 +38,23 @@ myjob:
     # command fails, but environment setup scripts typically expect errexit off.
     # Temporarily disable errexit when sourcing the setup script.
     - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
+
+
+
+job_build:
+    #image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+    tags:
+      # Make you job be executed in a shared runner that has CVMFS mounted
+      - cvmfs
+    variables:
+      # example base path for an Experiment environment
+      ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
+ 
+    script:
+        - ls /
+        - source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh
+        - source setup_here.sh
+        - source buildthis.sh
+
+
 
