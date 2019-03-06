@@ -52,7 +52,7 @@ job_build:
  
     script:
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
-        - source setup_here.sh
+        - set +e && source setup_here.sh; set -e
         - source buildthis.sh
 
 
