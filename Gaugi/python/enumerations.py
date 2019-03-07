@@ -6,12 +6,10 @@ from Gaugi import EnumStringification
 
 class Dataframe(EnumStringification):
   
-  #  Select the input data frame type.
-  #  - PhysVal: TriggerEgammaTool
-  #  - SkimmedNtuple: TagAndProbeFrame
-  #  - MuonPhysVal: TriggerMuonFrame
+  # from the simulator.
   Delphes = -2
-  Generic = -1        # special dataframe used for the lab. first simulator (for future).
+  Geant = -1        # special dataframe used for the lab. first simulator (for future).
+  # from athena ATLAS detector
   PhysVal = 0         # decrepted
   SkimmedNtuple  = 1  # decrepted
   MuonPhysVal = 2     # for future (muon studies)

@@ -1,9 +1,12 @@
 
 __all__ = ['EventSimulator']
 
+from Gaugi.messenger import Logger, LoggingLevel
+from Gaugi.messenger.macros import *
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi import StatusCode
-from Gaugi.messenger import Logger, LoggingLevel
+from Gaugi.types import NotSet
+
 
 # Import all root classes
 import ROOT
@@ -23,32 +26,34 @@ unique_sequence = uniqueid()
 # manager the storegate and histogram services for all classes.
 class EventSimulator( Logger ):
     
-  def __init__(self, **kw):
+  def __init__(self, name, **kw):
     # Retrieve all information needed
+    Logger.__init__(self, **kw)
     from Gaugi.utilities import retrieve_kw
     self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                          )
     self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"                   )
     self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                          )
-    self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.Delphes           )
-    self.name        = retrieve_kw( kw, 'name' ,      ''                              )
+    self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.Geant           )
     self._nov        = retrieve_kw( kw, 'nov'       , -1                              )
-    if self.name:
-      self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
-      kw['logger'] = retrieve_kw(kw, 'logger', Logger.getModuleLogger(self.name, LoggingLevel.retrieve( self.level ) ) )
-    Logger.__init__(self, kw)
+    self._name       = name
+    self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
     if self._fList:
       from Gaugi.utilities import csvStr2List, expandFolders
       self._fList = csvStr2List ( self._fList )
       self._fList = expandFolders( self._fList )
     
     # Loading libraries
-    if ROOT.gSystem.Load('libprometheus') < 0:
+    if ROOT.gSystem.Load('libEventGeantLib') < 0:
        MSG_FATAL( self, "Could not load prometheus library", ImportError)
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
     self._id = unique_sequence.next()
-  
+ 
+  def name(self):
+    return self._name
+
+
   def __getRunNumber(self,d):
     from ROOT import TFile
     f=TFile(d,'r')
@@ -66,19 +71,17 @@ class EventSimulator( Logger ):
 
     # Use this to hold the fist good 
     metadataInputFile = None
-
+    from Gaugi.utilities import progressbar
     ### Prepare to loop:
     self._t = ROOT.TChain()
-    for inputFile in progressbar(self._fList, len(self._fList),
-                                 logger = self._logger,
-                                 prefix = "Creating collection tree "):
+    for inputFile in progressbar(self._fList, "Creating collection tree ", 60):
       # Check if file exists
       self._f  = ROOT.TFile.Open(inputFile, 'read')
       if not self._f or self._f.IsZombie():
-        self._warning('Couldn''t open file: %s', inputFile)
+        MSG_WARNING( self, 'Couldn''t open file: %s', inputFile)
         continue
       # Inform user whether TTree exists, and which options are available:
-      self._debug("Adding file: %s", inputFile)
+      self._logger.debug("Adding file: %s", inputFile)
       try: 
         # Custon directory token
         if '*' in self._treePath:
@@ -87,29 +90,29 @@ class EventSimulator( Logger ):
         else:
           treePath=self._treePath
       except:
-        self._warning("Couldn't retrieve TTree (%s) from GetListOfKeys!", treePath)
+        MSG_WARNING( self, "Couldn't retrieve TTree (%s) from GetListOfKeys!", treePath)
         continue
 
       obj = self._f.Get(treePath)
       if not obj:
-        self._warning("Couldn't retrieve TTree (%s)!", treePath)
-        self._info("File available info:")
+        MSG_WARNING( self, "Couldn't retrieve TTree (%s)!", treePath)
+        MSG_INFO( self, "File available info:")
         self._f.ReadAll()
         self._f.ReadKeys()
         self._f.ls()
         continue
       elif not isinstance(obj, ROOT.TTree):
-        self._fatal("%s is not an instance of TTree!", treePath, ValueError)
+        MSG_FATAL( self, "%s is not an instance of TTree!", treePath, ValueError)
       self._t.Add( inputFile+'/'+treePath )
     # Turn all branches off.
 
     self._t.SetBranchStatus("*", False)
 
     # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.Generic:
+    if self._dataframe is DataframeEnum.Geant:
       #self._t.SetBranchStatus("*", False)
-      from ROOT import Gaugi
-      self._event = Gaugi.Generic()
+      from ROOT import edm
+      self._event = edm.Geant()
       self._t.GetEntry(0)
     elif self._dataframe is DataframeEnum.Delphes:
       try:
@@ -133,10 +136,10 @@ class EventSimulator( Logger ):
     self._entries = self._t.GetEntries()
     MSG_INFO( self, "Creating containers...")
     # Allocating containers
-    if self._dataframe is DataframeEnum.Generic:
-      from Simulator.dataframe.generic import CaloCells, CaloRings, ShowerShapes
+    if self._dataframe is DataframeEnum.Geant:
+      from EventGeant import CaloCells, CaloRings, ShowerShapes
     elif self._dataframe is DataframeEnum.Delphes:
-      from Simulator.dataframe.delphes import CaloTowers
+      from EventDelphes import CaloTowers
     else:
       pass
     
@@ -177,7 +180,7 @@ class EventSimulator( Logger ):
     if not self._storegateSvc:
       MSG_INFO( self, "Creating StoreGate...")
       from Gaugi.storage import StoreGate
-      self._storegateSvc = StoreGate( self._ofile )
+      self._storegateSvc = StoreGate( self._ofile , level = self._level)
     else:
       MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
 
@@ -195,9 +198,12 @@ class EventSimulator( Logger ):
     MSG_INFO( self, 'Finalizing StoreGate service...')
     self._storegateSvc.write()
     del self._storegateSvc
+    MSG_DEBUG( self, "Finalizing file...")
     self._f.Close()
     del self._f
+    MSG_DEBUG( self, "Finalizing Event...")
     del self._event
+    MSG_DEBUG( self, "Finalizing tree...")
     del self._t
     return StatusCode.SUCCESS
 
@@ -205,7 +211,7 @@ class EventSimulator( Logger ):
     return self._entries
 
   def getEntry( self, entry ):
-    if self._dataframe is DataframeEnum.Generic:
+    if self._dataframe is DataframeEnum.Geant:
       self._t.GetEntry( entry )
     elif self._dataframe is DataframeEnum.Delphes:
       self._t.ReadEntry( entry )

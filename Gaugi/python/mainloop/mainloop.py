@@ -17,7 +17,7 @@ class EventSimulatorLoop( EventSimulator ):
 
   def __init__(self, name, **kw):
     EventSimulator.__init__(self, name, **kw)
-    self._alg_tools = NotSet
+    self._alg_tools = list()
     self._level = retrieve_kw(kw, 'level', LoggingLevel.INFO)
     # For parallel process
     self._mute_progressbar = retrieve_kw(kw, 'mute_progressbar', False)
@@ -53,7 +53,8 @@ class EventSimulatorLoop( EventSimulator ):
         MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
 
     self._init_lock()
-  
+    return StatusCode.SUCCESS
+
   def execute( self ):
 
     # retrieve values 
@@ -61,9 +62,7 @@ class EventSimulatorLoop( EventSimulator ):
     ### Loop over events
     if not self._mute_progressbar:
       step = int(entries/100) if int(entries/100) > 0 else 1
-      for entry in progressbar(range(self._entries), self._entries, 
-                   step = step, logger = self._logger,
-                   prefix = "Looping over entries "):
+      for entry in progressbar(range(self._entries), "Looping over entries ", 60):
         if self.nov < entry:
           break
         self.process(entry)
@@ -72,6 +71,7 @@ class EventSimulatorLoop( EventSimulator ):
         if self.nov < entry:
           break
         self.process(entry)
+    return StatusCode.SUCCESS
 
 
   def process(self, entry):
@@ -112,11 +112,14 @@ class EventSimulatorLoop( EventSimulator ):
     if super(EventSimulatorLoop,self).finalize().isFailure():
       MSG_FATAL( self, 'Impossible to finalize the EventLooper services.')
 
+    MSG_DEBUG( self, "Finalizing tools...")
     for alg in self._alg_tools:
       if alg.isFinalized():
         continue
       if alg.finalize().isFailure():
         MSG_ERROR( self, 'The tool %s return status code different of SUCCESS',alg.name)
+    MSG_DEBUG( self, "Everything was finished... tchau!")
+    return StatusCode.SUCCESS
 
   def push_back( self, alg ):
     if isinstance(alg, (list,tuple,) ):

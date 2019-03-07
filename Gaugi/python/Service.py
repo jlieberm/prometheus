@@ -41,6 +41,7 @@ class Service( Logger ):
     self._tools[ tool.name() ] = tool
 
   def __add__(self, tool):
+    print type(tool)
     self._tools[ tool.name() ] =  tool
     return self
 

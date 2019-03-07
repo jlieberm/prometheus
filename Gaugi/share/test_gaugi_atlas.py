@@ -9,10 +9,11 @@ from Gaugi import ToolSvc, ToolMgr
 
 
 datapath = '/home/asp-calo/CERN-DATA-jodafons/data/data17_13TeV/PhysVal_v2/EGAM1/after_ts1/user.jodafons.data17_13TeV.00329835.physics_Main.deriv.DAOD_EGAM1.f843_m1824_p3336.Physval.GRL_v97.r7000_GLOBAL'
-
-ToolMgr += EventATLASLoop(  inputFiles = datapath, 
+datapath = '/afs/cern.ch/work/j/jodafons/public/data_samples/PhysVal/user.jodafons.data17_13TeV.00329835.physics_Main.deriv.DAOD_EGAM1.f843_m1824_p3336.Physval.GRL_v97.r7000_GLOBAL'
+ToolMgr += EventATLASLoop(  "EventATLASLoop",
+                            inputFiles = datapath, 
                             treePath = '*/HLT/Physval/Egamma/probes', 
-                            nov = -1,
+                            nov = 1000,
                             dataframe = DataframeEnum.PhysVal_v2, 
                             outputFile = 'test_output.root',
                             level = LoggingLevel.DEBUG
@@ -21,8 +22,6 @@ ToolMgr += EventATLASLoop(  inputFiles = datapath,
 
 from Gaugi import Algorithm
 ToolSvc += Algorithm( "AlgTest" )
-ToolSvc.resume()
-ToolMgr.resume()
 
 from Gaugi import job
 job.initialize()

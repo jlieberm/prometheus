@@ -5,7 +5,6 @@ from Gaugi.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from Gaugi.types import NotSet
 from EventCommon import EDM
-import numpy as np
 from copy import copy
 import numpy as np
 import sys
@@ -50,7 +49,7 @@ class CaloRings(EDM):
 
   def execute(self):
 
-    from prometheus.dataframe.simulator.generic import CaloGAN_Definitions as Layer
+    from EventGeant import CaloGAN_Definitions as Layer
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 
