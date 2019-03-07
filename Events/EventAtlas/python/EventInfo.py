@@ -1,9 +1,9 @@
 
 __all__ = ['EventInfo']
 
-from Gaugi  import Dataframe as DataframeEnum
+from Gaugi.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
-from Events import EDM
+from EventCommon import EDM
 
 
 class EventInfo(EDM):

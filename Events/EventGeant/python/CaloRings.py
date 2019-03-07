@@ -1,10 +1,11 @@
 
 __all__ = ['CaloRings']
 
-from prometheus.core.EnumCollection import Dataframe as DataframeEnum
-from prometheus.core.StatusCode     import StatusCode
-from prometheus.dataframe.EDM       import EDM
-from RingerCore                     import EnumStringification
+from Gaugi.enumerations  import Dataframe as DataframeEnum
+from Gaugi  import StatusCode, EnumStringification
+from Gaugi.types import NotSet
+from EventCommon import EDM
+import numpy as np
 from copy import copy
 import numpy as np
 import sys

@@ -4,7 +4,7 @@ __all__ = ['EDM']
 from Gaugi.messenger import Logger
 from Gaugi import NotSet, EnumStringification, StatusCode
 from Gaugi.enumerations import Dataframe as DataframeEnum
-
+from Gaugi.messenger.macros import *
 
 
 class EDM(Logger):
@@ -90,15 +90,15 @@ class EDM(Logger):
       tree.SetBranchStatus( varname, True )
       from ROOT import AddressOf
       tree.SetBranchAddress( varname, AddressOf(holder, pointername) )
-      self._debug("Set %s branch address on %s", varname, tree )
+      MSG_DEBUG( self, "Set %s branch address on %s", varname, tree )
     else:
-      self._debug("Already set %s branch address on %s", varname, tree)
+      MSG_DEBUG( self, "Already set %s branch address on %s", varname, tree)
 
   def retrieve(self, key):
     try:
       return self._containersSvc[key]
     except KeyError:
-      self._logger.warning('Container %s not found',key)
+      MSG_WARNING( self, 'Container %s not found',key)
 
   @property
   def candidate(self, v):

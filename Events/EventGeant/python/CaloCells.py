@@ -1,10 +1,10 @@
 
 __all__ = ['CaloCells', 'CaloCell','CaloGAN_Definitions']
 
-from prometheus.core.EnumCollection import Dataframe as DataframeEnum
-from prometheus.core.StatusCode     import StatusCode
-from prometheus.dataframe.EDM       import EDM
-from RingerCore                     import EnumStringification
+from Gaugi.enumerations  import Dataframe as DataframeEnum
+from Gaugi  import StatusCode, EnumStringification
+from Gaugi.types import NotSet
+from EventCommon import EDM
 import numpy as np
 
 # Do not change this definitions.
@@ -21,9 +21,9 @@ class CaloGAN_Definitions(EnumStringification):
 
 class CaloCell(object):
   def __init__(self):
-    self._x=0
-    self._y=0
-    self._energy = 0.0
+    self._x= 0.0 # In MeV
+    self._y= 0.0 # In MeV
+    self._energy = 0.0 # In MeV
   
   def energy(self):
     return self._energy
@@ -65,10 +65,10 @@ class CaloCells(EDM):
   def __init__(self):
     EDM.__init__(self)
     # three layers calorimeter
-    from prometheus.core import NOTSET
-    self._first_sampling  = NOTSET
-    self._second_sampling = NOTSET
-    self._third_sampling  = NOTSET
+
+    self._first_sampling  = NotSet
+    self._second_sampling = NotSet
+    self._third_sampling  = NotSet
 
   def initialize(self):
     try:

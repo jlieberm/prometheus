@@ -2,9 +2,9 @@
 __all__ = ['Photon']
 
 
-from Gaugi  import Dataframe as DataframeEnum
+from Gaugi.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
-from Events import EDM
+from EventCommon import EDM
 from Gaugi.utilities import stdvector_to_list
 
 

@@ -2,9 +2,9 @@
 __all__ = ["TrackCaloMatchType","SummaryType","TrackParticle"]
 
 
-from Gaugi  import Dataframe as DataframeEnum
+from Gaugi.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
-from Events import EDM
+from EventCommon import EDM
 
 
 

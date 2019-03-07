@@ -2,10 +2,10 @@
 __all__ = ['Electron', 'ElectronPid', 'EgammaParameters']
 
 
-from Events import EDM
+from EventCommon import EDM
 from Gaugi  import StatusCode, EnumStringification
-from Gaugi  import Dataframe as DataframeEnum
-from Events.atlas.TrackParticle   import TrackCaloMatchType 
+from Gaugi.enumerations  import Dataframe as DataframeEnum
+from EventAtlas.TrackParticle   import TrackCaloMatchType 
 import math
 
 class ElectronPid(EnumStringification):

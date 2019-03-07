@@ -2,8 +2,8 @@
 __all__ = ['MonteCarlo']
 
 from Gaugi  import StatusCode
-from Gaugi  import Dataframe as DataframeEnum
-from Events import EDM, ElectronCandidate
+from Gaugi.enumerations import Dataframe as DataframeEnum
+from EventCommon import EDM
 
 
 class MonteCarlo(EDM):

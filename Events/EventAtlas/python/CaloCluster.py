@@ -2,7 +2,7 @@
 __all__ = ["CaloCluster"]
 
 
-from Events import EDM, ElectronCandidate
+from EventCommon import EDM
 from Gaugi  import StatusCode
 from Gaugi  import Dataframe as DataframeEnum
 

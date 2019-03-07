@@ -4,11 +4,11 @@ __all__ = ["TDT", "DecisionCore", "AcceptType"]
 
 
 
-from Gaugi  import Dataframe as DataframeEnum
+from Gaugi.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
-from Events import EDM
+from EventCommon import EDM
 from Gaugi.utilities import stdvector_to_list
-
+from Gaugi.messenger.macros import *
 
 
 class AcceptType(EnumStringification):
@@ -65,15 +65,15 @@ class TDT(EDM):
     if core is (DecisionCore.TriggerDecisionTool) or (DecisionCore.TrigEgammaEmulationTool):
       self._core = core
     else:
-      self._logger.error('DecisionCore type unknow')
+      MSG_ERROR( self, 'DecisionCore type unknow')
 
 
   def initialize(self):
 
     import ROOT
-    from RingerCore import stdvector_to_list
+    from Gaugi.utilities import stdvector_to_list
     if not (self._dataframe is DataframeEnum.PhysVal_v2):
-      self._logger.warning('Not possible to initialize this metadata using this dataframe. skip!')
+      MSG_WARNING( self, 'Not possible to initialize this metadata using this dataframe. skip!')
       return StatusCode.SUCCESS
     
     inputFile = self._metadataParams['file']
@@ -81,32 +81,32 @@ class TDT(EDM):
     # Check if file exists
     f  = ROOT.TFile.Open(inputFile, 'read')
     if not f or f.IsZombie():
-      self._warning('Couldn''t open file: %s', inputFile)
+      MSG_WARNING( self, 'Couldn''t open file: %s', inputFile)
       return StatusCode.FAILURE
     
     # Inform user whether TTree exists, and which options are available:
-    self._debug("Adding file: %s", inputFile)
+    MSG_DEBUG( self, "Adding file: %s", inputFile)
     treePath = self._metadataParams['basepath'] + '/' + self._metadataName
     obj = f.Get(treePath)
     if not obj:
-      self._logger.warning("Couldn't retrieve TTree (%s)!", treePath)
-      self._logger.info("File available info:")
+      MSG_WARNING( self, "Couldn't retrieve TTree (%s)!", treePath)
+      MSG_INFO( self, "File available info:")
       f.ReadAll()
       f.ReadKeys()
       f.ls()
       return StatusCode.FAILURE
     elif not isinstance(obj, ROOT.TTree):
-      self._logger.fatal("%s is not an instance of TTree!", treePath, ValueError)
+      MSG_FATAL( self, "%s is not an instance of TTree!", treePath, ValueError)
   
     try:
       obj.GetEntry(0)
       self._triggerList = stdvector_to_list(obj.trig_tdt_triggerList)
     except:
-      self._logger.error("Can not extract the trigger list from the metadata file.")
+      MSG_ERROR( self, "Can not extract the trigger list from the metadata file.")
       return StatusCode.FAILURE
 
     for trigItem in self._triggerList:
-      self._logger.info("Metadata trigger: %s", trigItem)
+      MSG_INFO( self, "Metadata trigger: %s", trigItem)
 
     # try to get all triggers into the TDT metadata information
     try:
@@ -116,7 +116,7 @@ class TDT(EDM):
       # Success
       return StatusCode.SUCCESS
     except:
-      self._logger.warning("Impossible to create the TDTMetaData Container")
+      MSG_WARNING( self, "Impossible to create the TDTMetaData Container")
       return StatusCode.FAILURE
 
 
@@ -159,9 +159,9 @@ class TDT(EDM):
       elif acceptType is AcceptType.HLT:
         return bool(self._event.trig_tdt_EF_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_el_accept[idx])
       else:
-        self._logger.error('Trigger type not suppported.')
+        MSG_ERROR( self, 'Trigger type not suppported.')
     else:
-      self._logger.warning('Trigger %s not storage in TDT metadata.',trigItem)
+      MSG_WARNING( self, 'Trigger %s not storage in TDT metadata.',trigItem)
 
 
 
