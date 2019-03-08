@@ -20,7 +20,7 @@ def installTrigEgammaL2CaloSelectors( toolname = "EgammaEmulation" ):
     for sel in selectors:
       tool.addFastCaloSelector(sel.name(), sel)
   else:
-    raise RuntimeError("%s not found into the ToolSvc.", toolname)
+    raise RuntimeError("%s not found into the ToolSvc." % toolname)
 
 
 
