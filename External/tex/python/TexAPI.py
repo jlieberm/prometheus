@@ -17,11 +17,18 @@ def _writeline(self, *l, **kw ):
 StringIO.writeline = _writeline
 import os, sys, traceback
 
-from RingerCore.Configure import Holder, retrieve_kw
-from RingerCore.util import measureCallTime
-from RingerCore.Logger import Logger, LoggingLevel
-from RingerCore.FileIO import ensureExtension, changeExtension, checkExtension
-from RingerCore.LimitedTypeList import LimitedTypeList, _LimitedTypeList____init__
+
+from Gaugi.utilities import retrieve_kw, measureCallTime, Holder
+from Gaugi.messenger import Logger, LoggingLevel
+from Gaugi.messenger.macros import *
+from Gaugi.storage import ensureExtension, changeExtension, checkExtension
+from LimitedTypeList import LimitedTypeList, _LimitedTypeList____init__
+
+#from RingerCore.Configure import Holder, retrieve_kw
+#from RingerCore.util import measureCallTime
+#from RingerCore.Logger import Logger, LoggingLevel
+#from RingerCore.FileIO import ensureExtension, changeExtension, checkExtension
+#from RingerCore.LimitedTypeList import LimitedTypeList, _LimitedTypeList____init__
 
 try:
   from tex import escape_latex
@@ -134,7 +141,6 @@ class TexSessionStream( Logger ):
 
   def __init__( self, outputFile ):
     Logger.__init__( self )
-    from RingerCore.FileIO import ensureExtension
     if not outputFile:
       raise TexException( self, 'Cannot stream to empty file path.' )
     self.outputFile = ensureExtension( outputFile, self._outputExtension )
@@ -556,7 +562,7 @@ class OverPic( TexObject ):
     graphics_option += ',' if moreGraphicsOptions else ''
     graphics_option += ','.join( [str(key) + ('=' + str(val) if val else '') for key, val in moreGraphicsOptions.iteritems() ] )
     self.graphics_option = graphics_option
-    from RingerCore.LoopingBounds import traverse
+    from Gaugi.utilities import traverse
     try:
       _, _, _, _, depth = traverse(texts ).next()
     except (GeneratorExit, StopIteration):
