@@ -18,8 +18,8 @@ __all__.extend(TAxisFunctions.__all__)
 from .TAxisFunctions import *
 
 
-from . import PlotHelper
-__all__.extend(PlotHelper.__all__)
-from .PlotHelper import *
+from . import utilities
+__all__.extend(utilities.__all__)
+from .utilities import *
 
 
