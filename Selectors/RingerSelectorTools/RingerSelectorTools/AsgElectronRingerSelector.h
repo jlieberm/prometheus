@@ -32,6 +32,14 @@ class AsgElectronRingerSelector : public asg::AsgTool,
 
     virtual StatusCode finalize();
 
+    bool useCaloRings() const {return m_selectorTool.useCaloRings();};
+    bool useTrack() const {return m_selectorTool.useTrack();};
+    bool useShowerShape() const {return m_selectorTool.useShowerShape();};
+    bool useTileCal() const {return m_selectorTool.useTileCal();};
+
+
+
+
   public:
 
      /** The main accept method: using the generic interface */

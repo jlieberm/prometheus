@@ -4,7 +4,7 @@ __all__ = ['EmulationTool']
 
 from Gaugi import Algorithm, StatusCode
 from Gaugi.messenger.macros import *
-
+from Gaugi.enumerations import Dataframe as DataframeEnum
 
 class EmulationTool( Algorithm ):
 
@@ -68,7 +68,7 @@ class EmulationTool( Algorithm ):
 
     #TODO: this is only used in physval_v2 dataframe. This needed to be expand
     # to the offline (skimmed) fro future.
-    if self.dataframe is Dataframe.PhysVal_v2:
+    if self.dataframe is DataframeEnum.PhysVal_v2:
       hlt_el= context.getHandler("HLT__ElectronContainer")
       fc    = context.getHandler("HLT__FastCaloContainer")
       # Build each selector for FastCalo (only ringer) and decorate

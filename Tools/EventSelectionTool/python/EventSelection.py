@@ -6,6 +6,7 @@ from Gaugi import Algorithm, StatusCode, NotSet
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger.macros import *
 from Gaugi.constants import GeV
+from Gaugi.enumerations import StatusWatchDog
 from Gaugi import EnumStringification
 import numpy as np
 

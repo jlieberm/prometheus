@@ -10,6 +10,7 @@ from CommonTools import AlgorithmTool
 from CommonTools.constants import *
 from CommonTools.utilities import RetrieveBinningIdx
 import ROOT
+import numpy as np
 
 class QuadrantTool( AlgorithmTool ):
 
@@ -48,7 +49,6 @@ class QuadrantTool( AlgorithmTool ):
     #if super(TrigBaseTool,self).initialize().isFailure():
     #  self._logger.fatal("Impossible to initialize the Trigger services.")
     from ROOT import TH1F
-    from CommonTools.constants import *
     etabins = default_etabins
 
     for feat in self._quadrantFeatures:
@@ -94,7 +94,8 @@ class QuadrantTool( AlgorithmTool ):
 
 
   def execute(self, context):
-
+    
+    import math
     from Gaugi.constants import GeV
     # Retrieve Electron container
     el = context.getHandler( "ElectronContainer" )
@@ -164,7 +165,7 @@ class QuadrantTool( AlgorithmTool ):
     
     from itertools import product
     from Gaugi.utilities import progressbar
-    from CommonTools.constants import *
+
     import time
     import os, gc
 

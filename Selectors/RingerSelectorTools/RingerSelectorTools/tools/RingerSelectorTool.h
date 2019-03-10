@@ -64,10 +64,12 @@ namespace Ringer{
   
   
       std::string getWP( void ) const {return m_wp;};
+      
       bool useCaloRings() const {return m_useCaloRings;};
       bool useTrack() const {return m_useTrack;};
       bool useShowerShape() const {return m_useShowerShape;};
       bool useTileCal() const {return m_useTileCal;};
+
       void setConstantsCalibPath(std::string s){m_constantsCalibPath=s;};
       void setThresholdsCalibPath(std::string s){m_thresholdsCalibPath=s;};
      

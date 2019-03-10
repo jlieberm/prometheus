@@ -71,7 +71,8 @@ job_gaugi_atlas:
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
         - set +e && source setup_here.sh; set -e
         - source buildthis.sh
-        - ls build/
+        - cd build/
+        - ls *
         #- source build/x86_64-slc6-gcc62-opt/setup.sh
         #- source Validation/test/test_gaugi_atlas.sh
 

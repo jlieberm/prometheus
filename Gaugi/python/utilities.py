@@ -12,7 +12,13 @@ __all__ = [
            'appendToOutput',
            'traverse',
            'expandFolders',
-           'expandPath'
+           'expandPath',
+           'Holder',
+           'checkExtension',
+           'ensureExtension',
+           'changeExtension',
+           'mkdir_p'
+
            ]
 
 
@@ -335,10 +341,134 @@ def expandFolders( pathList, filters = None, logger = None, level = None):
 
 class BadFilePath(ValueError): pass
 
+
 def expandPath(path):
   " Returns absolutePath path expanding variables and user symbols "
   if not isinstance( path, basestring):
     raise BadFilePath(path)
   return os.path.abspath( os.path.expanduser( os.path.expandvars( path ) ) )
+
+
+
+class Holder( object ):
+  """
+  A simple object holder
+  """
+  def __init__(self, obj = None, replaceable = True):
+    self._obj = obj
+    self._replaceable = replaceable
+  def __call__(self):
+    return self._obj
+  def isValid(self):
+    return self._obj not in (None, NotSet)
+  def set(self, value):
+    if self._replaceable or not self.isValid():
+      self._obj = value
+    else:
+      raise RuntimeError("Cannot replace held object.")
+
+def checkExtension( filename, ext, ignoreNumbersAfterExtension = True):
+  """
+    Check if file matches extension(s) ext. If checking for multiple
+    extensions, use | to separate the extensions.
+  """
+  return bool(__extRE(ext, ignoreNumbersAfterExtension).match( filename ))
+
+def __extRE(ext, ignoreNumbersAfterExtension = True):
+  """
+  Returns a regular expression compiled object that will search for
+  extension ext
+  """
+  import re
+  if not isinstance( ext, (list,tuple,)): ext = ext.split('|')
+  ext = [e[1:] if e[0] == '.' else e for e in ext]
+  # remove all first dots
+  return re.compile(r'(.*)\.(' + r'|'.join(ext) + r')' + \
+                    (r'(\.[0-9]*|)' if ignoreNumbersAfterExtension else '()') + r'$')
+
+def ensureExtension( filename, extL, ignoreNumbersAfterExtension = True ):
+  """
+  Ensure that filename extension is extL, else adds its extension.
+  Extension extL may start with '.' or not. In case it does not, a dot will be
+  added.
+  A '|' may be specified to treat multiple extensions. In case either one of
+  the extensions specified is found, nothing will be changed in the output,
+  else the first extension will be added to the file.
+  """
+  if isinstance(extL, basestring) and '|' in extL:
+    extL = extL.split('|')
+  if not isinstance(extL, (list,tuple)):
+    extL = [extL]
+  extL = ['.' + e if e[0] != '.' else e for e in extL]
+
+  # FIXME: This can be returned earlier by using filter
+  if any([checkExtension(filename, ext, ignoreNumbersAfterExtension) for ext in extL]):
+    return filename
+
+  # FIXME We should check every extension and see how many composed matches we had before doing this
+  ext = extL[0]
+  composed = ext.split('.')
+  if not composed[0]: composed = composed[1:]
+  lComposed = len(composed)
+  if lComposed > 1:
+    for idx in range(lComposed):
+      if filename.endswith( '.'.join(composed[0:idx+1]) ):
+        filename += '.' + '.'.join(composed[idx+1:])
+        break
+    else:
+      filename += ext
+  else:
+    filename += ext
+  return filename
+
+def changeExtension( filename, newExtension, knownFileExtensions = ['tgz', 'tar.gz', 'tar.xz','tar',
+                                                                    'pic.gz', 'pic.xz', 'pic',
+                                                                    'npz', 'npy', 'root'],
+                      retryExtensions = ['gz', 'xz'],
+                      moreFileExtensions = [],
+                      moreRetryExtensions = [],
+                      ignoreNumbersAfterExtension = True,
+                    ):
+  """
+  Append string to end of file name but keeping file extension in the end.
+  Inputs:
+    -> filename: the filename path;
+    -> newExtension: the extension to be used by the file;
+    -> knownFileExtensions: the known file extensions, use to override all file extensions;
+    -> retryExtensions: some extensions are inside other extensions, e.g.
+    tar.gz and .gz. This makes regexp operator | to match the smaller
+    extension, so the easiest solution is to retry the smaller extensions after
+    checking the larger ones.
+    -> moreFileExtensions: add more file extensions to consider without overriding all file extensions;
+    -> moreRetryExtensions: add more extensions to consider while retrying without overriding the retryExtensions;
+    -> ignoreNumbersAfterExtension: whether to ignore numbers after the file extensions or not.
+  Output:
+    -> the filename with the string appended.
+  """
+  knownFileExtensions.extend( moreFileExtensions )
+  def repStr( newExt ):
+    return r'\g<1>' + ( newExt if newExt.startswith('.') else ( '.' + newExt ) )
+  str_ = __extRE( knownFileExtensions )
+  m = str_.match( filename )
+  if m:
+    return str_.sub( repStr(newExtension), filename )
+  str_ = __extRE( retryExtensions )
+  m = str_.match( filename )
+  if m:
+    return str_.sub( repStr(newExtension), filename )
+  else:
+    return filename + newExtension
+
+
+def mkdir_p(path):
+  import errno
+  path = os.path.expandvars( path )
+  try:
+    if not os.path.exists( path ):
+      os.makedirs(path)
+  except OSError as exc: # Python >2.5
+    if exc.errno == errno.EEXIST and os.path.isdir(path):
+      pass
+    else: raise IOError
 
 

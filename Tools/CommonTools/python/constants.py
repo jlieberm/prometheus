@@ -3,9 +3,10 @@ __all__ = ['nvtx_bins','zee_etbins','jpsiee_etbins','coarse_etbins','default_eta
           'lh_thres_etabins', 'lh_thres_etbins', 'lh_tuning_etabins', 'lh_tuning_etbins',
           'standardQuantitiesEtaEdge', 'standardQuantitiesHighEdges', 'standardQuantitiesLowerEdges', 
           'standardQuantitiesSpecialBins', 'standardQuantitiesNBins', 'standardQuantitiesPDFsHighEdges',
-          'standardQuantitiesPDFsLowerEdges', 'standardQuantitiesPDFsNBins', 'specialElectronBins',
+          'standardQuantitiesPDFsLowerEdges', 'standardQuantitiesPDFsNBins', 'specialElectronBins', 'basicInfoQuantities',
           'basicInfoNBins', 'basicInfoLowerEdges', 'basicInfoHighEdges','fudge_etbins','fudge_etabins',
-          'scalefactor_etbins','scalefactor_etabins','high_nvtx_bins', 'electronLatexStr', 'basicInfoLatexStr']
+          'scalefactor_etbins','scalefactor_etabins','high_nvtx_bins', 'electronLatexStr', 'basicInfoLatexStr',
+          'electronQuantities']
 
 import math
 

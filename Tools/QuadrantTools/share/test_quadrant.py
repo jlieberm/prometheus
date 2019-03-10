@@ -16,7 +16,7 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
                             nov = 1000,
                             dataframe = DataframeEnum.PhysVal_v2, 
                             outputFile = 'test_output.root',
-                            level = LoggingLevel.DEBUG
+                            level = LoggingLevel.INFO
                           )
 
 
