@@ -1,84 +1,17 @@
 __all__ = ['QuadrantTool']
 
-from RingerCore import retrieve_kw, mkdir_p
-from RingerCore import Logger, LoggingLevel, retrieve_kw, checkForUnusedVars, \
-                       expandFolders, csvStr2List, progressbar
-
-from prometheus.core                              import StatusCode
-from prometheus.drawers.functions                 import *
-from prometheus.drawers.functions.PlotFunctions   import *
-from prometheus.drawers.functions.TAxisFunctions  import *
-from prometheus.drawers.functions.PlotHelper      import *
-from prometheus.tools.atlas.common                import ATLASBaseTool
-from prometheus.tools.atlas.common.constants      import *
-from array                                        import array
-from prometheus.core                              import Dataframe
 
 
-from ROOT import TH1,TH1F, TH2F, TProfile
-import time,os,math,sys,pprint,glob
-import warnings
+from Gaugi import StatusCode
+from Gaugi.enumerations import Dataframe as DataframeEnum
+from Gaugi.utilities import retrieve_kw, mkdir_p
+from Gaugi.types import NotSet
+from CommonTools import AlgorithmTool
+from CommonTools.constants import *
+from CommonTools.utilities import RetrieveBinningIdx
 import ROOT
-import numpy as np
-import array
-import math
 
-def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', etlist = None
-                     , etalist = None, etidx = None, etaidx = None, legTextSize=10
-                     , runLabel = '', extraText1 = None, legendY1=.68, legendY2=.93
-                     , maxLegLength = 19, logger=None):
-    text_lines = []
-    text_lines += [GetAtlasInternalText()]
-    text_lines.append( GetSqrtsText(13) )
-    if runLabel: text_lines.append( runLabel )
-    if extraText1: text_lines.append( extraText1 )
-    DrawText(can,text_lines,.40,.68,.70,.93,totalentries=4)
-    if legend:
-        MakeLegend( can,.73,legendY1,.89,legendY2,textsize=legTextSize
-                  , names=legend, option = legOpt, squarebox=False
-                  , totalentries=0, maxlength=maxLegLength )
-    try:
-        extraText = []
-        if etlist and etidx is not None:
-            # add infinity in case of last et value too large
-            if etlist[-1]>9999:  etlist[-1]='#infty'
-            binEt = (str(etlist[etidx]) + ' < E_{T} [GeV] < ' + str(etlist[etidx+1]) if etidx+1 < len(etlist) else
-                                     'E_{T} > ' + str(etlist[etidx]) + ' GeV')
-            extraText.append(binEt)
-        if quantity_text: 
-            if not isinstance(quantity_text,(tuple,list)): quantity_text = [quantity_text]
-            extraText += quantity_text
-        if etalist and etaidx is not None:
-            binEta = (str(etalist[etaidx]) + ' < #eta < ' + str(etalist[etaidx+1]) if etaidx+1 < len(etalist) else
-                                        str(etalist[etaidx]) + ' < #eta < 2.47')
-            extraText.append(binEta)
-        DrawText(can,extraText,.14,.68,.35,.93,totalentries=4)
-    except NameError, e:
-        if logger:
-          logger.warning("Couldn't print test due to error: %s", e)
-        pass
-
-
-class QuadrantConfig(Logger):
-  def __init__(self, name_a, expression_a, name_b, expression_b):
-    Logger.__init__(self)
-    self._name_a=name_a; self._name_b=name_b
-    self._expression_a=expression_a; self._expression_b=expression_b
-  
-  def name_a(self):
-    return self._name_a
-
-  def expression_a(self):
-    return self._expression_a
-
-  def name_b(self):
-    return self._name_b
-
-  def expression_b(self):
-    return self._expression_b
-
-
-class QuadrantTool( ATLASBaseTool ):
+class QuadrantTool( AlgorithmTool ):
 
   # quadrant names definition
   _quadrants = ['passed_passed',
@@ -88,14 +21,15 @@ class QuadrantTool( ATLASBaseTool ):
 
   def __init__(self, name, **kw):
     
-    ATLASBaseTool.__init__(self, name)
+    AlgorithmTool.__init__(self, name)
     self._basepath = 'Event/QuadrantTool'
     self._quadrantFeatures = list()
-    self._etBins  = ringer_tuning_etbins
-    self._etaBins = ringer_tuning_etabins
+    self._etBins  = NotSet
+    self._etaBins = NotSet
     
 
   def add_quadrant( self, name_a, expression_a, name_b, expression_b):
+    from utilities import QuadrantConfig
     self._quadrantFeatures.append( QuadrantConfig(name_a,expression_a,name_b,expression_b) )
 
 
@@ -108,10 +42,13 @@ class QuadrantTool( ATLASBaseTool ):
 
   def initialize(self):
     
-    ATLASBaseTool.initialize(self)
+    AlgorithmTool.initialize(self)
+    sg = self.getStoreGateSvc()
+
     #if super(TrigBaseTool,self).initialize().isFailure():
     #  self._logger.fatal("Impossible to initialize the Trigger services.")
-    from prometheus.tools.atlas.common.constants import zee_etbins, default_etabins, nvtx_bins
+    from ROOT import TH1F
+    from CommonTools.constants import *
     etabins = default_etabins
 
     for feat in self._quadrantFeatures:
@@ -147,13 +84,6 @@ class QuadrantTool( ATLASBaseTool ):
                 standardQuantitiesNBins[key],
                 standardQuantitiesLowerEdges[key],
                 standardQuantitiesHighEdges[key]))
-          
-            #if nnoutput:
-            #  sg.addHistogram(TH1F('nnOutput','ringer NN output;discriminant;Count',380,-12,7))  
-            #if lhoutput:
-            #  sg.addHistogram(TH1F('lhOutput',' Likelihood discriminant;discriminant;Count',80,-2,2))  
-            #if lhoutput and nnoutput:
-            #  sg.addHistogram(TH2F('lhVsRinger',' Likelihood Vs NN output; LH; NN; Count',80,-2,2,380,-12,7))  
 
             # loop over quadrants
 
@@ -165,7 +95,7 @@ class QuadrantTool( ATLASBaseTool ):
 
   def execute(self, context):
 
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     # Retrieve Electron container
     el = context.getHandler( "ElectronContainer" )
     evt = context.getHandler( "EventInfoContainer" )
@@ -175,6 +105,7 @@ class QuadrantTool( ATLASBaseTool ):
     
     evt = context.getHandler("EventInfoContainer")
     pw = evt.MCPileupWeight()
+    sg = self.getStoreGateSvc()
 
     if et < self._etBins[0]:
       return StatusCode.SUCCESS
@@ -220,19 +151,6 @@ class QuadrantTool( ATLASBaseTool ):
         sg.histogram(dirname+'/DeltaPOverP').Fill(track.DeltaPOverP(),pw)
      
 
-      ### Special histograms for expert studies.
-      #isNN=False; isLH=False
-      #if nnoutput in el.decorations():
-      #  isNN=True
-      #  sg.histogram(dirname+'/nnOutput').Fill( el.getDecor(nnoutput+'_discriminant'), pw)
-      #if lhoutput in el.decorations():
-      #  isLH=True
-      #  sg.histogram(dirname+'/lhOutput').Fill( el.getDecor(lhoutput+'_discriminant'), pw )
-      #if isLH and isNN:
-      #  sg.histogram(dirname+'/lhVsRinger').Fill(el.getDecor(lhoutput+'_discriminant'),
-      #                                                      el.getDecor(nnoutput+'_discriminant') ,pw)
-
-
     return StatusCode.SUCCESS
 
 
@@ -243,12 +161,14 @@ class QuadrantTool( ATLASBaseTool ):
 
 
   def plot(self, dirnames, pdfoutputs, pdftitles, runLabel='' ,doPDF=True):
-    #from TagAndprobeFrame.PlotFunctions import  tobject_collector
-    #from TagAndProbeFrame.PlotFunctions import *
     
+    from itertools import product
+    from Gaugi.utilities import progressbar
+    from CommonTools.constants import *
+    import time
     import os, gc
+
     beamer_plots = {}
-    #from TagAndProbeFrame.PlotFunctions import tobject_collector
     global tobject_collector
 
     for idx, feat in enumerate(self._quadrantFeatures):
@@ -261,15 +181,11 @@ class QuadrantTool( ATLASBaseTool ):
       if not quadrant_name in beamer_plots.keys():
         beamer_plots[quadrant_name]={}
         beamer_plots[quadrant_name]['integrated']={}
-      from itertools import product
-      from RingerCore import progressbar
-      import time
-      ### Plot binning plots
-      
+
+      ### Plot binning plots  
       if (len(self._etBins) * len(self._etaBins)) > 1:
         for etBinIdx, etaBinIdx in progressbar(product(range(len(self._etBins)-1),range(len(self._etaBins)-1)), 
-                                                 (len(self._etBins)-1)*(len(self._etaBins)-1),
-                                                 logger = self._logger, prefix = "Plotting... "):
+                                               prefix = "Plotting... "):
           # hold binning name
           binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
           # for beamer...
@@ -320,12 +236,9 @@ class QuadrantTool( ATLASBaseTool ):
       beamer_plots[quadrant_name]['integrated']['statistics'] = self._getStatistics(self._basepath+'/'+quadrant_name, 'avgmu')
 
 
-    from pprint import pprint
-    #pprint(beamer_plots)
 
 
     if doPDF:
-      
       ### Make Latex str et/eta labels
       etbins_str = []; etabins_str=[]
       for etBinIdx in range( len(self._etBins)-1 ):
@@ -341,8 +254,8 @@ class QuadrantTool( ATLASBaseTool ):
 
 
 
-      from RingerCore.tex.TexAPI    import *
-      from RingerCore.tex.BeamerAPI import *
+      from tex.TexAPI    import *
+      from tex.BeamerAPI import *
       
       for slideIdx, feat in enumerate(self._quadrantFeatures):
         
@@ -487,9 +400,17 @@ class QuadrantTool( ATLASBaseTool ):
 
 
 
-  def _plotQuantities( self,basepath, key, outname, drawopt='hist', divide='B', etidx=None, etaidx=None, xlabel='', runLabel='',
-      addbinlines=False):
-    import ROOT
+  def _plotQuantities( self,basepath, key, outname, drawopt='hist', divide='B', 
+      etidx=None, etaidx=None, xlabel='', runLabel='', addbinlines=False):
+
+
+
+    from monet.utilities import sumHists
+    from monet.PlotFunctions import *
+    from monet.TAxisFunctions import *
+    from utilities import AddTopLabels
+
+
     ROOT.gROOT.SetBatch(ROOT.kTRUE)
     ROOT.gErrorIgnoreLevel=ROOT.kWarning
     ROOT.TH1.AddDirectory(ROOT.kFALSE)

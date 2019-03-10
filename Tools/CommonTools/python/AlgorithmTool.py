@@ -13,7 +13,7 @@ class AlgorithmTool( Algorithm ):
     self._doJpsiee = False
 
   def initialize(self):
-    from EventSelection import Interpreter
+    from EventSelectionTool import Interpreter
     self._re = Interpreter("Interpreter")
     self._re.dataframe = self._dataframe
     # syncronizaion with the base

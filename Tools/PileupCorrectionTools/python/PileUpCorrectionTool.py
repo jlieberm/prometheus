@@ -58,7 +58,7 @@ def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, run
 
 
 
-def Plot2DHist( chist, hist2D, a, b, discr_points, nvtx_points, error_points, outname, xlabel)
+def Plot2DHist( chist, hist2D, a, b, discr_points, nvtx_points, error_points, outname, xlabel):
     
   from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack,TLine,kBird, kOrange
   from ROOT import TGraphErrors,TF1,TColor
@@ -293,7 +293,7 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
 
   
-  def plot(self, dirname, filenames, exportTool=None)
+  def plot(self, dirname, filenames, exportTool=None ):
 
 
     if not exportTool:
@@ -526,8 +526,8 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
         self._logger.info('Applying correction in <et=%d, eta=%d> ? %s', etBinIdx,etaBinIdx, doLinearCorrection)
 
-        sgn_hist2D = sg.histogram(self._basepath+'/probes/'+target.name()+'/'target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
-        bkg_hist2D = sg.histogram(self._basepath+'/fakes/'+target.name()+'/'target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
+        sgn_hist2D = sg.histogram(self._basepath+'/probes/'+target.name()+'/'+target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
+        bkg_hist2D = sg.histogram(self._basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
 
         sgn_eff, sgn_passed, sgn_total  = target.reference( self.getStoreGateSvc(), etBinIdx, etaBinIdx, self._basepath )
         bkg_eff, bkg_passed, bkg_total  = target.reference( self.getStoreGateSvc(), etBinIdx, etaBinIdx, self._basepath, True )
