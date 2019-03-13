@@ -1,24 +1,14 @@
 
 
-from RingerCore import Logger, LoggingLevel, retrieve_kw, checkForUnusedVars, \
-                       expandFolders, csvStr2List, progressbar
-from ROOT       import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite
-from prometheus.core                          import StatusCode
-from prometheus.core                          import Dataframe
-from prometheus.drawers.functions             import *
-from prometheus.tools.atlas.common            import ATLASBaseTool
-from prometheus.tools.atlas.common.constants  import *
-from prometheus.drawers.functions.AtlasStyle      import *
-from prometheus.drawers.functions.PlotFunctions   import *
-from prometheus.drawers.functions.TAxisFunctions  import *
-
-from array                                    import array
-import time,os,math,sys,pprint,glob
-import warnings
-import ROOT
+from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite
+from monet import *
+from array import array
+from copy import deepcopy
+import time,os,math,sys,pprint,glob,warnings
 import numpy as np
-import array
+import ROOT, math
 
+ 
 
 _g = []
 
@@ -387,156 +377,103 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
 
 
 
-def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', etlist = None
-                     , etalist = None, etidx = None, etaidx = None, legTextSize=10
-                     , runLabel = '', extraText1 = None, legendY1=.68, legendY2=.93
-                     , maxLegLength = 19, logger=None):
-    text_lines = []
-    text_lines += [GetAtlasInternalText()]
-    text_lines.append( GetSqrtsText(13) )
-    if runLabel: text_lines.append( runLabel )
-    if extraText1: text_lines.append( extraText1 )
-    DrawText(can,text_lines,.40,.68,.70,.93,totalentries=4)
-    if legend:
-        MakeLegend( can,.73,legendY1,.89,legendY2,textsize=legTextSize
-                  , names=legend, option = legOpt, squarebox=False
-                  , totalentries=0, maxlength=maxLegLength )
-    try:
-        from copy import copy
-        extraText = []
-        if etlist and etidx is not None:
-            # add infinity in case of last et value too large
-            etlist=copy(etlist)
-            if etlist[-1]>9999:  etlist[-1]='#infty'
-            binEt = (str(etlist[etidx]) + ' < E_{T} [GeV] < ' + str(etlist[etidx+1]) if etidx+1 < len(etlist) else
-                                     'E_{T} > ' + str(etlist[etidx]) + ' GeV')
-            extraText.append(binEt)
-        if quantity_text:
-            if not isinstance(quantity_text,(tuple,list)): quantity_text = [quantity_text]
-            extraText += quantity_text
-        if etalist and etaidx is not None:
-            binEta = (str(etalist[etaidx]) + ' < #eta < ' + str(etalist[etaidx+1]) if etaidx+1 < len(etalist) else
-                                        str(etalist[etaidx]) + ' < #eta < 2.47')
-            extraText.append(binEta)
-        DrawText(can,extraText,.14,.68,.35,.93,totalentries=4)
-    except NameError, e:
-        if logger:
-          logger.warning("Couldn't print test due to error: %s", e)
-        pass
+# threshold pileup correction
+def ApplyThresholdLinearCorrection( chist, sgn_hist2D, bkg_hist2D, refvalue,  doLinearCorrection=True, false_alarm_limit=0.5, logger=None ):
+  """
+    This is the main function used to call the pileup correction and make the summary
+  """
+ 
+  mumin = chist.ymin()
+  mumax = chist.ymax()
+
+  sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),chist.xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
+  bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),chist,xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
+  
+
+  if isinstance(chist.yres(),(float,int)):
+    sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/chist.ybins())))
+    bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/chist.ybins())))
+  else:
+    sgn_hist2D = rebinY(sgn_hist2D,chist.yres())
+    bkg_hist2D = rebinY(bkg_hist2D,chist.yres())
 
 
+  false_alarm = 1.0
+  while false_alarm > false_alarm_limit:
+    # Calculate the original threshold
+    b0, error = FindThreshold(sgn_hist2D.ProjectionX(), refvalue )
+    # Take eff points using uncorrection threshold
+    discr_points, nvtx_points, error_points = CalculateDependentDiscrPoints(sgn_hist2D , refvalue )
+    nvtx = np.array(nvtx_points)
+    local_a = ( discr_points[0] - discr_points[1] ) / ( nvtx[0] - nvtx[1] )
+    local_b = discr_points[0] - local_a*nvtx[0]
+    # Calculate eff without correction
+    sgn_histNum, sgn_histDen, sgn_histEff, sgn_info   = CalculateEfficiency(sgn_hist2D, refvalue, b0, 0,  doCorrection=False)
+
+    if doLinearCorrection:
+      sgn_histNum_corr, sgn_histDen_corr, sgn_histEff_corr, sgn_info_corr ,b, a = CalculateEfficiency( sgn_hist2D, refvalue, b0, 0, doCorrection=True)
+      if a>0:
+        if logger:  logger.warning("Retrieved positive angular factor of the linear correction, setting to 0!")
+        a = 0; b = b0;
+    else:
+      sgn_histNum_corr=sgn_histNum.Clone()
+      sgn_histDen_corr=sgn_histDen.Clone()
+      sgn_histEff_corr=sgn_histEff.Clone()
+      sgn_info_corr=deepcopy(sgn_info)
+      b=b0; a=0.0
 
 
-def Plot2DLinearFit( hist2D, title, xname
-                    , limits, graph
-                    , label, eff_uncorr, eff
-                    , etBin = None, etaBin = None ):
-  import array as ar
-  from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack, TLine, kBird, kOrange
-  from ROOT import TGraphErrors, TF1, TColor
-  pileup_max = hist2D.GetYaxis().GetXmax()
-  pileup_min = hist2D.GetYaxis().GetXmin()
-  # Retrieve some usefull information
-  gStyle.SetPalette(kBird)
-  canvas = TCanvas(title,title, 500, 500)
-  #canvas3.SetTopMargin(0.10)
-  canvas.SetRightMargin(0.12)
-  canvas.SetLeftMargin(0.10)
-  #canvas3.SetBottomMargin(0.11)
-  FormatCanvasAxes(canvas, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  #hist2D.SetTitle('Neural Network output as a function o nvtx, '+partition_name)
-  #hist2D.GetXaxis().SetTitle('Neural Network output (Discriminant)')
-  #hist2D.GetYaxis().SetTitle(xname)
-  #hist2D.GetZaxis().SetTitle('Counts')
-  #if not useNoActivationFunctionInTheLastLayer: hist2D.SetAxisRange(-1,1, 'X' )
-  hist2D.Draw('colz')
-  (miny,maxy) = GetYaxisRanges(canvas,check_all=True,ignorezeros=True,ignoreErrors=True)
-  canvas3.SetLogz()
-  # Invert graph
-  nvtx_points        = ar.array( 'd', graph.GetX(), )
-  nvtx_error_points  = ar.array( 'd', graph.GetEX(),)
-  discr_points       = ar.array( 'd', graph.GetY(), )
-  discr_error_points = ar.array( 'd', graph.GetEY(),)
-  g1 = TGraphErrors(len(discr_points), discr_points, nvtx_points, discr_error_points, nvtx_error_points)
-  g1.SetLineWidth(1)
-  g1.SetLineColor(kBlack)
-  g1.SetMarkerColor(kBlack)
-  g1.SetMarkerSize(.6)
-  g1.Draw("P same")
-  _g.append(g1)
-  l2 = TLine(eff_uncorr.thres,miny,eff_uncorr.thres,maxy)
-  l2.SetLineColor(kRed)
-  l2.SetLineWidth(2)
-  l2.Draw("l,same")
-  _g.append(l2)
-  f1 = eff.f1
-  l3 = TLine(f1.Eval(miny), miny, f1.Eval(maxy), maxy)
-  l3.SetLineColor(kBlack)
-  l3.SetLineWidth(2)
-  l3.Draw("l,same")
-  _g.append(l3)
-  SetAxisLabels(canvas,'Neural Network output (Discriminant)',xname,'Entries')
-  t = DrawText(canvas3,[GetAtlasInternalText(), '', FixLength(label,16), '', GetSqrtsText()],.05,.70,.45,.9)
-  t.SetTextAlign(12)
-  t2 = DrawText(canvas,[ '#color[2]{%s}' % eff_uncorr.thresstr( 'Fixed Threshold' )
-                   , '#color[2]{#varepsilon=%s}' % eff_uncorr.asstr(addname = False, addthres = False )
-                   , ''
-                   , eff.threstr( prefix = 'Correction' )
-                   , '#varepsilon=%s' % eff.asstr(addname = False, addthres = False )
-                   ]
-          ,.45,.70,.45,.9,totalentries=5, textsize = 14 )
-  t2.SetTextAlign(12)
-  AutoFixAxes( canvas, ignoreErrors = True, limitXaxisToFilledBins = True, changeAllXAxis = True )
-  return canvas
-
-
-
-
-class Target( Logger ):
-
-  def __init__( self, name, algname, reference, doSP=False, factor=None, relaxparameter=0.0 ):
-    Logger.__init__(self)
-    self._name =name
-    self._algname = algname
-    self._reference = reference
-    self._relaxparameter = relaxparameter
-    self._doSP = doSP
-
-
-  def name(self):
-    return self._name
-
-  def algname(self):
-    return self._algname
-
-  def refname(self):
-    return self._refname
-
-  def reference( self, storegate=None, etbinidx=None, etabinidx=None, basepath=None, useFalseAlarm=False ):
+    # Calculate eff without correction
+    bkg_histNum, bkg_histDen, bkg_histEff, bkg_info  = CalculateEfficiency(bkg_hist2D, refvalue, b0, 0,  doCorrection=False)
     
-    if not storegate:
-      self._logger.fatal("Can not access the reference. You must pass the Storegate pointer as argument.")
-    if not basepath:
-      self._logger.fatal("Can not access the reference. You must pass the basepath as argument.")
-    
-    if type(self._reference) is list:
-      if (etbinidx is not None) and (etabinidx is not None):
-        eff = self._reference[etbinidx][etabinidx]        
-        path = '{}/{}/{}/{}/{}'.format(self._basepath,'fakes' if useFalseAlarm else 'probes',self.name(),self._reference,binningname)
-        total   = storegate.histogram(path+'/eta').GetEntries()
-        passed = eff*float(total)
-    elif type(self._reference) is float:
-        path = '{}/{}/{}/{}/{}'.format(self._basepath,'fakes' if useFalseAlarm else 'probes',self.name(),self._reference,binningname)
-        total   = storegate.histogram(path+'/eta').GetEntries()
-        eff = self._reference
-        passed = eff*float(total)
-    elif type(self._reference) is str:
-      if (etbinidx is None) and (etabinidx is None):
-        self._logger.fatal("Can not access the reference. You must pass et/eta bin index as argument.")
-        algname = pair[0]; 
-        binningname = ('et%d_eta%d') % (etbinidx,etabinidx)
-        if self._doSP:
-          det, fa, sp = CalculateMaxSP(
-          storegate.histogram('{}/{}/{}/{}/{}/discriminantVsMu'.format(basepath,'probes',self.name(),self.algname(),binningname)).ProjectionX(),
-          storegate.histogram('{}/{}/{}/{}/{}/discriminantVsMu'.format(basepath,'fakes',self.name(),self.algname(),binningname)).ProjectionX())
-          total = storegate.histogram('{}/{}/{}/{}/{}/eta'.format(basepath,'probes',target.name(), self._reference,binningname)).GetEntries()
+    # Calculate eff using the correction from signal
+    #if addToBeta:  b = b + addToBeta
+    bkg_histNum_corr, bkg_histDen_corr, bkg_histEff_corr, bkg_info_corr = CalculateEfficiency(bkg_hist2D, refvalue, b, a,  doCorrection=False)
+    false_alarm = bkg_info_corr[0] # get the passed/total
+    if false_alarm > false_alarm_limit:
+      refvalue-=0.0025
+
+  angular = a;  offset = b; offset_0 = b0
+  
+  if logger:
+    logger.info( 'Signal with correction is: %1.2f%%', sgn_info_corr[0]*100 )
+    logger.info( 'Background with correction is: %1.2f%%', bkg_info_corr[0]*100 )
+  
+  # create the summary with all counts
+  summary = {
+             'signal_corr_values'     : {'eff'  : sgn_info_corr[0], 'passed'  : sgn_info_corr[1]  , 'total'  : sgn_info_corr[2]},
+             'background_corr_values' : {'eff'  : bkg_info_corr[0], 'passed'  : bkg_info_corr[1]  , 'total'  : bkg_info_corr[2]},
+             'signal_values'          : {'eff'  : sgn_info[0]     , 'passed'  : sgn_info[1]       , 'total'  : sgn_info[2]},
+             'background_values'      : {'eff'  : bkg_info[0]     , 'passed'  : bkg_info[1]       , 'total'  : bkg_info[2]},
+             }
+  # create the root object dict holder
+  objects = {
+             'signal_corr_hists'      : {'num'  : sgn_histNum_corr, 'den'     : sgn_histDen_corr , 'eff'     : sgn_histEff_corr , 'hist2D'    : sgn_hist2D},      
+             'background_corr_hists'  : {'num'  : bkg_histNum_corr, 'den'     : bkg_histDen_corr , 'eff'     : bkg_histEff_corr , 'hist2D'    : bkg_hist2D},
+             'signal_hists'           : {'num'  : sgn_histNum     , 'den'     : sgn_histDen      , 'eff'     : sgn_histEff      , 'hist2D'    : sgn_hist2D},
+             'background_hists'       : {'num'  : bkg_histNum     , 'den'     : bkg_histDen      , 'eff'     : bkg_histEff      , 'hist2D'    : bkg_hist2D},
+             'correction'             : {'discr_points'   : discr_points    , 'nvtx_points'      : nvtx_points      , 'error_points'      : error_points,
+                                         'angular'        : angular         , 'offset'           : offset           , 'offset0'           : offset0 },
+            }
+
+  # return the summary and objects 
+  return summary, objects
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

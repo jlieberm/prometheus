@@ -1,151 +1,58 @@
 
 __all__ = ["PileupLinearCorrectionTool"]
 
-from RingerCore                                   import Logger, LoggingLevel, retrieve_kw, checkForUnusedVars,expandFolders, csvStr2List, progressbar
-from prometheus.core                              import StatusCode
-from prometheus.core                              import Dataframe
-from prometheus.drawers.functions                 import *
-from prometheus.tools.atlas.common                import ATLASBaseTool
-from prometheus.tools.atlas.common.constants      import *
-from prometheus.drawers.functions.AtlasStyle      import *
-from prometheus.drawers.functions.PlotFunctions   import *
-from prometheus.drawers.functions.TAxisFunctions  import *
 
 
+from Gaugi.messenger.macros import *
+from Gaugi import StatusCode
+from CommonTools import AlgorithmTool
 
 
-
-def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, runLabel=None,  etBinIdx=None, etaBinIdx=None, etBins=None,etaBins=None):
-
-  from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack,TLine,kBird, kOrange
-  from ROOT import TGraphErrors,TF1,TColor
-  gStyle.SetPalette(kBird)
-  ymax = chist.ymax(); ymin = chist.ymin()
-  xmin = ymin; xmax = ymax
-  drawopt='lpE2'
-  
-  canvas = TCanvas('canvas','canvas',500, 500)
-  hist_eff.SetTitle('Signal Efficiency in: '+partition_name)
-  hist_eff.SetLineColor(kGray+2)
-  hist_eff.SetMarkerColor(kGray+2)
-  hist_eff.SetFillColor(TColor.GetColorTransparent(kGray, .5))
-  hist_eff_corr.SetLineColor(kBlue+1)
-  hist_eff_corr.SetMarkerColor(kBlue+1)
-  hist_eff_corr.SetFillColor(TColor.GetColorTransparent(kBlue+1, .5))
-  AddHistogram(canvas,hist_eff,drawopt)
-  AddHistogram(canvas,hist_eff_corr,drawopt)
-  l0 = TLine(xmin,refvalue,xmax,refvalue)
-  l0.SetLineColor(kBlack)
-  l0.Draw()
-  l1 = TLine(x_min,refvalue,x_max,refvalue)
-  l1.SetLineColor(kGray+2)
-  l1.SetLineStyle(9)
-  l1.Draw()
-  AddTopLabels( canvas, ['Without correction','With correction'], runLabel=runLabel, legOpt='p',
-                etlist=etBins,
-                etalist=EtaBins,
-                etidx=etBinIdx,etaidx=etaBinIdx)
-  
-  FormatCanvasAxes(canvas, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  SetAxisLabels(canvas,xlabel,'#epsilon('+xlabel+')')
-  FixYaxisRanges(canvas, ignoreErrors=False,yminc=-eps)
-  AutoFixAxes(canvas,ignoreErrors=False)
-  AddBinLines(canvas,sgn_hist_eff)
-  canvas.SaveAs(outname+'.pdf')
-  canvas.SaveAs(outname+'.C')
-
-
-
-
-
-def Plot2DHist( chist, hist2D, a, b, discr_points, nvtx_points, error_points, outname, xlabel):
-    
-  from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack,TLine,kBird, kOrange
-  from ROOT import TGraphErrors,TF1,TColor
-  gStyle.SetPalette(kBird)
-  ymax = chist.ymax(); ymin = chist.ymin()
-  xmin = ymin; xmax = ymax
-  drawopt='lpE2'
-
-  canvas = TCanvas('canvas','canvas',500, 500)
-  canvas.SetRightMargin(0.15)
-  hist2D.SetTitle('Neural Network output as a function of nvtx, '+partition_name)
-  hist2D.GetXaxis().SetTitle('Neural Network output (Discriminant)')
-  hist2D.GetYaxis().SetTitle(xlabel)
-  hist2D.GetZaxis().SetTitle('Count')
-  #if not removeOutputTansigTF:  hist2D.SetAxisRange(-1,1, 'X' )
-  sgn_hist2D.Draw('colz')
-  canvas.SetLogz()
-  g1 = TGraphErrors(len(discr_points), array.array('d',discr_points), array.array('d',nvtx_points), array.array('d',error_points)
-                   , array.array('d',[0]*len(discr_points)))
-  g1.SetLineWidth(1)
-  g1.SetLineColor(kBlue)
-  g1.SetMarkerColor(kBlue)
-  g1.Draw("P same")
-  l3 = TLine(b+a*xmin,ymin, a*xmax+b, ymax)
-  l3.SetLineColor(kBlack)
-  l3.SetLineWidth(2)
-  l3.Draw()
-  FormatCanvasAxes(canvas, XLabelSize=16, YLabelSize=16, XTitleOffset=0.87, ZLabelSize=14,ZTitleSize=14, YTitleOffset=0.87, ZTitleOffset=1.1)
-  SetAxisLabels(canvas,'Neural Network output (Discriminant)',xname)
-  AtlasTemplate1(canvas,atlaslabel=atlaslabel)
-  canvas.SaveAs(outname+'.pdf')
-  canvas.SaveAs(outname+'.C')
-
-
-
-
-
-
-
-class PileupLinearCorrectionTool( ATLASBaseTool ):
+class PileupCorrectionTool( AlgorithmTool ):
 
   def __init__(self, name):
-
-    ATLASBaseTool.__init__(self, name)
+    AlgorithmTool.__init__(self, name)
     self._basepath = 'Event/PileupCorrection'
-    self._thresholdEtBins   = ringer_tuning_etbins
-    self._thresholdEtaBins  = ringer_tuning_etabins
+    from Gaugi.types import NotSet
+    self._thresholdEtBins   = NotSet
+    self._thresholdEtaBins  = NotSet
     import collection
     self._targets = collection.OrderedDict()
     self._probesId = []
 
-  def setProbesId(self, id):
-    self._probesId.append(id)
-    self.setId(id)
-
-  def setBackgroundId( self, id ):
-    self.setId(id)
-
 
   def addTarget( self, target ):
     if target.name() in self._targets.keys():
-      self._logger.error("Can not include %s as target. This target already exist into the target list", target.name())
+      MSG_ERROR( self, "Can not include %s as target. This target already exist into the target list", target.name())
     else:
       self._targets[ target.name() ] = target
 
 
-
   def setEtBinningValues( self, etbins ):
     self._thresholdEtBins = etbins
+
 
   def setEtaBinningValues( self, etabins ):
     self._thresholdEtaBins = etabins
 
 
   def setHistogram2DRegion( self, xmin, xmax, ymin, ymax, xres=0.02, yres=0.5 ):
+    from utilities import TH2FParameters
     self._histparams = TH2FParameters(xmin,xmax,xres,ymin,ymax,yres)
-
 
 
   def initialize(self):
 
-    ATLASBaseTool.initialize(self)
+    # initialize the base tool
+    AlgorithmTool.initialize(self)
+
     from ROOT import TH2F, TH1F, TProfile
     keyWanted = ['probes','fakes']
     from itertools import product
-
+    # get the storegate
     sg = self.getStoreGateSvc()
+
+    from CommonTools.constants import zee_etbins, default_etabins
 
     for dx, dirname in enumerate(keyWanted):
       for target in self._targets:
@@ -191,11 +98,11 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
   def execute(self, context):
 
+    from Gaugi.constants import GeV
     # offline electron
     el = context.getHandler( "ElectronContainer" )
     sg = self.getStoreGateSvc()
-    
-    from prometheus.tools.atlas.common.constants import GeV
+
     import math
     # retrive the correct et/eta information
     if self._doTrigger: # Online
@@ -225,7 +132,7 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
     # Get the correct binning to fill the histogram later...
     etBinIdx, etaBinIdx = RetrieveBinningIdx( et, abs(eta), self._threshold_etbins, self._threshold_etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
-      self._logger.warning('Skipping event since et/eta idx does not match with the current GEO/Energy position.')
+      MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
       return StatusCode.SUCCESS
 
     # get bin name to point to the correct directory
@@ -253,7 +160,7 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
         discriminant = el.getDecor(algname+'_discriminant')
 
       path = self._basepath+'/'+dirname+'/'+target.name()+'/'+refname+'/'+binningname
-      self._logger.debug('Et = %1.2f, Eta = %1.2f, phi = %1.2f, nvtx = %1.2f, mu = %1.2f, passed = %d',
+      MSG_DEBUG( self, 'Et = %1.2f, Eta = %1.2f, phi = %1.2f, nvtx = %1.2f, mu = %1.2f, passed = %d',
           et,eta,phi,nvtx,avgmu,int(passed))
 
       # Fill all target histograms
@@ -296,18 +203,24 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
   def plot(self, dirname, filenames, exportTool=None ):
 
 
-    if not exportTool:
-      from TuningTools.export import TrigMultiVarHypo_v2
-      exportTool = TrigMultiVarHypo_v2( removeOutputTansigTF=True )
-
+    # generate all plots and the summary
     summary = self.generate_plots(dirname)
-    #generate thresholds config file
-    for target in self._targets:
-      exportTool.create_thresholds( summary[target.name()]['thresholds'], target.outputname() )
+
+
+    if exportTool:
+      try:
+        from TuningTools.export import TrigMultiVarHypo_v2
+        exportTool = TrigMultiVarHypo_v2( removeOutputTansigTF=True )
+        #generate thresholds config file
+        for target in self._targets:
+          exportTool.create_thresholds( summary[target.name()]['thresholds'], target.outputname() )
+      except:
+        MSG_ERROR(self, "Can not import export code since TuningTools was not included in the path...")
+
 
   
 
-
+    # Generate all str latex et/eta bins
     etbins_str = []; etabins_str=[]
     for etBinIdx in range( len(self._threshold_etbins)-1 ):
       etbin = (self._threshold_etbins[etBinIdx], self._threshold_etbins[etBinIdx+1])
@@ -322,10 +235,10 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
 
 
-    from RingerCore.tex.TexAPI import Table, ResizeBox, Tabular, HLine, TableLine
-    from RingerCore.tex.BeamerAPI import BeamerTexReportTemplate1, BeamerSection, BeamerSubSection, BeamerMultiFigureSlide, BeamerSlide
+    from tex.TexAPI import Table, ResizeBox, Tabular, HLine, TableLine
+    from tex.BeamerAPI import BeamerTexReportTemplate1, BeamerSection, BeamerSubSection, BeamerMultiFigureSlide, BeamerSlide
 
-    self._logger.info('Do pdf maker...')
+    MSG_INFO( self, 'Do pdf maker...')
     # Slide maker
     with BeamerTexReportTemplate1( theme = 'Berlin'
                                  , _toPDF = True
@@ -455,7 +368,7 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
               df = DataFrame(xls)
               df.to_excel('%s.xlsx'%target.name(), sheet_name='sheet1', index=False)
             except:
-              self._logger.warning("Can not create sheets")
+              MSG_WARNING( self,"Can not create sheets")
 
 
 
@@ -488,19 +401,21 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
   def generate_plots(self, dirname):
     
-    import ROOT
+    from Gaugi.utilities import progressbar
+    from functions import ApplyThresholdLinearCorrection
+    from itertools import product
+    import ROOT, os
     ROOT.gErrorIgnoreLevel=ROOT.kFatal
-    
-    import os
+   
+    # get the basepath to generate the plots
     localpath = os.getcwd()+'/'+dirname
     try:
       if not os.path.exists(localpath): os.makedirs(localpath)
     except:
-      self._logger.warning('The director %s exist.', localpath)
+      MSG_WARNING( self,'The director %s exist.', localpath)
 
+    # the summary 
     summary = {}
-    from itertools import product
-    from RingerCore import progressbar
 
     for target in self._targets:
       
@@ -524,7 +439,7 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
         binningname = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
         doLinearCorrection= False if (etBinIdx, etaBinIdx) in excludedEt_EtaBinIdx else True
 
-        self._logger.info('Applying correction in <et=%d, eta=%d> ? %s', etBinIdx,etaBinIdx, doLinearCorrection)
+        MSG_INFO( self, 'Applying correction in <et=%d, eta=%d> ? %s', etBinIdx,etaBinIdx, doLinearCorrection)
 
         sgn_hist2D = sg.histogram(self._basepath+'/probes/'+target.name()+'/'+target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
         bkg_hist2D = sg.histogram(self._basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+('discriminantVsMu' if self._doTrigger else 'discriminantVsNvtx') )
@@ -533,10 +448,16 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
         bkg_eff, bkg_passed, bkg_total  = target.reference( self.getStoreGateSvc(), etBinIdx, etaBinIdx, self._basepath, True )
         sgn_counters   = {'eff':sgn_eff,'passed':sgn_passed,'total':sgn_total}
         bkg_counters   = {'eff':bkg_eff,'passed':bkg_passed,'total':bkg_total}
- 
-        csummary, objects = self._apply_threshold_correction( self._histparams, sgn_hist2D, bkg_hist2D, sgn_eff, doLinearCorrection=doLinearCorrection)
         
-
+        # applyt the threshold linear correction follow the last strategy using the root linear fitting
+        # This functions was implemented taken some functions from the tag and probe offline framework.
+        # If the false alarm is higher than an threshold (default is 0.5) than we will reduce the
+        # detection probability until the false alarm is lower than the stabilish limit.
+        # The summary hold all counts and object hold all root python objects.
+        csummary, objects = ApplyThresholdLinearCorrection( self._histparams, sgn_hist2D, bkg_hist2D, sgn_eff, 
+                                                            doLinearCorrection=doLinearCorrection, logger=self._logger)
+            
+        # helper function to increase the counter
         def UpdateCounters(obj1,obj2):
           for key in ['total','passed']: obj1[key]+=obj2[key]
           obj1['eff']=obj1['passed']+float(obj1['total'])
@@ -595,93 +516,6 @@ class PileupLinearCorrectionTool( ATLASBaseTool ):
 
 
     return summary
-
-
-
-
-  def _apply_threshold_correction( self, chist, sgn_hist2D, bkg_hist2D, refvalue, limits = None, doLinearCorrection=True ):
-
-
-    mumin = chist.ymin()
-    mumax = chist.ymax()
-
-    sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),chist.xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
-    bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),chist,xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
-    
-    import math
-    if isinstance(chist.yres(),(float,int)):
-      sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/chist.ybins())))
-      bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/chist.ybins())))
-    else:
-      sgn_hist2D = rebinY(sgn_hist2D,chist.yres())
-      bkg_hist2D = rebinY(bkg_hist2D,chist.yres())
-
-
-    from copy import deepcopy
-    false_alarm = 1.0
-    false_alarm_limit = 0.5
-    
-    while false_alarm > false_alarm_limit:
-      # Calculate the original threshold
-      b0, error = FindThreshold(sgn_hist2D.ProjectionX(), refvalue )
-      # Take eff points using uncorrection threshold
-      discr_points, nvtx_points, error_points = CalculateDependentDiscrPoints(sgn_hist2D , refvalue )
-      nvtx = np.array(nvtx_points)
-      local_a = ( discr_points[0] - discr_points[1] ) / ( nvtx[0] - nvtx[1] )
-      local_b = discr_points[0] - local_a*nvtx[0]
-      # Calculate eff without correction
-      sgn_histNum, sgn_histDen, sgn_histEff, sgn_info   = CalculateEfficiency(sgn_hist2D, refvalue, b0, 0,  doCorrection=False)
-
-      if doLinearCorrection:
-        sgn_histNum_corr, sgn_histDen_corr, sgn_histEff_corr, sgn_info_corr ,b, a = CalculateEfficiency( sgn_hist2D, refvalue, b0, 0, doCorrection=True, limits=limits)
-        if a>0:
-          self._warning("Retrieved positive angular factor of the linear correction, setting to 0!")
-          a = 0; b = b0;
-      else:
-        sgn_histNum_corr=sgn_histNum.Clone()
-        sgn_histDen_corr=sgn_histDen.Clone()
-        sgn_histEff_corr=sgn_histEff.Clone()
-        sgn_info_corr=deepcopy(sgn_info)
-        b=b0; a=0.0
-
-
-      # Calculate eff without correction
-      bkg_histNum, bkg_histDen, bkg_histEff, bkg_info  = CalculateEfficiency(bkg_hist2D, refvalue, b0, 0,  doCorrection=False)
-      
-      # Calculate eff using the correction from signal
-      #if addToBeta:  b = b + addToBeta
-      bkg_histNum_corr, bkg_histDen_corr, bkg_histEff_corr, bkg_info_corr = CalculateEfficiency(bkg_hist2D, refvalue, b, a,  doCorrection=False)
-      false_alarm = bkg_info_corr[0] # get the passed/total
-      if false_alarm > false_alarm_limit:
-        refvalue-=0.0025
-
-    angular = a;  offset = b; offset_0 = b0
-    self._logger.debug('Signal with correction is: %1.2f%%', sgn_info_corr[0]*100 )
-    self._logger.debug('Background with correction is: %1.2f%%', bkg_info_corr[0]*100 )
-    
-
-    summary = {
-               'signal_corr_values'     : {'eff'  : sgn_info_corr[0], 'passed'  : sgn_info_corr[1]  , 'total'  : sgn_info_corr[2]},
-               'background_corr_values' : {'eff'  : bkg_info_corr[0], 'passed'  : bkg_info_corr[1]  , 'total'  : bkg_info_corr[2]},
-               'signal_values'          : {'eff'  : sgn_info[0]     , 'passed'  : sgn_info[1]       , 'total'  : sgn_info[2]},
-               'background_values'      : {'eff'  : bkg_info[0]     , 'passed'  : bkg_info[1]       , 'total'  : bkg_info[2]},
-               }
-    objects = {
-               'signal_corr_hists'      : {'num'  : sgn_histNum_corr, 'den'     : sgn_histDen_corr , 'eff'     : sgn_histEff_corr , 'hist2D'    : sgn_hist2D},      
-               'background_corr_hists'  : {'num'  : bkg_histNum_corr, 'den'     : bkg_histDen_corr , 'eff'     : bkg_histEff_corr , 'hist2D'    : bkg_hist2D},
-               'signal_hists'           : {'num'  : sgn_histNum     , 'den'     : sgn_histDen      , 'eff'     : sgn_histEff      , 'hist2D'    : sgn_hist2D},
-               'background_hists'       : {'num'  : bkg_histNum     , 'den'     : bkg_histDen      , 'eff'     : bkg_histEff      , 'hist2D'    : bkg_hist2D},
-               'correction'             : {'discr_points'   : discr_points    , 'nvtx_points'      : nvtx_points      , 'error_points'      : error_points,
-                                           'angular'        : angular         , 'offset'           : offset           , 'offset0'           : offset0 },
-              }
-
-    return summary, objects
-           
-
-
-
-
-
 
 
 
