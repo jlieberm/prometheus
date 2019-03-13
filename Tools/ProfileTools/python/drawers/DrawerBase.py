@@ -2,8 +2,8 @@ __all__ = ['DrawerBase', 'histToUnitArea', 'sumHists', 'getBounderies', 'colorGr
           , 'fadeToBlack', 'fadeToWhite', 'getBinText', 'formatQuantity', 'addTopLabels'
           , 'rearrange', 'formatBinsLegend', 'retrieveSpecialBinsLegend', 'returnArgument']
 
-from RingerCore import Logger, retrieve_kw, ensureExtension, progressbar
-from prometheus.tools.atlas.common import *
+from Gaugi.utilities import retrieve_kw, ensureExtension, progressbar
+from Gaugi.messenger import Logger
 import os
 
 def histToUnitArea(hist, norm):
@@ -78,7 +78,7 @@ def formatQuantity(can, outputPath
                   , useBlackLine=None
                   , norm=None
                   ):
-  from prometheus.drawers.functions.PlotFunctions import FormatCanvasAxes, SetAxisLabels, AutoFixAxes, FixYaxisRanges, SetColors, SetMarkerStyles
+  from monet.PlotFunctions import FormatCanvasAxes, SetAxisLabels, AutoFixAxes, FixYaxisRanges, SetColors, SetMarkerStyles
   # First change hist colors:
   if colorarr: SetColors(can,colorarr,fillColor=True)
   if useBlackLine: 
@@ -121,7 +121,7 @@ def addTopLabels(can, legend
                 , dataLegend = '', quantity_text = ''
                 , binBounderies = None, binStr = None, binUnit = None
                 , specialBinsLegend = None):
-  from prometheus.drawers.functions.PlotFunctions import GetAtlasInternalText, GetSqrtsText, DrawText, MakeLegend
+  from monet.PlotFunctions import GetAtlasInternalText, GetSqrtsText, DrawText, MakeLegend
   text_lines = []
   text_lines += [GetAtlasInternalText()]
   text_lines.append( GetSqrtsText(13) )
@@ -193,7 +193,8 @@ def returnArgument(arg):
 class DrawerBase(Logger):
 
   def __init__(self, d = {}, **kw):
-    from RingerCore import restoreStoreGate, retrieve_kw
+    from Gaugi.storage import restoreStoreGate
+    from Gaugi.utilities import retrieve_kw
     import numpy as np
     from ROOT import gROOT, kTRUE, kAzure
     gROOT.SetBatch(kTRUE)
@@ -201,7 +202,7 @@ class DrawerBase(Logger):
     Logger.__init__(self, d)
     self._sg                      = restoreStoreGate( retrieve_kw(d, 'filePath','') )
     #self._sg = None
-    from prometheus.tools.atlas.common.constants import ringer_tuning_etbins, ringer_tuning_etabins
+    from CommonTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
     self._etBins                  = retrieve_kw( d, 'etBins', ringer_tuning_etbins )
     self._etaBins                 = retrieve_kw( d, 'etaBins', ringer_tuning_etabins )
     self._EDM                     = retrieve_kw( d, 'EDM',        ''              )
@@ -398,7 +399,7 @@ class DrawerBase(Logger):
       maxIdx = 0; maxOtherIdx = -1
     import ROOT, numpy as np
     from operator import itemgetter
-    from prometheus.drawers.functions.PlotFunctions import RatioCanvas, AddHistogram, AddRatio, tobject_collector
+    from monet.PlotFunctions import RatioCanvas, AddHistogram, AddRatio, tobject_collector
     MCanvas = RatioCanvas if self._plotRatio and maxIdx != 0 else ROOT.TCanvas
     def addXAxisWorkaround(canvas, hists):
       axesLimits = [(hist.GetXaxis().GetBinLowEdge(1),hist.GetXaxis().GetBinUpEdge(hist.GetXaxis().GetNbins())) for hist in hists if hist]

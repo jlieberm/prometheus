@@ -28,7 +28,7 @@ class RingProfiles( ProfileToolBase ):
       for etaBinIdx in range(len(self._etaBins)-1):
         path = self.getPath(etBinIdx, etaBinIdx)
         sg.mkdir( path )
-        MSG_DEBUG( ('Initializing path: %s', path)
+        MSG_DEBUG( self, 'Initializing path: %s', path)
         # Loop over all calo rings
         for r, nbins, le, he in zip( range( 100 ), ringNBins, ringLowerEdges, ringHighEdges):
           sg.addHistogram(TH1F('ring_%d_%s' % (r, self.binStr(etBinIdx,etaBinIdx), ),'Ring %d E_{T} Profile;E_T (MeV); Counts/bin' % r, nbins , le, he))
@@ -36,7 +36,7 @@ class RingProfiles( ProfileToolBase ):
         # loop over rings
     path_integrated = self.getPath()
     sg.mkdir( path_integrated )
-    MSG_DEBUG( ('Initializing path_integrated: %s', path_integrated)
+    MSG_DEBUG( self, 'Initializing path_integrated: %s', path_integrated)
     for r, nbins, le, he in zip( range( 100 ), ringNBins, ringLowerEdges, ringHighEdges):
       sg.addHistogram(TH1F('ring_%d_%s' % (r, self.binStr(), ),'Ring %d E_{T} Profile;E_T (MeV); Counts/bin' % r, nbins , le, he))
       sg.addHistogram(TH1I('ring_%d_%s_specialBins' % (r, self.binStr(), ),'Ring %d Special Bins;Special Bins; Counts/bin' % r, nbins , le, he))
@@ -51,7 +51,7 @@ class RingProfiles( ProfileToolBase ):
     from prometheus.tools.atlas.common.constants import GeV
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
-      MSG_WARNING( ("Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
+      MSG_WARNING( self, "Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
       return StatusCode.SUCCESS
     path = self.getPath(etBinIdx, etaBinIdx)
     path_integrated = self.getPath()

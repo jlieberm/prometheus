@@ -1,8 +1,7 @@
 __all__ = ['RingerQuantitiesDrawer']
 
-from prometheus.drawers.DrawerBase import *
-from prometheus.tools.atlas.common import *
-from RingerCore import retrieve_kw, ensureExtension
+from DrawerBase import *
+from Gaugi.utilites import retrieve_kw, ensureExtension
 
 from collections import OrderedDict
 layers = OrderedDict([ ('PS', 8),
@@ -29,7 +28,7 @@ class RingerQuantitiesDrawer(DrawerBase):
     DrawerBase.__init__(self, kw)
 
   def plot(self, **kw):
-    from RingerCore import mkdir_p
+    from Gaugi.utilities import mkdir_p
     mkdir_p( self.outputPath )
     self.plotRingProfiles(**kw)
 

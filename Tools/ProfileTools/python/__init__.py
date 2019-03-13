@@ -15,3 +15,7 @@ from .StandardQuantityProfiles import *
 from . import DiscriminantProfiles
 __all__.extend(DiscriminantProfiles.__all__)
 from .DiscriminantProfiles import *
+
+from . import drawers
+__all__.extend(drawers.__all__)
+from .drawers import *

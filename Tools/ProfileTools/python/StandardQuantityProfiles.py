@@ -66,7 +66,7 @@ class StandardQuantityProfiles( ProfileToolBase ):
       obj = context.getHandler('ElectronContainer')
 
     # If is trigger, the position must use the trigger et/eta positions.
-    from Gaugi.constants import GeV, 
+    from Gaugi.constants import GeV 
     from CommonTools.constants import specialElectronBins
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
