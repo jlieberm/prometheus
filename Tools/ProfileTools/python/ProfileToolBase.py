@@ -1,14 +1,14 @@
 __all__ = ['ProfileToolBase']
 
-from prometheus.tools.atlas.common  import ATLASBaseTool
-from prometheus.core                import StatusCode
-from RingerCore                     import retrieve_kw
+from CommonTools  import AlgorithmTool
+from Gaugi import StatusCode
+from Gaugi.utilities import retrieve_kw
  
-class ProfileToolBase( ATLASBaseTool ):
+class ProfileToolBase( AlgorithmTool ):
 
   def __init__(self, name, **kw):
-    ATLASBaseTool.__init__(self, name)
-    from prometheus.tools.atlas.common.constants import ringer_tuning_etbins, ringer_tuning_etabins
+    AlgorithmTool.__init__(self, name)
+    from CommonTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
     self._etBins   = ringer_tuning_etbins
     self._etaBins  = ringer_tuning_etabins
 
@@ -28,12 +28,14 @@ class ProfileToolBase( ATLASBaseTool ):
     self._discrList = d
 
   def initialize(self):
+    AlgorithmTool.initialize()
     return StatusCode.SUCCESS
 
-  def execute(self):
+  def execute(self, context):
     return StatusCode.SUCCESS
 
   def finalize(self):
+    AlgorithmTool.finalize()
     return StatusCode.SUCCESS
 
   def binStr(self, etBinIdx = None, etaBinIdx = None):

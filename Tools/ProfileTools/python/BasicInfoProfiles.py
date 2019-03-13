@@ -1,10 +1,12 @@
 
 
 __all__ = ['BasicInfoProfiles']
-from prometheus.core                                  import StatusCode
-from prometheus.tools.atlas.profiles.ProfileToolBase  import ProfileToolBase
-from prometheus.tools.atlas.common.constants          import (  basicInfoNBins, basicInfoLowerEdges, basicInfoHighEdges, 
-                                                                default_etabins, coarse_etbins, nvtx_bins )
+
+from Gaugi import StatusCode
+from Gaugi.messenger.macros import *
+from ProfileToolBase import ProfileToolBase
+from CommonTools.constants import ( basicInfoNBins, basicInfoLowerEdges, basicInfoHighEdges, 
+                                    default_etabins, coarse_etbins, nvtx_bins )
 
 
 
@@ -14,20 +16,21 @@ class BasicInfoProfiles( ProfileToolBase ):
 
   def __init__(self, name, **kw):
     ProfileToolBase.__init__(self, name, **kw)
-    from prometheus.tools.atlas.common.constants import basicInfoNBins
+    from CommonTools.constants import basicInfoNBins
     self.basicInfos = basicInfoNBins.keys()
 
   def initialize(self):
+    ProfileToolBase.initialize()
     sg = self.getStoreGateSvc()
     from ROOT import TH1F
     # Fill all histograms needed
-    from prometheus.tools.atlas.common.constants import basicInfoLatexStr
+    from CommonTools.constants import basicInfoLatexStr
     for etBinIdx in range(len(self._etBins)-1):
       for etaBinIdx in range(len(self._etaBins)-1):
         # if doSpecialBins
         path = self.getPath(etBinIdx, etaBinIdx)
         sg.mkdir( path )
-        self._debug('Initializing path: %s', path)
+        MSG_DEBUG( self,'Initializing path: %s', path)
         for var in self.basicInfos:
           latexvar = basicInfoLatexStr(var)
           if var == 'eta':
@@ -42,7 +45,7 @@ class BasicInfoProfiles( ProfileToolBase ):
     import numpy as np
     path_integrated = self.getPath()
     sg.mkdir( path_integrated )
-    self._debug('Initializing path: %s', path_integrated)
+    MSG_DEBUG( self,'Initializing path: %s', path_integrated)
     for var in self.basicInfos:
       latexvar = basicInfoLatexStr( var )
       if var == 'eta':
@@ -64,10 +67,10 @@ class BasicInfoProfiles( ProfileToolBase ):
       obj = context.getHandler('ElectronContainer')
 
     # If is trigger, the position must use the trigger et/eta positions.
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
-      self._warning("Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
+      MSG_WARNING( self,"Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
       return StatusCode.SUCCESS
 
     # Force this to be the offline object
@@ -85,14 +88,15 @@ class BasicInfoProfiles( ProfileToolBase ):
       try:
         sg.histogram(path+'/'+var+"_"+self.binStr(etBinIdx,etaBinIdx)).Fill(value)
       except AttributeError, e:
-        self._fatal("Couldn't fill histogram. Reason: %s", e)
+        MSG_FATAL( self,"Couldn't fill histogram. Reason: %s", e)
       try:
         sg.histogram(path_integrated+'/'+var+"_"+self.binStr()).Fill(value)
       except AttributeError, e:
-        self._fatal("Couldn't fill histogram. Reason: %s", e)
+        MSG_FATAL( self,"Couldn't fill histogram. Reason: %s", e)
 
     return StatusCode.SUCCESS
 
   def finalize(self):
+    ProfileToolBase.finalize()
     self.fina_lock()
     return StatusCode.SUCCESS

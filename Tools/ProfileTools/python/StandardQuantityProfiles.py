@@ -1,10 +1,14 @@
 __all__ = ['StandardQuantityProfiles']
 
-from prometheus.core                                  import StatusCode
-from prometheus.tools.atlas.profiles.ProfileToolBase  import ProfileToolBase
-from prometheus.tools.atlas.common.constants          import ( standardQuantitiesEtaEdge, standardQuantitiesHighEdges, standardQuantitiesLowerEdges
-                                                             , standardQuantitiesSpecialBins, standardQuantitiesNBins, standardQuantitiesPDFsHighEdges
-                                                             , standardQuantitiesPDFsLowerEdges, standardQuantitiesPDFsNBins )
+from Gaugi.messenger.macros import *
+from Gaugi import StatusCode
+from ProfileToolBase  import ProfileToolBase
+from CommonTools.constants import ( standardQuantitiesEtaEdge, standardQuantitiesHighEdges, standardQuantitiesLowerEdges
+                                  , standardQuantitiesSpecialBins, standardQuantitiesNBins, standardQuantitiesPDFsHighEdges
+                                  , standardQuantitiesPDFsLowerEdges, standardQuantitiesPDFsNBins )
+
+
+
 
 
 class StandardQuantityProfiles( ProfileToolBase ):
@@ -16,7 +20,7 @@ class StandardQuantityProfiles( ProfileToolBase ):
 
   def setAndCheckStandardQuantities(self, values):
     self.standardQuantities = []
-    from prometheus.tools.atlas.common.constants import electronLatexStr
+    from CommonTools.constants import electronLatexStr
     if not isinstance(values, (list,tuple)):
       values = [values]
     for value in values:
@@ -27,13 +31,14 @@ class StandardQuantityProfiles( ProfileToolBase ):
         electronLatexStr(value)
         self.standardQuantities.append(value)
       except KeyError, e:
-        self._warning("Ignoring quantity '%s' due to error: %s", e)
+        MSG_WARNING( self,"Ignoring quantity '%s' due to error: %s", e)
 
   def initialize(self):
+    ProfileToolBase.initialize()
     sg = selg.getStoreGateSvc()
     from ROOT import TH1F, TH1I
     # Fill all histograms needed
-    from prometheus.tools.atlas.common.constants import electronLatexStr
+    from CommonTools.constants import electronLatexStr
     def createHist(var, binLabel):
       latexvar = electronLatexStr( var )
       nBins = standardQuantitiesNBins[var]
@@ -45,11 +50,11 @@ class StandardQuantityProfiles( ProfileToolBase ):
       for etaBinIdx in range(len(self._etaBins)-1):
         path = self.getPath(etBinIdx, etaBinIdx)
         sg.mkdir( path )
-        self._debug('Initializing path: %s', path)
+        MSG_DEBUG( self,'Initializing path: %s', path)
         for var in self.standardQuantities: createHist(var, self.binStr(etBinIdx,etaBinIdx))
     path_integrated = self.getPath()
     sg.mkdir( path_integrated )
-    self._debug('Initializing path: %s', path_integrated)
+    MSG_DEBUG( self,'Initializing path: %s', path_integrated)
     for var in self.standardQuantities: createHist(var, self.binStr())
     return StatusCode.SUCCESS
 
@@ -61,10 +66,11 @@ class StandardQuantityProfiles( ProfileToolBase ):
       obj = context.getHandler('ElectronContainer')
 
     # If is trigger, the position must use the trigger et/eta positions.
-    from prometheus.helper import GeV, specialElectronBins
+    from Gaugi.constants import GeV, 
+    from CommonTools.constants import specialElectronBins
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
-      self._logger.warning("Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
+      MSG_WARNING( self,"Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
       return StatusCode.SUCCESS
 
     # Force this to be the offline object
@@ -95,10 +101,11 @@ class StandardQuantityProfiles( ProfileToolBase ):
         sg.histogram(path+'/'+var+"_"+self.binStr(etBinIdx,etaBinIdx)).Fill(quantityVal)
         sg.histogram(path_integrated+'/'+var+"_"+self.binStr()).Fill(quantityVal)
       except AttributeError, e:
-        self._fatal("Couldn't fill histogram at path: %s", e)
+        MSG_FATAL( self,"Couldn't fill histogram at path: %s", e)
 
     return StatusCode.SUCCESS
 
   def finalize(self):
+    ProfileToolBase.finalize()
     self.fina_lock()
     return StatusCode.SUCCESS

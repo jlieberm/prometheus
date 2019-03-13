@@ -1,6 +1,7 @@
 __all__ = ['DiscriminantProfiles']
-from prometheus.tools.atlas.profiles.ProfileToolBase  import ProfileToolBase
-from prometheus.core                                  import StatusCode
+from ProfileToolBase  import ProfileToolBase
+from Gaugi.messenger.macros import *
+from Gaugi import StatusCode
 
 class DiscriminantProfiles( ProfileToolBase ):
   def __init__(self, name, **kw):
@@ -8,12 +9,13 @@ class DiscriminantProfiles( ProfileToolBase ):
 
   def initialize(self):
     
+    ProfileToolBase.initialize()
     sg = selg.getStoreGateSvc()
     # Fill all histograms needed
     # Loop over main dirs
     from ROOT import TH2F
     import numpy as np
-    from prometheus.tools.atlas.common.constants import nvtx_bins
+    from CommonTools.constants import nvtx_bins
     for etBinIdx in range(len(self._etBins)-1):
       for etaBinIdx in range(len(self._etaBins)-1):
         for algname in self._discrList:
@@ -36,10 +38,10 @@ class DiscriminantProfiles( ProfileToolBase ):
     else: # Offline
       obj = context.getHandler('ElectronContainer')
 
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
-      self._warning("Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et/GeV, obj.eta)
+      MSG_WARNING( self,"Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et/GeV, obj.eta)
       return StatusCode.SUCCESS
     # make the et/eta string path
     eventInfo = context.getHandler( "EventInfoContainer" )
@@ -59,12 +61,13 @@ class DiscriminantProfiles( ProfileToolBase ):
         try:
           sg.histogram(path+'/discriminantVsMu').Fill(discriminant,avgmu)
         except AttributeError:
-          self._fatal("Couldn't fill histogram at path: %s", path + '/discriminantVsMu')
+          MSG_FATAL( self,"Couldn't fill histogram at path: %s", path + '/discriminantVsMu')
         sg.histogram(path+'/discriminantVsNvtx').Fill(discriminant,nvtx)
       except:
         pass
     return StatusCode.SUCCESS
 
   def finalize(self):
+    ProfileToolBase.finalize()
     return StatusCode.SUCCESS
   
