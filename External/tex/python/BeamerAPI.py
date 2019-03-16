@@ -7,10 +7,10 @@ __all__ = [ 'BeamerSlide', 'BeamerTexReport'
           , 'BeamerTexReportTemplate2','gcb']
 
 import os
-from RingerCore.Configure import checkForUnusedVars, Holder, retrieve_kw, NotSet
-from RingerCore.Logger import Logger, LoggingLevel
-from RingerCore.Configure import RCM_GRID_ENV
-from RingerCore.tex.TexAPI import *
+from Gaugi.utilities import checkForUnusedVars, Holder, retrieve_kw, 
+from Gaugi.types import NotSet
+from Gaugi.messenger import Logger, LoggingLevel
+from TexAPI import *
 
 class PDFTexLayout( TexPackage ):
   _preamble = _( r"""
@@ -437,7 +437,7 @@ class BeamerTexReport( TexObjectCollection ):
     kw['slidenumber'] = slidenumber
     self._toPDF       = kw.pop( '_toPDF', None )
     # Behavior:
-    self._ignoreErrors = retrieve_kw( kw, 'ignoreErrors', False if not RCM_GRID_ENV else True )
+    self._ignoreErrors = retrieve_kw( kw, 'ignoreErrors', True )
     TexObjectCollection.__init__(self, *args, **kw)
     if self._stream() is None or self._toPDF is not None:
       changeStream = True

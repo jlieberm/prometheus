@@ -12,47 +12,22 @@ import ROOT, math
 
 _g = []
 
-#def switchaxis(th2):
-#  c = type(th2)
-#  f = lambda a: array.array('d',[a.GetBinLowEdge(x) for x in range(a.GetNbins())] + [a.GetBinUpEdge(a.GetNbins())])
-#  th2_ret = c( th2.GetName(), th2.GetTitle(), th2.GetNbinsY(), f(th2.GetYaxis())
-#             , th2.GetNbinsX(), f(th2.GetXaxis()) )
-#  from itertools import product
-#  for x, y in product(xrange(th2_ret.GetNbinsX()+2), xrange(th2_ret.GetNbinsY()+2)):
-#    th2_ret.SetBinContent(x,y,th2.GetBinContent(y,x))
-#  _g.append(th2_ret)
-#  return th2_ret
 
 
 
 def rebinY(th2, newbinning):
   c = type(th2)
-  #old = list(th2.ProjectionX())
-  #oldY = list(th2.ProjectionY())
-  #print len(old), len(oldY)
-  #print list(th2.ProjectionY())
   f = lambda a: array.array('d',[a.GetBinLowEdge(x) for x in range(1,a.GetNbins()+1)] + [a.GetBinUpEdge(a.GetNbins())])
-  #print len(newbinning)
   th2_ret = c( th2.GetName(), th2.GetTitle(), th2.GetNbinsX(), f(th2.GetXaxis())
              , len(newbinning)-1, array.array('d',newbinning) )
   from itertools import product
   for x, y in product(xrange(th2.GetNbinsX()+2), xrange(th2.GetNbinsY()+2)):
-    #print th2.GetXaxis().GetBinCenter(x), (th2.GetYaxis().GetBinLowEdge(y)+th2.GetYaxis().GetBinLowEdge(y+1))/2.
     th2_ret_idx = th2_ret.FindBin(th2.GetXaxis().GetBinCenter(x),(th2.GetYaxis().GetBinLowEdge(y)+th2.GetYaxis().GetBinLowEdge(y+1))/2.)
     th2_ret_x_idx = ROOT.Long(0); th2_ret_y_idx = ROOT.Long(0); dummy = ROOT.Long(0);
     th2_ret.GetBinXYZ (th2_ret_idx, th2_ret_x_idx, th2_ret_y_idx, dummy)
-    #print th2_ret.GetXaxis().GetBinCenter(th2_ret_x_idx), th2_ret.GetYaxis().GetBinCenter(th2_ret_y_idx)
     c = th2_ret.GetBinContent(th2_ret_x_idx, th2_ret_y_idx)
     cAdd = th2.GetBinContent(x,y)
     th2_ret.SetBinContent(th2_ret_x_idx, th2_ret_y_idx,c+cAdd)
-  #new = list(th2_ret.ProjectionX())
-  #newY = list(th2_ret.ProjectionY())
-  #print np.array(new)-np.array(old)
-  #print sum(np.array(new)-np.array(old))
-  #print np.array(newY),np.array(oldY)
-  #print len(new), len(newY)
-
-  #print list(th2.ProjectionY())
   _g.append(th2_ret)
   return th2_ret
 
@@ -74,13 +49,10 @@ def Copy2DRegion(hist, xbins, xmin, xmax, ybins, ymin, ymax):
   tot=0; passed=0; M=0; c=None
   # Keep track of outliers or not
   x = 0 if xlowidx == 0 else 1
-  #for x, bx in enumerate(xrange(int(xlowidx),int(xhighidx))):
   for bx in xrange(int(xlowidx),int(xhighidx)):
-    #x+=1
     y = 1
     for by in xrange(int(ylowidx),int(yhighidx)) :
       value = hist.GetBinContent(bx,by)
-      #print '->',value, ' (',bx,',',by,')'
       tot+=value
       h.SetBinContent(x,y,value)
       if value>M:
@@ -123,9 +95,6 @@ def FindThreshold(hist,effref):
   prevEff = 1. -prevNotDetected
   deltaEff = (eff - prevEff)
   threshold = hist.GetBinCenter(i-1)+(effref-prevEff)/deltaEff*(hist.GetBinCenter(i)-hist.GetBinCenter(i-1))
-  #threshold = hist.GetBinCenter(i)
-  #error = math.sqrt(abs(threshold)*(1-abs(threshold))/fullArea)
-  #error = eff/math.sqrt(fullArea)
   error = 1./math.sqrt(fullArea)
   return threshold, error
 
@@ -155,45 +124,10 @@ def PileUpDiscFit(hist,effref):
                          , array.array('d',discr_points)
                          , array.array('d',[0.]*len(discr_points))
                          , array.array('d',error_points) )
-    #counter = 0
-    #for k in xrange(NBINSY) :
-    #    n_sig = hist.Integral(0,-1,k,k)
-    #    if n_sig == 0 : continue
-    #    cut = -4.0
-    #    pileupVal = 0
-    #    for m in xrange(NBINSX) :
-    #        #Below is where the efficiency is computed
-    #        if (1 - hist.Integral(0,m,k,k)/n_sig) < effref :
-    #            if abs((1 - hist.Integral(0,m-1,k,k)/n_sig) - effref) < abs((1 - hist.Integral(0,m,k,k)/n_sig) - effref) :
-    #                cut = hist.GetXaxis().GetBinLowEdge(m)
-    #            else:
-    #                cut = hist.GetXaxis().GetBinLowEdge(m+1)
-    #            pileupVal = hist.GetYaxis().GetBinLowEdge(k+1) + (-hist.GetYaxis().GetBinLowEdge(k+1)+hist.GetYaxis().GetBinLowEdge(k+2))/2.
-    #            counter = counter + 1
-    #            #print 'counter is: %3.15f' %counter
-    #            #print 'pileupVal to be fitted: %3.15f' %pileupVal
-    #            #print 'cut to be fitted is: %3.15f' %cut
-    #            #print "effref is: %3.15f" % effref
-    #            #print "calc eff is is: %3.15f" % (1 - hist.Integral(0,m,k,k)/n_sig)
-    #            break
-    #    if cut == -4.0 : continue
-    #    #inverting plot to do fit
-    #    ex = 0
-    #    ey = 1/math.sqrt(hist.Integral(0,-1,k,k))
-    #    g.SetPoint(counter - 1 ,pileupVal, cut)
-    #    g.SetPointError(counter - 1 ,ex, ey)
-    #    print "setting:", pileupVal, cut
     FirstBinVal = hist.GetYaxis().GetBinLowEdge(hist.GetYaxis().GetFirst())
-    #LastBinVal = hist.GetYaxis().GetBinLowEdge(hist.GetYaxis().GetLast())
     LastBinVal = hist.GetYaxis().GetBinLowEdge(hist.GetYaxis().GetLast()+1)
-    #print "First bin val is %3.15f" % FirstBinVal
-    #print "Last bin val is %3.15f" % LastBinVal
     f1 = ROOT.TF1('f1','pol1',FirstBinVal, LastBinVal)
     g.Fit(f1,"FRq")
-    #canvas = ROOT.TCanvas('Offline')
-    #g.SetMarkerStyle(20)
-    #g.Draw()
-    #canvas.SaveAs('Tgraph'+hist.GetName()+'.pdf')
     a = f1.GetParameter(1)
     b = f1.GetParameter(0)
     return a,b
@@ -211,9 +145,7 @@ def GetEfficiencyRegion(hist,ylow,yhigh,a,b,err_on_higher_eff=False) : # yhigh i
   yhigh = min(hist.GetNbinsY(),yhigh)
   den = float(hist.Integral(-99999,99999,int(ylow)+1,int(yhigh)))
   num = 0
-  #for by in xrange(ylow,yhigh) :
   for by in xrange(int(ylow),int(yhigh)) :
-    #print by, a, b
     discr = a + b*by
     dbin = hist.GetXaxis().FindBin(discr)
     num += hist.Integral(dbin+(0 if err_on_higher_eff else 1),99999,by+1,by+1)
@@ -233,104 +165,17 @@ def GetParameterizedDiscrNumeratorProfile(hist,a,b) :
   h1.Reset("ICESM")
   Numerator=0; Denominator=0
   for by in xrange(nbinsy) :
-
     xproj = hist.ProjectionX('xproj'+str(time.time()),by+1,by+1)
     discr = a*hist.GetYaxis().GetBinCenter(by+1)+b
-
     dbin = xproj.FindBin(discr)
-
     num = xproj.Integral(dbin+(0 if err_on_higher_eff else 1),xproj.GetNbinsX()+1)
     h1.SetBinContent(by+1,num)
     Numerator+=num
-    #Denominator+=xproj.GetEntries()
     Denominator+=xproj.Integral(-1, xproj.GetNbinsX()+1)
     den = xproj.Integral(-1, xproj.GetNbinsX()+1)
 
   return h1, Numerator, Denominator
 
-
-
-def GetEquilibriumLine(hist,effref,a_1,limits) :
-  #Takes a 2d hist (hist), the target efficiency (effref), the starting discr value (a_1),
-  #and the three numbers corresponding to the boundary lines in nvtx (i.e. [0,12,23] for
-  #nvtx = 0-11 and 12-22).
-
-  err_on_higher_eff = True
-  dslope = hist.GetXaxis().GetBinWidth(1)/15. # *10
-  #binwidth = 10*hist.GetXaxis().GetBinWidth(1)
-  binwidth = 5*hist.GetXaxis().GetBinWidth(1)
-  if hist.Integral() != 0:
-    error = math.sqrt(effref*(1-effref)/hist.Integral())
-  else:
-    error = 1
-  if error == 0 :
-    error = 1.
-
-  nIters = 0; a = a_1; b = 0; tmp = 0
-  islo,ishi,isgt,islt,reset = False,False,False,False,False
-  flipcounter = 0
-  while (True) :
-    if a < hist.GetXaxis().GetBinLowEdge(1) :
-      #print('GetEquilibriumLine: discriminant is at low egdge of histo. Breaking.')
-      a = a_1
-      b = 0
-      break
-    if a > hist.GetXaxis().GetBinLowEdge(hist.GetNbinsX()+1) :
-      #print('GetEquilibriumLine: discriminant is at high egdge of histo. Breaking.')
-      a = a_1
-      b = 0
-      break
-    if flipcounter == 10 :
-      #print('GetEquilibriumLine: flipcounter maxed out. breaking.')
-      break
-    if islo and ishi :
-      #print('GetEquilibriumLine: oscillating...')
-      binwidth = binwidth*0.5
-      flipcounter += 1
-    if isgt and islt :
-      #print('GetEquilibriumLine: slope oscillating...')
-      dslope = 0.5*dslope
-      flipcounter += 1
-    reset = not reset
-    if reset :
-        islo,ishi,isgt,islt = False,False,False,False
-    tmp+=1
-    lower = GetEfficiencyRegion(hist,limits[0],limits[1],a,b,err_on_higher_eff)
-    upper = GetEfficiencyRegion(hist,limits[1],limits[2],a,b,err_on_higher_eff)
-    #print('GetEquilibriumLine: a %f b %f lower %f upper %f effref %f'%(a,b,lower,upper,effref))
-    if (lower - effref > error) and (upper - effref > error) :
-      #print('GetEquilibriumLine: both effs are larger')
-      islo = True
-      a += binwidth
-    elif (lower - effref < error) and (upper - effref < error) :
-      #print('GetEquilibriumLine: both effs are smaller')
-      ishi = True
-      a -= binwidth
-    elif lower - upper < error :
-      #print('GetEquilibriumLine: both effs are within error %f'%error)
-      break
-    elif lower > upper :
-      isgt = True
-      #print('GetEquilibriumLine: Lower eff >>>>> Upper eff')
-      a = a - limits[1]*dslope
-      b -= dslope
-    elif upper > lower :
-      islt = True
-      #print('GetEquilibriumLine: Lower eff <<<<< Upper eff')
-      a = a + limits[1]*dslope
-      b += dslope
-    #print 'slope,intercept=', b, a
-
-
-  lower = GetEfficiencyRegion(hist,limits[0],limits[1],a,b,err_on_higher_eff)
-  upper = GetEfficiencyRegion(hist,limits[1],limits[2],a,b,err_on_higher_eff)
-  if lower - upper > error :
-    #print('GetEquilibriumLine Error! Results are not within error %f (%f,%f)'%(error,lower,upper))
-    #print('GetEquilibriumLine a %f b %f'%(a,b))
-    #print('GetEquilibriumLine end')
-    pass
-  #print "theSlope (GetEquilLine): %3.15f" % b
-  return a,b
 
 
 
@@ -340,16 +185,7 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
   hist2D=deepcopy(h2D)
 
   if doCorrection:
-    # Get the intercept and slope in disc vs. pileup plane: y = ax+b
-    #a,b = GetEquilibriumLine(hist2D,effref,b,limits)
     a,b = PileUpDiscFit(hist2D,effref) # a + bx, b is slope
-
-    # Now do some correction to give the efficiency a small slope
-    # (so backgrounds do not explode)
-    pivotPoint = limits[1]
-    b = b + pivotPoint*a*(1-fix_fraction)
-    a = a*fix_fraction
-
   # Put into histograms
   histNum, passed, total = GetParameterizedDiscrNumeratorProfile(hist2D,a,b)
   histDen = hist2D.ProjectionY()
@@ -366,8 +202,6 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
       histEff.SetBinError(bin+1,dEff)
     else:
       histEff.SetBinError(bin+1,0)
-
-  #eff=passed/float(histDen.GetEntries())
   eff=passed/float(total)
   if doCorrection:
     return histNum, histDen, histEff, (eff,passed,float(histDen.GetEntries())), b, a
@@ -376,13 +210,32 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
 
 
 
+class TH2Holder(object):
+  def __init__(self,xmin,xmax,xres,ymin,ymax,yres):
+    self._xmin=xmin; self._xmax=xmax; self._xres=xres
+    self._ymin=ymin; self._ymax=ymax; self._yres=yres
+  def xmin(self): 
+    return self._xmin
+  def xmax(self): 
+    return self._xmax
+  def xresolution(self): 
+    return self._xres
+  def ymin(self): 
+    return self._ymin
+  def ymax(self): 
+    return self._ymax
+  def yresolution(self): 
+    return self._yres
+  def xbins(self):
+    return (self.xmax() - self.xmin()) / float(self.xresolution)
 
-# threshold pileup correction
+
+
+
 def ApplyThresholdLinearCorrection( chist, sgn_hist2D, bkg_hist2D, refvalue,  doLinearCorrection=True, false_alarm_limit=0.5, logger=None ):
   """
     This is the main function used to call the pileup correction and make the summary
   """
- 
   mumin = chist.ymin()
   mumax = chist.ymax()
 

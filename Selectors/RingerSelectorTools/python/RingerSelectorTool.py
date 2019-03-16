@@ -8,7 +8,7 @@ from Gaugi import StatusCode
 from Gaugi.types import NotSet
 import numpy as np
 
-
+from EventAtlas import *
 
 
 class RingerSelectorTool(Algorithm):
@@ -17,7 +17,9 @@ class RingerSelectorTool(Algorithm):
     Algorithm.__init__(self, name, **kw)
     self._asg           = NotSet
     self._nnOutput=-999
- 
+    self._constantsCalibPath = constants
+    self._thresholdsCalibPath = thresholds
+
   def asg(self):
     return self._asg
 

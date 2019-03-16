@@ -19,9 +19,10 @@ import os, sys, traceback
 
 
 from Gaugi.utilities import retrieve_kw, measureCallTime, Holder
+from Gaugi.utilities import ensureExtension, changeExtension, checkExtension
+from Gaugi.types import NotSet
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
-from Gaugi.storage import ensureExtension, changeExtension, checkExtension
 from LimitedTypeList import LimitedTypeList, _LimitedTypeList____init__
 
 #from RingerCore.Configure import Holder, retrieve_kw

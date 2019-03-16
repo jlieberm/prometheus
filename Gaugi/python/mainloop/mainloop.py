@@ -244,7 +244,7 @@ class EventATLASLoop( EventATLAS ):
       if alg.execute(context).isFailure():
         MSG_ERROR( self, 'The tool %s return status code different of SUCCESS',alg.name)
       if alg.wtd is StatusWatchDog.ENABLE:
-        self._logger.debug('Watchdog is true in %s. Skip events',alg.name)
+        MSG_DEBUG( self, 'Watchdog is true in %s. Skip events',alg.name)
         # reset the watchdog since this was used
         alg.wtd = StatusWatchDog.DISABLE
         break

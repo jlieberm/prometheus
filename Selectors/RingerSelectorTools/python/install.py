@@ -18,16 +18,16 @@ def installElectronL2CaloRingerSelector_v6( toolname = "EgammaEmulation" ):
 
   selectors = [
       RingerSelectorTool( "T0HLTElectronRingerTight_v6", 
-                          calibpath+'/TrigL2CaloRingerElectronTightContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronTightConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronTightThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerMedium_v6", 
-                          calibpath+'/TrigL2CaloRingerElectronMediumContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronMediumConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronMediumThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerLoose_v6", 
-                          calibpath+'/TrigL2CaloRingerElectronLooseContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronLooseConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronLooseThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v6", 
-                          calibpath+'/TrigL2CaloRingerElectronVeryLooseContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.root'), 
 
     ]
@@ -53,16 +53,16 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
 
   selectors = [
       RingerSelectorTool( "T0HLTElectronRingerTight_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronTightContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronTightConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronTightThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerMedium_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronMediumContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronMediumConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronMediumThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerLoose_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronLooseContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronLooseConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronLooseThresholds.root'), 
       RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronVeryLooseContants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.root', 
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.root'), 
 
     ]

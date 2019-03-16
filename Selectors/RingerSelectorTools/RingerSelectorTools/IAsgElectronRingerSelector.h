@@ -27,14 +27,9 @@ class IAsgElectronRingerSelector :
   virtual ~IAsgElectronRingerSelector() {};
 
   /** The main accept method: using the generic interface */
-  virtual const Root::TAccept& accept( const xAOD::IParticle* /*part*/ ) const=0;
-  virtual const Root::TAccept& accept( float, float, float, float  ) const=0;
+  //virtual const Root::TAccept& accept( const xAOD::IParticle* /*part*/ ) const=0;
+  //virtual const Root::TAccept& accept( float, float, float, float  ) const=0;
 
-  /** The main accept method: in case mu not in EventInfo online */
-  //virtual const Root::TAccept& accept( const xAOD::Electron* /*part*/, double /*mu*/ ) const = 0;
-
-  /** The main accept method: in case mu not in EventInfo online */
-  //virtual const Root::TAccept& accept( const xAOD::Egamma* /*part*/, double /*mu*/ ) const = 0;
 
 
 

@@ -7,19 +7,17 @@
 #include "AsgTools/AsgTool.h"
 #include <string>
 #include <vector>
-#include "RingerSelectorTools/IAsgElectronRingerSelector.h"
+//#include "RingerSelectorTools/IAsgElectronRingerSelector.h"
 #include "RingerSelectorTools/tools/RingerSelectorTool.h"
-
+#include "PATCore/TAccept.h"
 
 namespace prometheus{
 
 
 
-class AsgElectronRingerSelector : public asg::AsgTool,
-                                  virtual public IAsgElectronRingerSelector
+class AsgElectronRingerSelector : public asg::AsgTool
 {
 
-  ASG_TOOL_CLASS2(AsgElectronRingerSelector, IAsgElectronRingerSelector, IAsgSelectionTool)
 
   public:
     /// Standard constructor
@@ -39,20 +37,7 @@ class AsgElectronRingerSelector : public asg::AsgTool,
 
 
 
-
-  public:
-
-     /** The main accept method: using the generic interface */
-    virtual const Root::TAccept&  accept( const xAOD::IParticle* /*part*/ );
-
-    virtual const Root::TAccept&  accept( double discriminant, double et, double eta, double mu);
-
-    /** The main accept method: in case mu not in EventInfo online */
-    //virtual bool accept( const xAOD::Electron* /*part*/, double /*mu*/ ) const;
-
-    /** The main accept method: in case mu not in EventInfo online */
-    //virtual bool accept( const xAOD::Egamma* /*part*/, double /*mu*/ ) const;
-
+    const Root::TAccept&  accept( double discriminant, double et, double eta, double mu);
 
 
 

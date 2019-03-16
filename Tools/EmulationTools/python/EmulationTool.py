@@ -54,7 +54,7 @@ class EmulationTool( Algorithm ):
     
     event = context.getHandler("EventInfoContainer")
     el    = context.getHandler("ElectronContainer")
-
+    MSG_DEBUG( self, "execute e/g emulation tool")
     # Build each selector for electrons and decorate
     # the Offline electron with the Likelihood decision
     for key, tool in self._el_selector.iteritems():
@@ -76,9 +76,9 @@ class EmulationTool( Algorithm ):
       for key, tool in self._fc_selector.iteritems():
         passed = tool.accept(fc, event.avgmu() )
         hlt_el.setDecor( key, passed )      
-        if hasattr(tool, "getNNOutput"):
+        if hasattr(tool, "getDiscriminant"):
           # set the neural network output as a decoration
-          hlt_el.setDecor( key+'_discriminant', tool.getNNOutput() )
+          hlt_el.setDecor( key+'_discriminant', tool.getDiscriminant() )
       # helper accessor function
       def getDecision( container, branch ):
         passed=False
@@ -102,9 +102,9 @@ class EmulationTool( Algorithm ):
       for key, tool in self._fc_selector.iteritems():
         passed = tool.accept(fc, event.avgmu() )
         fc.setDecor( key, passed )      
-        if hasattr(tool, "getNNOutput"):
+        if hasattr(tool, "getDiscriminant"):
           # set the neural network output as a decoration
-          fc.setDecor( key+'_discriminant', tool.getNNOutput() )
+          fc.setDecor( key+'_discriminant', tool.getDiscriminant() )
  
 
     return StatusCode.SUCCESS

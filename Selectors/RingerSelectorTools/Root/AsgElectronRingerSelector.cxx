@@ -10,8 +10,8 @@ AsgElectronRingerSelector::AsgElectronRingerSelector(std::string name):
   asg::AsgTool(name),
   m_selectorTool()
 {
-  declareProperty("CalibPathConstants"  , m_constantsCalibPath=""              );
-  declareProperty("CalibPathThresholds" , m_thresholdsCalibPath=""             );
+  declareProperty("ConstantsCalibPath"  , m_constantsCalibPath=""              );
+  declareProperty("ThresholdsCalibPath" , m_thresholdsCalibPath=""             );
 }
 
 
@@ -112,11 +112,5 @@ const Root::TAccept& AsgElectronRingerSelector::accept( double discriminant, dou
   bool passed =  m_selectorTool.accept( discriminant, et,eta,mu);
   m_accept.setCutResult("NeuralCut", passed);
   return m_accept;
-}
-
-
-
-const Root::TAccept& AsgElectronRingerSelector::accept( const xAOD::IParticle* /*part*/ ){
-  return m_acceptDummy;
 }
 

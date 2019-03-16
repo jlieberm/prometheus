@@ -41,7 +41,6 @@ class Service( Logger ):
     self._tools[ tool.name() ] = tool
 
   def __add__(self, tool):
-    print type(tool)
     self._tools[ tool.name() ] =  tool
     return self
 
@@ -55,6 +54,12 @@ class Service( Logger ):
    
   def getTools(self):
     return [ tool for _, tool in self._tools.iteritems() ] 
+
+  def retrieve( self, key ):
+    if key in self._tools.keys():
+      return self._tools[key]
+    else:
+      MSG_ERROR( self, "Tool with name %s not found in the tool service", key)
 
 # Use this to attach all tools 
 ToolSvc = Service("ToolSvc")
