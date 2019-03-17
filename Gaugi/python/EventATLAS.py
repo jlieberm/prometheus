@@ -76,7 +76,7 @@ class EventATLAS( Logger ):
     ### Prepare to loop:
     self._t = ROOT.TChain()
     from Gaugi.utilities import progressbar
-    for inputFile in progressbar(self._fList, "Creating collection tree...", 60):
+    for inputFile in progressbar(self._fList, len(self._fList), prefix="Creating collection tree...", logger=self._logger):
       # Check if file exists
       self._f  = ROOT.TFile.Open(inputFile, 'read')
       if not self._f or self._f.IsZombie():

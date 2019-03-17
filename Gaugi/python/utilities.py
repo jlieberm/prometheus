@@ -124,18 +124,18 @@ def printArgs(args, fcn = None):
 
 
 # helper function to display a progress bar
-def progressbar(it, prefix="", size=60):
-    count = len(it)
-    def _show(_i):
-        x = int(size*_i/count)
-        sys.stdout.write("%s[%s%s] %i/%i\r" % (prefix, "█"*x, "."*(size-x), _i, count))
-        sys.stdout.flush()
-    _show(0)
-    for i, item in enumerate(it):
-        yield item
-        _show(i+1)
-    sys.stdout.write("\n")
-    sys.stdout.flush()
+#def progressbar(it, prefix="", size=60):
+#    count = len(it)
+#    def _show(_i):
+#        x = int(size*_i/count)
+#        sys.stdout.write("%s[%s%s] %i/%i\r" % (prefix, "█"*x, "."*(size-x), _i, count))
+#        sys.stdout.flush()
+#    _show(0)
+#    for i, item in enumerate(it):
+#        yield item
+#        _show(i+1)
+#    sys.stdout.write("\n")
+#    sys.stdout.flush()
 
 
 
@@ -292,6 +292,8 @@ def traverse(o, tree_types=(list, tuple),
 
 
 
+
+
 def expandFolders( pathList, filters = None, logger = None, level = None):
   """
     Expand all folders to the contained files using the filters on pathList
@@ -313,22 +315,25 @@ def expandFolders( pathList, filters = None, logger = None, level = None):
   if not( type( filters ) in (list,tuple,) ):
     filters = [ filters ]
   retList = [[] for idx in range(len(filters))]
+  #from RingerCore import progressbar, traverse
   pathList = list(traverse([glob(path) if '*' in path else path for path in traverse(pathList,simple_ret=True)],simple_ret=True))
-  for path in progressbar( pathList,  'Expanding folders: ', 60):
+  for path in progressbar( pathList, len(pathList), 'Expanding folders: ', 60, 50,
+                           True if logger is not None else False, logger = logger,
+                           level = level):
     path = expandPath( path )
     if not os.path.exists( path ):
       raise ValueError("Cannot reach path '%s'" % path )
     if os.path.isdir(path):
       for idx, filt in enumerate(filters):
-        cList = [ f for f in glob( os.path.join(path,filt) ) ]
-        if cList: 
+        cList = filter(lambda x: not(os.path.isdir(x)), [ f for f in glob( os.path.join(path,filt) ) ])
+        if cList:
           retList[idx].extend(cList)
       folders = [ os.path.join(path,f) for f in os.listdir( path ) if os.path.isdir( os.path.join(path,f) ) ]
       if folders:
         recList = expandFolders( folders, filters )
         if len(filters) is 1:
           recList = [recList]
-        for idx, l in enumerate(recList):
+        for l in recList:
           retList[idx].extend(l)
     else:
       for idx, filt in enumerate(filters):
@@ -339,6 +344,7 @@ def expandFolders( pathList, filters = None, logger = None, level = None):
   return retList
 
 
+
 class BadFilePath(ValueError): pass
 
 
@@ -347,7 +353,6 @@ def expandPath(path):
   if not isinstance( path, basestring):
     raise BadFilePath(path)
   return os.path.abspath( os.path.expanduser( os.path.expandvars( path ) ) )
-
 
 
 class Holder( object ):
@@ -367,12 +372,14 @@ class Holder( object ):
     else:
       raise RuntimeError("Cannot replace held object.")
 
+
 def checkExtension( filename, ext, ignoreNumbersAfterExtension = True):
   """
     Check if file matches extension(s) ext. If checking for multiple
     extensions, use | to separate the extensions.
   """
   return bool(__extRE(ext, ignoreNumbersAfterExtension).match( filename ))
+
 
 def __extRE(ext, ignoreNumbersAfterExtension = True):
   """
@@ -385,6 +392,7 @@ def __extRE(ext, ignoreNumbersAfterExtension = True):
   # remove all first dots
   return re.compile(r'(.*)\.(' + r'|'.join(ext) + r')' + \
                     (r'(\.[0-9]*|)' if ignoreNumbersAfterExtension else '()') + r'$')
+
 
 def ensureExtension( filename, extL, ignoreNumbersAfterExtension = True ):
   """
@@ -470,5 +478,138 @@ def mkdir_p(path):
     if exc.errno == errno.EEXIST and os.path.isdir(path):
       pass
     else: raise IOError
+
+
+
+
+
+
+
+
+
+
+def progressbar(it, count ,prefix="", size=60, step=1, disp=True, logger = None, level = None,
+                no_bl = int(os.environ.get('RCM_GRID_ENV',0)) or sys.stdout.isatty(), 
+                measureTime = True):
+  """
+    Display progressbar.
+    Input arguments:
+    -> it: the iterations collection;
+    -> count: total number of iterations on collection;
+    -> prefix: the strings preceding the progressbar;
+    -> size: number of chars to use on the progressbar;
+    -> step: the number of iterations needed for updating;
+    -> disp: whether to display progressbar or not;
+    -> logger: use this logger object instead o sys.stdout;
+    -> level: the output level used on logger;
+    -> no_bl: whether to show messages without breaking lines;
+    -> measureTime: display time measurement when completing progressbar task.
+  """
+  from Gaugi.messenger.Logger import LoggingLevel
+  from logging import StreamHandler
+  from Gaugi.messenger.Logger import nlStatus, resetNlStatus
+  import sys
+  if level is None: level = LoggingLevel.INFO
+  def _show(_i):
+    x = int(size*_i/count) if count else 0
+    if _i % (step if step else 1): return
+    if logger:
+      if logger.isEnabledFor(level):
+        fn, lno, func = logger.findCaller() 
+        record = logger.makeRecord(logger.name, level, fn, lno, 
+                                   "%s|%s%s| %i/%i\r",
+                                   (prefix, "█"*x, "-"*(size-x), _i, count,), 
+                                   None, 
+                                   func=func)
+        record.nl = False
+        # emit message
+        logger.handle(record)
+    else:
+      sys.stdout.write("%s|%s%s| %i/%i\r" % (prefix, "█"*x, "-"*(size-x), _i, count))
+      sys.stdout.flush()
+  # end of (_show)
+  # prepare for looping:
+  try:
+    if disp:
+      if measureTime:
+        from time import time
+        start = time()
+      # override emit to emit_no_nl
+      if logger:
+        if not nlStatus(): 
+          sys.stdout.write("\n")
+          sys.stdout.flush()
+        if no_bl:
+          from Gaugi.messenger.Logger import StreamHandler2
+          prev_emit = []
+          # TODO On python3, all we need to do is to change the Handler.terminator
+          for handler in logger.handlers:
+            if type(handler) is StreamHandler:
+              stream = StreamHandler2( handler )
+              prev_emit.append( handler.emit )
+              setattr(handler, StreamHandler.emit.__name__, stream.emit_no_nl)
+      _show(0)
+    # end of (looping preparation)
+    # loop
+    try:
+      for i, item in enumerate(it):
+        yield item
+        if disp: _show(i+1)
+    except GeneratorExit:
+      pass
+    # end of (looping)
+    # final treatments
+    step = 1 # Make sure we always display last printing
+    if disp:
+      if measureTime:
+        end = time()
+      if logger:
+        if no_bl:
+          # override back
+          for handler in logger.handlers:
+            if type(handler) is StreamHandler:
+              setattr( handler, StreamHandler.emit.__name__, prev_emit.pop() )
+          _show(i+1)
+        if measureTime:
+          logger.log( level, "%s... finished task in %3fs.", prefix, end - start )
+        if no_bl:
+          resetNlStatus()
+      else:
+        if measureTime:
+          sys.stdout.write("\n%s... finished task in %3fs.\n" % ( prefix, end - start) )
+        else:
+          sys.stdout.write("\n" )
+        sys.stdout.flush()
+  except (BaseException) as e:
+    import traceback
+    print traceback.format_exc()
+    step = 1 # Make sure we always display last printing
+    if disp:
+      if logger:
+        # override back
+        if no_bl:
+          for handler in logger.handlers:
+            if type(handler) is StreamHandler:
+              try:
+                setattr( handler, StreamHandler.emit.__name__, prev_emit.pop() )
+              except IndexError:
+                pass
+        try:
+          _show(i+1)
+        except NameError:
+          _show(0)
+        for handler in logger.handlers:
+          if type(handler) is StreamHandler:
+            handler.stream.flush()
+      else:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+    # re-raise:
+    raise e
+  # end of (final treatments)
+
+
+
+
 
 

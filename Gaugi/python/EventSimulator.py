@@ -74,7 +74,7 @@ class EventSimulator( Logger ):
     from Gaugi.utilities import progressbar
     ### Prepare to loop:
     self._t = ROOT.TChain()
-    for inputFile in progressbar(self._fList, "Creating collection tree ", 60):
+    for inputFile in progressbar(self._fList, len(self._fList), prefix= "Creating collection tree ", logger=self._logger):
       # Check if file exists
       self._f  = ROOT.TFile.Open(inputFile, 'read')
       if not self._f or self._f.IsZombie():

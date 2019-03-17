@@ -62,7 +62,7 @@ class EventSimulatorLoop( EventSimulator ):
     ### Loop over events
     if not self._mute_progressbar:
       step = int(entries/100) if int(entries/100) > 0 else 1
-      for entry in progressbar(range(self._entries), "Looping over entries ", 60):
+      for entry in progressbar(range(self._entries), entries, step=step, prefix= "Looping over entries ", logger=self._logger):
         if self.nov < entry:
           break
         self.process(entry)
@@ -209,7 +209,7 @@ class EventATLASLoop( EventATLAS ):
     ### Loop over events
     if not self._mute_progressbar:
       step = int(entries/100) if int(entries/100) > 0 else 1
-      for entry in progressbar(range(self._entries), "Looping over entries", 60): 
+      for entry in progressbar(range(self._entries),entries, step=step, prefix= "Looping over entries", logger=self._logger): 
         if self.nov < entry:
           break
         self.process(entry)
