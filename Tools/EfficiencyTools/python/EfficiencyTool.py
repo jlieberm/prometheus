@@ -1,77 +1,47 @@
 
-__all__ = ['EfficiencyTool', 'EfficiencyMode']
-
-from prometheus.dataframe           import ElectronCandidate
-from prometheus.tools.atlas.common  import ATLASBaseTool
-from prometheus.core                import StatusCode
-from RingerCore                     import EnumStringification
-from RingerCore                     import retrieve_kw
+__all__ = ['EfficiencyTool']
 
 
-class EfficiencyMode(EnumStringification):
-  # @brief: Use to apply the same athena trigger approch
-  Athena   = 0
-  # @brief: Use for selector/cut combinations
-  Selector = 1
+from CommonTools import AlgorithmTool
+from Gaugi.messenger.macros import *
+from Gaugi import StatusCode
+from EfficiencyTools import EfficiencyMode
 
-
-class EfficiencyTool( ATLASBaseTool ):
+class EfficiencyTool( AlgorithmTool ):
   
   _triggerLevels = ['L1Calo','L2Calo','L2','EFCalo','HLT']
 
   def __init__(self, name, **kw):
-    ATLASBaseTool.__init__(self, name)
-    # default trigger list
-    self._itemList = []
-    # Default directory
+    AlgorithmTool.__init__(self, name)
+    self._triggerList = []
     self._basepath = 'Event/EfficiencyTool'
-    # switch flag between athena/selector
-    self._mode = EfficiencyMode.Selector
-    from prometheus.tools.atlas.common.constants import scalefactor_etbins, scalefactor_etabins
-    self._etBins = scalefactor_etbins
-    self._etaBins = scalefactor_etabins
 
 
 
   # Athena:  ( TDT__HLT__e24_lhmedium, e24_medium )
   # Selector: ('Et>15GeV && el_lhtight && TDT__HLT__e60_lhmedium' , 'Medium' )
-  def setItem( self, name, expression, mode=EfficiencyMode.Selector ):
-    self._itemList.append( (name, expression, mode) )  
-
-
-  def setEtBinningValues( self, etbins ):
-    self._etBins = etbins
-
-  def setEtaBinningValues( self, etabins ):
-    self._etaBins = etabins
+  def addTrigger( self, name, expression, mode=EfficiencyMode.Selector ):
+    from utilities import TriggerInfo
+    self._triggerList.append( TriggerInfo(expression, mode, name) )  
 
 
   def initialize(self):
     
-    ATLASBaseTool.initialize(self)
-    from prometheus.tools.atlas.common.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
-    from ROOT         import TH1F, TH2F, TProfile, TProfile2D
+    AlgorithmTool.initialize(self)
     import numpy as np
-
     sg = self.getStoreGateSvc()
-
+    from CommonTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
     #et_bins  = zee_etbins
     eta_bins = default_etabins
     nvtx_bins.extend(high_nvtx_bins)
     #eta_bins = [0,0.6,0.8,1.15,1.37,1.52,1.81,2.01,2.37,2.47]
-    
-    if self._doJpsiee:
-      et_bins = jpsiee_etbins
-    else:
-      et_bins = [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
+    et_bins = jpsiee_etbins if self.doJpsiee() else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
 
+    from ROOT import TH1F, TH2F, TProfile, TProfile2D
+    for info in self._triggerList:
+      for dirname in ( self._triggerLevels if info.isAthena() else ['Selector'] ):
 
-    for item in self._itemList:
-      self._mode=item[2]
-      dirnames = self._triggerLevels if self._mode is EfficiencyMode.Athena else ['Selector']
-      for sdir in dirnames:
-
-        sg.mkdir( self._basepath+'/'+item[0]+'/Efficiency/'+sdir )
+        sg.mkdir( self._basepath+'/'+info.label()+'/Efficiency/'+dirname )
         sg.addHistogram(TH1F('et','E_{T} distribution;E_{T};Count', len(et_bins)-1, np.array(et_bins)))
         sg.addHistogram(TH1F('eta','#eta distribution;#eta;Count', len(eta_bins)-1, np.array(eta_bins)))
         sg.addHistogram(TH1F("phi", "#phi distribution; #phi ; Count", 20, -3.2, 3.2));
@@ -102,52 +72,51 @@ class EfficiencyTool( ATLASBaseTool ):
 
   def execute(self, context):
   
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     # Retrieve Electron container
     elCont = context.getHandler( "ElectronContainer" )
     self._evt = context.getHandler("EventInfoContainer")
     
-    
-    for item in self._itemList:
-      self._mode=item[2] ### switch to analysis mode 
-      if self._mode is EfficiencyMode.Athena:
-        info = self.getTrigInfo(item[1])
+    for info in self._triggerList:
+
+      if info.isAthena():
+
         for el in elCont:
-          if el.et()/GeV < (info['etthr']- 5):  continue 
-          dirname = self._basepath+'/'+item[0]+'/Efficiency'
-          self.fillEfficiency(dirname+'/'+'L1Calo', el, info['etthr'], info['pidword'], self.isPassed(info['core']+'__L1Calo__'+info['trigger']))
-          self.fillEfficiency(dirname+'/'+'L2Calo', el, info['etthr'], info['pidword'], self.isPassed(info['core']+'__L2Calo__'+info['trigger']))
-          self.fillEfficiency(dirname+'/'+'L2'    , el, info['etthr'], info['pidword'], self.isPassed(info['core']+'__L2__'+info['trigger']    ))
-          self.fillEfficiency(dirname+'/'+'EFCalo', el, info['etthr'], info['pidword'], self.isPassed(info['core']+'__EFCalo__'+info['trigger']))
-          self.fillEfficiency(dirname+'/'+'HLT'   , el, info['etthr'], info['pidword'], self.isPassed(info['core']+'__HLT__'+info['trigger']   ))  
-      elif self._mode is EfficiencyMode.Selector:
+          if el.et()  < (info.etthr()- 5)*GeV:  continue 
+          if abs(el.eta())>2.47: continue
+          dirname = self._basepath+'/'+info.label()+'/Efficiency'
+          self.fillEfficiency(dirname+'/'+'L1Calo', el, info.etthr(), info.pid(), self.accept(info.core()+'__L1Calo__'+info.trigger() ))
+          self.fillEfficiency(dirname+'/'+'L2Calo', el, info.etthr(), info.pid(), self.accept(info.core()+'__L2Calo__'+info.trigger() ))
+          self.fillEfficiency(dirname+'/'+'L2'    , el, info.etthr(), info.pid(), self.accept(info.core()+'__L2__'    +info.trigger() ))
+          self.fillEfficiency(dirname+'/'+'EFCalo', el, info.etthr(), info.pid(), self.accept(info.core()+'__EFCalo__'+info.trigger() ))
+          self.fillEfficiency(dirname+'/'+'HLT'   , el, info.etthr(), info.pid(), self.accept(info.core()+'__HLT__'   +info.trigger() ))  
+      
+      else: # Selector mode
         # retrieve internal selection tool from the main framework
-        dirname = self._basepath+'/'+item[0]+'/Efficiency'
-        etthr = self.re().search_et(item[1])
-        pidword = self.re().search_pid(item[1])
         # el_lhtight && Et>15GeV && HLT__isElectronRingerTight 
+        dirname = self._basepath+'/'+info.label()+'/Efficiency'
+        etthr = self.re().search_et( info.expression() )
+        pid = self.re().search_pid( info.expression() )
         for el in elCont:
           if abs(el.eta())>2.47: continue
           if el.et()/GeV < (etthr - 5):  continue 
-          self.fillEfficiency(dirname+'/'+'Selector' , el, etthr, pidword, self.re().apply(item[1])  )
+          self.fillEfficiency(dirname+'/'+'Selector' , el, etthr, pidword, self.re().apply( info.expression() )  )
 
     return StatusCode.SUCCESS 
 
 
   def fillEfficiency( self, dirname, el, etthr, pidword, isPassed ):
     
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     pid = el.accept(pidword)
     eta = el.caloCluster().etaBE2()
     et = el.et()/GeV
     phi = el.phi()
-    avgmu = self._evt.avgmu()
-    nvtx = self._evt.nvtx()
- 
     evt = self.getContext().getHandler("EventInfoContainer")
+    avgmu = evt.avgmu()
+    nvtx = evt.nvtx()
     pw = evt.MCPileupWeight()
 
-    pid=True
     if pid: 
       sg.histogram( dirname+'/et' ).Fill(et, pw)
       if et > etthr+1.0:
@@ -186,29 +155,26 @@ class EfficiencyTool( ATLASBaseTool ):
 
   def finalize(self):
     
-    for item in self._itemList:
-      self._logger.info('{:-^78}'.format((' %s ')%(item[0])))
-      self._mode=item[2]
-      if self._mode is EfficiencyMode.Athena:
+    for info in self._triggerList:
+      MSG_INFO( self, '{:-^78}'.format((' %s ')%(item[0])))
+      if info.isAthena():
         for trigLevel in self._triggerLevels:
-          dirname = self._basepath+'/'+item[0]+'/Efficiency/'+trigLevel
+          dirname = self._basepath+'/'+info.label()+'/Efficiency/'+trigLevel
           total  = sg.histogram( dirname+'/eta' ).GetEntries()
           passed = sg.histogram( dirname+'/match_eta' ).GetEntries()
           eff = passed/float(total) * 100. if total>0 else 0
           eff=('%1.2f')%(eff); passed=('%d')%(passed); total=('%d')%(total)
           stroutput = '| {0:<30} | {1:<5} ({2:<5}, {3:<5}) |'.format(trigLevel,eff,passed,total)
-          self._logger.info(stroutput)
-
-      elif self._mode is EfficiencyMode.Selector:
-        dirname = self._basepath+'/'+item[0]+'/Efficiency/Selector'
+          MSG_INFO( self, stroutput)
+      else:
+        dirname = self._basepath+'/'+info.label()+'/Efficiency/Selector'
         total  = sg.histogram( dirname+'/eta' ).GetEntries()
         passed = sg.histogram( dirname+'/match_eta' ).GetEntries()
         eff = passed/float(total) * 100. if total>0 else 0
         eff=('%1.2f')%(eff); passed=('%d')%(passed); total=('%d')%(total)
         stroutput = '| {0:<30} | {1:<5} ({2:<5}, {3:<5}) |'.format('Efficiency',eff,passed,total)
-        self._logger.info(stroutput)
-
-      self._logger.info('{:-^78}'.format((' %s ')%('-')))
+        MSG_INFO(stroutput)
+      MSG_INFO('{:-^78}'.format((' %s ')%('-')))
     self.fina_lock()
     return StatusCode.SUCCESS 
 
