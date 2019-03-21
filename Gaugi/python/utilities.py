@@ -17,7 +17,9 @@ __all__ = [
            'checkExtension',
            'ensureExtension',
            'changeExtension',
-           'mkdir_p'
+           'mkdir_p',
+           'measureLoopTime',
+           'measureCallTime',
 
            ]
 
@@ -609,7 +611,86 @@ def progressbar(it, count ,prefix="", size=60, step=1, disp=True, logger = None,
   # end of (final treatments)
 
 
+def measureCallTime(f, *args, **kw):
+  from logging import StreamHandler
+  from Gaugi.messenger.Logger import nlStatus, resetNlStatus
+  import sys
+  msg = kw.pop('__msg', '' )
+  logger = kw.pop('__logger', None )
+  no_bl = kw.pop('__no_bl', True )
+  if logger:
+    if not nlStatus(): 
+      sys.stdout.write("\n")
+      sys.stdout.flush()
+    if no_bl:
+      from Gaugi.messenger.Logger import StreamHandler2
+      prev_emit = []
+      # TODO On python3, all we need to do is to change the Handler.terminator
+      for handler in logger.handlers:
+        if type(handler) is StreamHandler:
+          stream = StreamHandler2( handler )
+          prev_emit.append( handler.emit )
+          setattr(handler, StreamHandler.emit.__name__, stream.emit_no_nl)
+  level = kw.pop('__level', None )
+  from time import time
+  if level is None:
+    from Gaugi.messenger.Logger import LoggingLevel
+    level = LoggingLevel.DEBUG
+  if not msg:
+    msg = 'Executing ' + f.__name__ + '(' + ','.join(args) + ','.join([(str(key) + '=' + str(val)) for key, val in kw.iteritems()]) + ')'
+  if not msg.endswith('...') and not msg.endswith('... '): msg += '...'
+  if not msg.endswith(' '): msg += ' '
+  if logger:
+    fn, lno, func = logger.findCaller() 
+    record = logger.makeRecord(logger.name, level, fn, lno, 
+                               "%s\r",
+                               (msg), 
+                               None, 
+                               func=func)
+    record.nl = False
+    # emit message
+    logger.handle(record)
+  start = time()
+  ret = f(*args, **kw)
+  end = time()
+  if logger:
+    if no_bl:
+      # override back
+      for handler in logger.handlers:
+        if type(handler) is StreamHandler:
+          try:
+            setattr( handler, StreamHandler.emit.__name__, prev_emit.pop() )
+          except IndexError:
+            pass
+    record.msg = record.msg[:-1] + 'done!'
+    logger.handle(record)
+    logger.log( level, '%s execution took %.2fs.', f.__name__, end - start)
+    if no_bl:
+      resetNlStatus()
+  return ret
 
+def measureLoopTime(it, prefix = 'Iteration', prefix_end = '', 
+                    logger = None, level = None, showLoopBenchmarks = True):
+  from time import time
+  if level is None:
+    from Gaugi.messenger.Logger import LoggingLevel
+    level = LoggingLevel.DEBUG
+  start = time()
+  for i, item in enumerate(it):
+    lStart = time()
+    yield item
+    end = time()
+    if showLoopBenchmarks:
+      if logger:
+        logger.log( level, '%s %d took %.2fs.', prefix, i, end - lStart)
+      else:
+        sys.stdout.write( level, '%s %d took %.2fs.\n' % ( prefix, i, end - lStart ) )
+        sys.stdout.flush()
+  if logger:
+    logger.log( level, 'Finished looping (%s) in %.2fs.', prefix_end, end - start)
+  else:
+    sys.stdout.write( level, 'Finished looping (%s) in %.2fs.\n' % ( prefix_end, end - start) )
+    sys.stdout.flush()
 
 
 

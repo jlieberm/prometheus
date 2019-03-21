@@ -1,9 +1,10 @@
 
 __all__ = ["PlotProfiles"]
 
-
-from monet import *
-from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite
+from monet.PlotFunctions import *
+from monet.TAxisFunctions import *
+from monet.AtlasStyle import SetAtlasStyle
+from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor
 
 # force atlas style
 SetAtlasStyle()
@@ -17,7 +18,7 @@ local_these_colors = [kBlack,kBlue-4,kGray+2, kRed-2,kAzure+2,kGreen-2,kMagenta+
                 ,21,22,23,24,25,26,27,28,29,30
                 ]
 
-local_these_transcolors=[ROOT.TColor.GetColorTransparent(c,.5) for c in local_these_colors]
+local_these_transcolors=[TColor.GetColorTransparent(c,.5) for c in local_these_colors]
 local_these_marker = (23, 24, 22, 26, 32 ,23, 20,25)
 
 

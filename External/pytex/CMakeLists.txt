@@ -3,11 +3,10 @@
 ################################################################################
 
 # Declare the package name:
-atlas_subdir( EfficiencyTools )
+atlas_subdir( pytex )
 
 
 # Install files from the package:
-atlas_install_python_modules( python/*.py python/drawers )
-atlas_install_scripts( scripts/*.py )
+atlas_install_python_modules( python/*.py )
 
 

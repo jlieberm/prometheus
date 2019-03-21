@@ -7,7 +7,7 @@ __all__ = [ 'BeamerSlide', 'BeamerTexReport'
           , 'BeamerTexReportTemplate2','gcb']
 
 import os
-from Gaugi.utilities import checkForUnusedVars, Holder, retrieve_kw, 
+from Gaugi.utilities import checkForUnusedVars, Holder, retrieve_kw 
 from Gaugi.types import NotSet
 from Gaugi.messenger import Logger, LoggingLevel
 from TexAPI import *
@@ -216,7 +216,7 @@ class BeamerMultiFigureSlide( BeamerSlide ):
     elif nDivWidth * nDivHeight != len(paths):
       paths += [None] * ( ( nDivWidth * nDivHeight ) - len(paths) )
     try:
-      from RingerCore.LoopingBounds import traverse
+      from Gaugi.utilities import traverse
       _, _, _, _, depth = traverse( texts ).next()
     except (GeneratorExit, StopIteration):
       depth = 0

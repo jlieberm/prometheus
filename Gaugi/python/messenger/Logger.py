@@ -235,7 +235,7 @@ class Logger( object ):
     if hasattr( self, '_level' ):
       return LoggingLevel.tostring( self._level )
     else:
-      return LoggingLevel.MUTE
+      return LoggingLevel.INFO
 
   def setLevel(self, value):
     from Gaugi.types import NotSet

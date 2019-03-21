@@ -1003,7 +1003,6 @@ def FixLength(names, nchar = 22):
             if name is None: continue
             lName = len(name)
             breakVec = [0]; cBreakVecIdx=0
-            from RingerCore import keyboard
             while True:
                 prevIdx = breakVec[cBreakVecIdx]
                 maxIdx = nchar + prevIdx

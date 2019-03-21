@@ -38,6 +38,12 @@ class AlgorithmTool( Algorithm ):
     self._doJpsiee = v
 
 
+  def doJpsiee(self):
+    return self._doJpsiee
+
+  def doTrigger(self):
+    self._doTrigger
+
   def accept( self, expression ):
     return self._re.apply(expression)
 

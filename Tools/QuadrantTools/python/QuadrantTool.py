@@ -185,8 +185,9 @@ class QuadrantTool( AlgorithmTool ):
 
       ### Plot binning plots  
       if (len(self._etBins) * len(self._etaBins)) > 1:
-        for etBinIdx, etaBinIdx in progressbar(product(range(len(self._etBins)-1),range(len(self._etaBins)-1)), 
-                                               prefix = "Plotting... "):
+        for etBinIdx, etaBinIdx in progressbar(product(range(len(self._etBins)-1),range(len(self._etaBins)-1)),
+                                               (len(self._etBins)-1)*(len(self._etaBins)-1),
+                                               prefix = "Plotting... ", logger=self._logger):
           # hold binning name
           binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
           # for beamer...
@@ -255,8 +256,8 @@ class QuadrantTool( AlgorithmTool ):
 
 
 
-      from tex.TexAPI    import *
-      from tex.BeamerAPI import *
+      from pytex.TexAPI    import *
+      from pytex.BeamerAPI import *
       
       for slideIdx, feat in enumerate(self._quadrantFeatures):
         
@@ -509,7 +510,7 @@ class QuadrantTool( AlgorithmTool ):
   def _getStatistics( self,basepath, key, etidx=None, etaidx=None ):
     sg = self.getStoreGateSvc()
     # get all quadrant histograms
-
+    from monet.utilities import sumHists
     if (etidx is not None) and (etaidx is not None):
       hists = [
                 sg.histogram(basepath+'/passed_passed/'+key),

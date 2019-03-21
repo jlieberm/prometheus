@@ -12,6 +12,7 @@ doc/.ipynb_checkpoints/*
 *.pdf
 *.eps
 *.pdf
+*.tex
 *.C
 cmt/boost_test.cxx.o
 MoreFilesForYou-*
