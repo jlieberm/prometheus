@@ -40,6 +40,11 @@ parser.add_argument('-l','--legends', action='store',
     dest='legends', required = False, nargs='+', default=None,
     help = "The legends to be add in the TLegend display")
 
+parser.add_argument('--extraText1', action='store', 
+    dest='extraText1', required = False, default='[]',
+    help = "This used in (extraText1)")
+
+
 parser.add_argument('-o','--outputDir', action='store', 
     dest='outputDir', required = False, default = 'plots',
     help = "The output directory name.")
@@ -207,7 +212,7 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
       legends=[]; h_ref=[]; h_test=[];
       pname=str()
       for trigItem in group:  
-        #pname+='_'+trigItem
+        pname+='_'+trigItem
         legends.append(trigItem)
         if not trigItem in values[idx].keys():
           values[idx][trigItem] = {'L1Calo':{},'L2Calo':{},'L2':{},'EFCalo':{},'HLT':{}}
@@ -237,9 +242,11 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
       ### NOTE: hack legend for werner's article. 
       #if len(legends)==2:
       #  legends = ['Ringer chain','Baseline chain']
-      extraText1='Full: without ringer, Open: with ringer'
+      #extraText1='Full: without ringer, Open: with ringer'
+      extraText1=eval(args.extraText1)
       #extraText1=group[0]
-      #legends = args.legends
+      if args.legends:
+        legends = args.legends
       outname = localpath+'/'+dirpath+'/'+level+pname+'_'+histname+'.pdf'
       res = PlotProfiles( h_ref+h_test, legends = legends, outname=outname, runLabel=args.runLabel, extraText1=extraText1, 
                           doFitting=False, doRatioCanvas=args.doRatio,xlabel=xlabel_names[jdx],theseColors=these_colors,theseMarker=these_marker,

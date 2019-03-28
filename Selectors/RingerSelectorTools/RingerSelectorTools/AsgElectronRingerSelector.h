@@ -66,6 +66,11 @@ class AsgElectronRingerSelector : public asg::AsgTool
       return m_accept;
     }
 
+    float output();
+    float outputBeforeTheActivationFunction();
+
+
+
 
   private:
 

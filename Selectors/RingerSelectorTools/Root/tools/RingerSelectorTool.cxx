@@ -36,7 +36,6 @@ StatusCode  RingerSelectorTool::initialize()
     }
     // retrieve metadata
     m_doPileupCorrection = m_reader.doPileupCorrection();
-
     m_lumiCut  = m_reader.lumiCut();
   }
 
@@ -78,7 +77,7 @@ StatusCode  RingerSelectorTool::finalize(){
 double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, double eta, double mu,
                                               double eratio, double reta, double rphi, double rhad, double weta2,
                                               double f1, double f3 ) 
-const {
+{
 
   float output = -999;
   // It's ready to select the correct eta/et bin
@@ -104,7 +103,10 @@ const {
     refRings.push_back(f1/0.6);
     refRings.push_back(f3/0.04);
     auto answer = discr->propagate(refRings);
-    
+    m_outputBeforeTheActivationFunction = answer.outputBeforeTheActivationFunction;
+    m_output = answer.output;
+
+
     if(m_removeOutputTansigTF){
       output = answer.outputBeforeTheActivationFunction;
     }else{
@@ -127,7 +129,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
                                               double f1, double f3, double deltaeta1, double deltaPoverP, 
                                               double deltaPhiReescaled, double d0significance, double d0pvunbiased, 
                                               double eProbabilityHT)
-const {
+{
 
   float  output = -999;
   ///It's ready to select the correct eta/et bin
@@ -162,7 +164,10 @@ const {
     // Add extra variables in this order! Do not change this!!!
  
     auto answer = discr->propagate(refRings);
-    
+    m_outputBeforeTheActivationFunction = answer.outputBeforeTheActivationFunction;
+    m_output = answer.output;
+
+   
     if(m_removeOutputTansigTF){
       output = answer.outputBeforeTheActivationFunction;
     }else{
@@ -183,7 +188,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
                                               double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
                                               double d0significance, double d0pvunbiased, double eProbabilityHT)
 
-const {
+{
   
   float output=-999.;
 
@@ -208,7 +213,10 @@ const {
     // Add extra variables in this order! Do not change this!!!
     
     auto answer = discr->propagate(refRings);
-    
+    m_outputBeforeTheActivationFunction = answer.outputBeforeTheActivationFunction;
+    m_output = answer.output;
+
+   
     if(m_removeOutputTansigTF){
       output = answer.outputBeforeTheActivationFunction;
     }else{
@@ -225,7 +233,7 @@ const {
 
 double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, double eta, double mu)
 
-const {
+{
   
   float output = -999;
   ///It's ready to select the correct eta/et bin
@@ -241,7 +249,10 @@ const {
     // Apply preprocessor
     if(preproc)  preproc->execute(refRings);
     auto answer = discr->propagate(refRings);
-    
+    m_outputBeforeTheActivationFunction = answer.outputBeforeTheActivationFunction;
+    m_output = answer.output;
+
+   
     if(m_removeOutputTansigTF){
       output = answer.outputBeforeTheActivationFunction;
     }else{
@@ -263,7 +274,7 @@ const {
 double  RingerSelectorTool::calculate( double et, double eta, double mu,
                                               double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
                                               double d0significance, double d0pvunbiased, double eProbabilityHT)
-const {
+{
 
   ///It's ready to select the correct eta/et bin
   std::shared_ptr<Ringer::IModel>         discr;
@@ -281,7 +292,10 @@ const {
     refRings.push_back(eProbabilityHT/1.0);
     // Add extra variables in this order! Do not change this!!!
     auto answer = discr->propagate(refRings);
-    
+    m_outputBeforeTheActivationFunction = answer.outputBeforeTheActivationFunction;
+    m_output = answer.output;
+
+   
     if(m_removeOutputTansigTF){
       output = answer.outputBeforeTheActivationFunction;
     }else{
@@ -365,7 +379,6 @@ const {
   }
   return false;
 }
-
 
 
 

@@ -32,7 +32,11 @@ def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', legTextSize=15
     #text_lines += [GetAtlasInternalText()]
     #text_lines.append( GetSqrtsText(13) )
     if runLabel: text_lines.append( runLabel )
-    if extraText1: text_lines.append( extraText1 )
+    if extraText1:
+      if type(extraText1) is str:
+        extraText1=[extraText1]
+      text_lines.extend( extraText1 )
+    
     DrawText(can,text_lines,.15,.68,.47,.93,totalentries=4)
     if legend:
         MakeLegend( can,legendX1,legendY1,.98,legendY2,textsize=legTextSize

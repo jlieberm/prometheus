@@ -165,7 +165,9 @@ class QuadrantTool( AlgorithmTool ):
     
     from itertools import product
     from Gaugi.utilities import progressbar
-
+    from monet.AtlasStyle import SetAtlasStyle
+    SetAtlasStyle()
+ 
     import time
     import os, gc
 
@@ -402,10 +404,14 @@ class QuadrantTool( AlgorithmTool ):
 
 
 
+
   def _plotQuantities( self,basepath, key, outname, drawopt='hist', divide='B', 
-      etidx=None, etaidx=None, xlabel='', runLabel='', addbinlines=False):
+      etidx=None, etaidx=None, xlabel='', runLabel='',addbinlines=False):
 
-
+    import ROOT
+    ROOT.gROOT.SetBatch(ROOT.kTRUE)
+    ROOT.gErrorIgnoreLevel=ROOT.kWarning
+    ROOT.TH1.AddDirectory(ROOT.kFALSE)
 
     from monet.utilities import sumHists
     from monet.PlotFunctions import *
@@ -413,30 +419,26 @@ class QuadrantTool( AlgorithmTool ):
     from utilities import AddTopLabels
 
 
-    ROOT.gROOT.SetBatch(ROOT.kTRUE)
-    ROOT.gErrorIgnoreLevel=ROOT.kWarning
-    ROOT.TH1.AddDirectory(ROOT.kFALSE)
-
     #if (not "_et2" in outname) or (not "_eta0" in outname): return outname + '.pdf'
-    sg = self.getStoreGateSvc()
+
     # get all quadrant histograms
 
     if (etidx is not None) and (etaidx is not None):
       hists = [
-                sg.histogram(basepath+'/passed_passed/'+key),
-                sg.histogram(basepath+'/passed_rejected/'+key),
-                sg.histogram(basepath+'/rejected_passed/'+key),
-                sg.histogram(basepath+'/rejected_rejected/'+key)
+                self.storeSvc.histogram(basepath+'/passed_passed/'+key),
+                self.storeSvc.histogram(basepath+'/passed_rejected/'+key),
+                self.storeSvc.histogram(basepath+'/rejected_passed/'+key),
+                self.storeSvc.histogram(basepath+'/rejected_rejected/'+key)
               ]
     else:
       from itertools import product
       passed_passed = []; passed_rejected = []; rejected_passed = []; rejected_rejected = []
       for etBinIdx, etaBinIdx in product(range(len(self._etBins)-1),range(len(self._etaBins)-1)):
         binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx) 
-        passed_passed.append( sg.histogram(basepath+'/'+binning_name+'/passed_passed/'+key) ) 
-        passed_rejected.append( sg.histogram(basepath+'/'+binning_name+'/passed_rejected/'+key) )
-        rejected_passed.append( sg.histogram(basepath+'/'+binning_name+'/rejected_passed/'+key) )
-        rejected_rejected.append( sg.histogram(basepath+'/'+binning_name+'/rejected_rejected/'+key) )
+        passed_passed.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/passed_passed/'+key) ) 
+        passed_rejected.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/passed_rejected/'+key) )
+        rejected_passed.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/rejected_passed/'+key) )
+        rejected_rejected.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/rejected_rejected/'+key) )
 
       hists = [
                 sumHists(passed_passed),
@@ -447,7 +449,7 @@ class QuadrantTool( AlgorithmTool ):
 
     ref_hist = sumHists(hists)
     from ROOT import kBlack,kRed,kGreen,kGray,kMagenta,kBlue
-    outcan = RatioCanvas( outname.split('/')[-1], outname.split('/')[-1], 500, 500)
+    outcan = RatioCanvas( outname, outname, 500, 500)
     pad_top = outcan.GetPrimitive('pad_top')
     pad_bot = outcan.GetPrimitive('pad_bot')
 
@@ -474,6 +476,8 @@ class QuadrantTool( AlgorithmTool ):
       hist.SetFillColor(these_transcolors[idx])
       div.SetMarkerColor(these_colors[idx])
       AddHistogram( pad_top, hist, 'histE2 L same', False, None, None)
+      # TODO: Check why error bar still here. Force error bar equal zero
+      for ibin in range(div.GetNbinsX()):  div.SetBinError(ibin,0.0)
       divs.append( div )
       if idx == 0 or idx == 3: AddHistogram( pad_bot, div , 'p', False, None, None)
     #AddHistogram( pad_bot, divs[2] , 'p'   , False, None, None)
@@ -503,6 +507,113 @@ class QuadrantTool( AlgorithmTool ):
     outname = outname+'.pdf'
     outcan.SaveAs( outname ) 
     return outname
+
+
+
+
+
+
+  #def _plotQuantities( self,basepath, key, outname, drawopt='hist', divide='B', 
+  #    etidx=None, etaidx=None, xlabel='', runLabel='', addbinlines=False):
+
+
+
+  #  from monet.utilities import sumHists
+  #  from monet.PlotFunctions import *
+  #  from monet.TAxisFunctions import *
+  #  from utilities import AddTopLabels
+
+
+  #  ROOT.gROOT.SetBatch(ROOT.kTRUE)
+  #  ROOT.gErrorIgnoreLevel=ROOT.kWarning
+  #  ROOT.TH1.AddDirectory(ROOT.kFALSE)
+
+  #  #if (not "_et2" in outname) or (not "_eta0" in outname): return outname + '.pdf'
+  #  sg = self.getStoreGateSvc()
+  #  # get all quadrant histograms
+
+  #  if (etidx is not None) and (etaidx is not None):
+  #    hists = [
+  #              sg.histogram(basepath+'/passed_passed/'+key),
+  #              sg.histogram(basepath+'/passed_rejected/'+key),
+  #              sg.histogram(basepath+'/rejected_passed/'+key),
+  #              sg.histogram(basepath+'/rejected_rejected/'+key)
+  #            ]
+  #  else:
+  #    from itertools import product
+  #    passed_passed = []; passed_rejected = []; rejected_passed = []; rejected_rejected = []
+  #    for etBinIdx, etaBinIdx in product(range(len(self._etBins)-1),range(len(self._etaBins)-1)):
+  #      binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx) 
+  #      passed_passed.append( sg.histogram(basepath+'/'+binning_name+'/passed_passed/'+key) ) 
+  #      passed_rejected.append( sg.histogram(basepath+'/'+binning_name+'/passed_rejected/'+key) )
+  #      rejected_passed.append( sg.histogram(basepath+'/'+binning_name+'/rejected_passed/'+key) )
+  #      rejected_rejected.append( sg.histogram(basepath+'/'+binning_name+'/rejected_rejected/'+key) )
+
+  #    hists = [
+  #              sumHists(passed_passed),
+  #              sumHists(passed_rejected),
+  #              sumHists(rejected_passed),
+  #              sumHists(rejected_rejected),
+  #            ]
+
+  #  ref_hist = sumHists(hists)
+  #  from ROOT import kBlack,kRed,kGreen,kGray,kMagenta,kBlue
+  #  outcan = RatioCanvas( outname.split('/')[-1], outname.split('/')[-1], 500, 500)
+  #  pad_top = outcan.GetPrimitive('pad_top')
+  #  pad_bot = outcan.GetPrimitive('pad_bot')
+
+  #  pad_top.SetLogy()
+  #  collect=[]
+  #  divs=[]
+  #  #outcan.GetPrimitive('pad_bot').SetLogy()
+  #  these_colors = [kBlack,kRed+1, kBlue+2,kGray+1]
+  #  #these_colors = [kBlack,kGray+1]
+  #  these_transcolors=[]
+  #  for c in these_colors:
+  #    these_transcolors.append(ROOT.TColor.GetColorTransparent(c, .5))
+ 
+  #  #hists = [hists[0], hists[3]] 
+  #  divs = []
+  #  for idx, hist in enumerate(hists):
+  #    #AddHistogram(outcan,hist,drawopt=drawopt) 
+  #    #AddRatio(outcan, hist, ref_hist, drawopt = drawopt, divide=divide)
+  #    div = hist.Clone(); div.Divide(div,ref_hist,1.,1.,'b'); div.Scale(100.); collect.append(div)
+  #    hist.SetMarkerSize(0.35)
+  #    div.SetMarkerSize(0.5)
+  #    hist.SetLineColor(these_colors[idx])
+  #    hist.SetMarkerColor(these_colors[idx])
+  #    hist.SetFillColor(these_transcolors[idx])
+  #    div.SetMarkerColor(these_colors[idx])
+  #    AddHistogram( pad_top, hist, 'histE2 L same', False, None, None)
+  #    divs.append( div )
+  #    if idx == 0 or idx == 3: AddHistogram( pad_bot, div , 'p', False, None, None)
+  #  #AddHistogram( pad_bot, divs[2] , 'p'   , False, None, None)
+
+  #  #pad_bot.SetLogy() 
+  #  #SetColors(pad_top,these_colors=these_colors)
+  #  #SetColors(pad_bot,these_colors=these_colors)
+  #  #pad_top.cd()
+  #  #SetColors(pad_top,these_colors=these_transcolors, lineColor=False,markerColor=False,fillColor=True)
+  #  #SetColors(pad_bot,these_colors=these_transcolors, lineColor=False,markerColor=False,fillColor=True)
+  #
+  #  legend = [ 'Both Approved','Ringer Rejected', 'Ringer Approved', 'Both Rejected' ]
+  #  AddTopLabels(outcan, legend, runLabel=runLabel, legOpt='p',
+  #               logger=self._logger,etlist=self._etBins,etalist=self._etaBins,etidx=etidx,etaidx=etaidx)
+  #  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
+  #  SetAxisLabels(outcan,xlabel,'Count','Agreement [%]')
+  #  AutoFixAxes(pad_top,ignoreErrors=False)
+  #  FixYaxisRanges(pad_bot, ignoreErrors=True, yminc=-eps )
+  #  if addbinlines:
+  #    AddBinLines(pad_top,hists[0],useHistMax=True,horizotalLine=0.)
+  #    #AddBinLines(pad_bot,hists[0],useHistMax=True,horizotalLine=0.)
+  #  AddRightAxisObj(pad_bot, divs[1:3], drawopt="p,same", equate=[0., max([d.GetBinContent(h.GetMaximumBin()) for d,h in zip(divs[1:3], hists[1:3])])]
+  #                 , drawAxis=True, axisColor=(ROOT.kGray+3), ignorezeros=False
+  #                 , ignoreErrors=True, label = "Disagreement [%]")
+  #  #AddOutOfBoundArrows(pad_bot, useFill=True, useMarkerColor=True, colors=None, lengthDiv=.01,arrowLenghtDiv=.003, textPerc=2, addNumbers=False)
+  #  outcan.SaveAs( outname+'.C' ) 
+  #  outname = outname+'.pdf'
+  #  outcan.SaveAs( outname ) 
+  #  return outname
 
 
 

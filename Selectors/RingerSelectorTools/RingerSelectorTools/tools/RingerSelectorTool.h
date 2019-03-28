@@ -43,24 +43,24 @@ namespace Ringer{
   
       double  calculate( double et, double eta, double mu,
                          double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
-                         double d0significance, double d0pvunbiased, double eProbabilityHT) const;
+                         double d0significance, double d0pvunbiased, double eProbabilityHT);
   
       
-      double  calculate( std::vector<float>& rings, double et, double eta, double mu) const;
+      double  calculate( std::vector<float>& rings, double et, double eta, double mu);
   
       double  calculate( std::vector<float>& rings, double et, double eta, double mu,
                          double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
-                         double d0significance, double d0pvunbiased, double eProbabilityHT) const;
+                         double d0significance, double d0pvunbiased, double eProbabilityHT);
   
       double  calculate( std::vector<float>& rings, double et, double eta, double mu,
                          double eratio, double reta, double rphi, double rhad, double weta2,
-                         double f1, double f3) const;
+                         double f1, double f3);
   
       double  calculate( std::vector<float>& rings, double et, double eta, double mu,
                          double eratio, double reta, double rphi, double rhad, double weta2,
                          double f1, double f3, double deltaeta1, double deltaPoverP,
                          double deltaPhiReescaled, double d0significance, double d0pvunbiased,
-                         double eProbabilityHT) const;
+                         double eProbabilityHT);
   
   
       std::string getWP( void ) const {return m_wp;};
@@ -75,7 +75,9 @@ namespace Ringer{
      
       
 
-  
+      float outputBeforeTheActivationFunction(){return m_outputBeforeTheActivationFunction;};
+      float output(){return m_output;};
+
 
     private:
   
@@ -85,9 +87,11 @@ namespace Ringer{
       std::vector<std::shared_ptr<Ringer::INormalization>>  m_preprocs;
       std::vector<std::shared_ptr<Ringer::IModel>>          m_discriminators;
       std::vector<std::shared_ptr<Ringer::IThresholds>>     m_cutDefs;
-  
+      
       Ringer::RingerReader m_reader;
       
+      float m_outputBeforeTheActivationFunction;
+      float m_output;
   
       double      m_etCut;
       double      m_lumiCut;
@@ -102,6 +106,7 @@ namespace Ringer{
       //Discriminator configuration
       std::string m_constantsCalibPath, m_thresholdsCalibPath;
       std::string m_wp; // working point
+
 
 
 

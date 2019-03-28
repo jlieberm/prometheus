@@ -15,11 +15,12 @@ _g = []
 
 
 
-def rebinY(th2, newbinning):
+def rebinY(th2, newbinning): 
+  #print newbinning
   c = type(th2)
-  f = lambda a: array.array('d',[a.GetBinLowEdge(x) for x in range(1,a.GetNbins()+1)] + [a.GetBinUpEdge(a.GetNbins())])
+  f = lambda a: array('d',[a.GetBinLowEdge(x) for x in range(1,a.GetNbins()+1)] + [a.GetBinUpEdge(a.GetNbins())])
   th2_ret = c( th2.GetName(), th2.GetTitle(), th2.GetNbinsX(), f(th2.GetXaxis())
-             , len(newbinning)-1, array.array('d',newbinning) )
+             , len(newbinning)-1, array('d',newbinning) )
   from itertools import product
   for x, y in product(xrange(th2.GetNbinsX()+2), xrange(th2.GetNbinsY()+2)):
     th2_ret_idx = th2_ret.FindBin(th2.GetXaxis().GetBinCenter(x),(th2.GetYaxis().GetBinLowEdge(y)+th2.GetYaxis().GetBinLowEdge(y+1))/2.)
@@ -65,9 +66,16 @@ def Copy2DRegion(hist, xbins, xmin, xmax, ybins, ymin, ymax):
   return h.Clone()
 
 
+def calcSP( pd, pj ):
+  #  ret  = calcSP(x,y) - Calculates the normalized [0,1] SP value.
+  #  effic is a vector containing the detection efficiency [0,1] of each
+  #  discriminating pattern.  
+  from numpy import sqrt
+  return sqrt(geomean([pd,pj]) * mean([pd,pj]))
+
+
 def CalculateMaxSP( hist_sgn, hist_bkg ):
 
-  from RingerCore import calcSP
   nbinsx = hist_sgn.GetNbinsX()
   maxSP=0.0; best_det=0.0; best_fa=0.0
   for bx in xrange(nbinsx):
@@ -227,28 +235,29 @@ class TH2Holder(object):
   def yresolution(self): 
     return self._yres
   def xbins(self):
-    return (self.xmax() - self.xmin()) / float(self.xresolution)
+    print self.xresolution
+    return (len(self.xresolution())-1) if type(self.xresolution()) is list else ((self.xmax() - self.xmin()) / float(self.xresolution()))
 
 
 
 
-def ApplyThresholdLinearCorrection( chist, sgn_hist2D, bkg_hist2D, refvalue,  doLinearCorrection=True, false_alarm_limit=0.5, logger=None ):
+def ApplyThresholdLinearCorrection( xmin, xmax, xres, mumin, mumax, mures,
+  sgn_hist2D, bkg_hist2D, refvalue,  doLinearCorrection=True, false_alarm_limit=0.5, logger=None ):
   """
     This is the main function used to call the pileup correction and make the summary
   """
-  mumin = chist.ymin()
-  mumax = chist.ymax()
-
-  sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),chist.xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
-  bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),chist,xbins(),chist.xmin(),chist.xmax(),np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
+  xbins=int((xmax-xmin)/float(xres))
+  sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
+  bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
   
 
-  if isinstance(chist.yres(),(float,int)):
-    sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/chist.ybins())))
-    bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/chist.ybins())))
+  if isinstance(mures,(float,int)):
+    mubins=int((mumax-mumin)/float(mures))
+    sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/mubins)))
+    bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/mubins)))
   else:
-    sgn_hist2D = rebinY(sgn_hist2D,chist.yres())
-    bkg_hist2D = rebinY(bkg_hist2D,chist.yres())
+    sgn_hist2D = rebinY(sgn_hist2D,mures)
+    bkg_hist2D = rebinY(bkg_hist2D,mures)
 
 
   false_alarm = 1.0
@@ -286,7 +295,7 @@ def ApplyThresholdLinearCorrection( chist, sgn_hist2D, bkg_hist2D, refvalue,  do
     if false_alarm > false_alarm_limit:
       refvalue-=0.0025
 
-  angular = a;  offset = b; offset_0 = b0
+  angular = a;  offset = b; offset0 = b0
   
   if logger:
     logger.info( 'Signal with correction is: %1.2f%%', sgn_info_corr[0]*100 )

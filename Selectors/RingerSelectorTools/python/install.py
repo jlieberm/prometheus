@@ -1,9 +1,51 @@
 
 
 __all__ =  [
+            "installElectronL2CaloRingerSelector_v5", 
             "installElectronL2CaloRingerSelector_v6",
             "installElectronL2CaloRingerSelector_v8",
            ]
+
+
+
+
+# same as ringer v6 but use the output after the tansig TF function in 
+# the last neuron
+def installElectronL2CaloRingerSelector_v5( toolname = "EgammaEmulation" ):
+
+  from RingerSelectorTools import RingerSelectorTool
+  # do not change this paths...
+  calibpath = 'RingerSelectorTools/TrigL2_20170505_v6'
+
+  selectors = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v5", 
+                          calibpath+'/TrigL2CaloRingerElectronTightConstants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronTightThresholds.root',
+                          useOutputBeforeTheActivationFunction=False ), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v5", 
+                          calibpath+'/TrigL2CaloRingerElectronMediumConstants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronMediumThresholds.root', 
+                          useOutputBeforeTheActivationFunction=False ), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v5", 
+                          calibpath+'/TrigL2CaloRingerElectronLooseConstants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronLooseThresholds.root', 
+                          useOutputBeforeTheActivationFunction=False ), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v5", 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.root', 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.root', 
+                          useOutputBeforeTheActivationFunction=False ), 
+
+    ]
+
+  from Gaugi import ToolSvc as toolSvc
+  tool = toolSvc.retrieve( toolname )
+  if tool:
+    for sel in selectors:
+      tool.addFastCaloSelector( sel.name(), sel )
+  else:
+    raise RuntimeError( "%s not found into the ToolSvc." % toolname )
+
+
 
 
 

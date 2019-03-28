@@ -13,12 +13,13 @@ from EventAtlas import *
 
 class RingerSelectorTool(Algorithm):
 
-  def __init__(self, name, constants, thresholds, **kw):
+  def __init__(self, name, constants, thresholds, useOutputBeforeTheActivationFunction=True, **kw):
     Algorithm.__init__(self, name, **kw)
     self._asg           = NotSet
     self._nnOutput=-999
     self._constantsCalibPath = constants
     self._thresholdsCalibPath = thresholds
+    self._useOutputBeforeTheActivationFunction = useOutputBeforeTheActivationFunction
 
   def asg(self):
     return self._asg
@@ -47,11 +48,9 @@ class RingerSelectorTool(Algorithm):
 
   def accept( self, eg, mu ):
     if eg.isGoodRinger():
-      self._discriminant = self.calculate( eg, mu ) 
-      return bool(self._asg.accept( self._nnOutput, eg.et(), eg.eta(), mu ))
+      nnOutput = self.calculate( eg, mu ) 
+      return bool(self._asg.accept( nnOutput, eg.et(), eg.eta(), mu ))
     else:
-      # reset the output discriminant
-      self._discriminant=-999.
       return True
 
 
@@ -121,7 +120,11 @@ class RingerSelectorTool(Algorithm):
 
 
   def getDiscriminant(self):
-    return self._discriminant
+    if self._useOutputBeforeTheActivationFunction:
+      return self._asg.outputBeforeTheActivationFunction()
+    else:
+      return self._asg.output()
+
 
 
 

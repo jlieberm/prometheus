@@ -114,3 +114,19 @@ const Root::TAccept& AsgElectronRingerSelector::accept( double discriminant, dou
   return m_accept;
 }
 
+
+
+
+float AsgElectronRingerSelector::output()
+{
+  return m_selectorTool.output();
+}
+
+float AsgElectronRingerSelector::outputBeforeTheActivationFunction()
+{
+  return m_selectorTool.outputBeforeTheActivationFunction();
+}
+
+
+
+

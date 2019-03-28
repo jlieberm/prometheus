@@ -24,10 +24,10 @@ plot_triggers.py -d cern_data/data17_13TeV/Mon/EGAM1/after_ts1 cern_data/data18_
                 --triggers $TRIGGERS \
                 -l 'data17 (After TS1)' 'data18' \
                 -r $RUNLABEL \
-                -o 'plot_efficiency_EGAM1_all_triggers_2017_before_and_after_ts1_and_2018' \
-                --pdf_output 'plot_efficiency_EGAM1_all_triggers_2017_before_and_after_ts1_and_2018.pdf' \
+                -o 'plot_efficiency_EGAM1_all_triggers_2017_after_ts1_and_2018' \
+                --pdf_output 'plot_efficiency_EGAM1_all_triggers_2017_after_ts1_and_2018.pdf' \
                 --pdf_title 'Monitoring 2017 and 2018 trigger (EGAM1)' \
-                --debug
+                #--debug
 
 
 

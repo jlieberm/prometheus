@@ -53,7 +53,7 @@ class Target( Logger ):
     self._expertAndExperimentalMethods = ExpertAndExperimentalMethods()
 
   # get the internal menu used for experts
-  def expertAndExperimentalMethod(self):
+  def expertAndExperimentalMethods(self):
     return self._expertAndExperimentalMethods
 
   def name(self):
@@ -70,14 +70,13 @@ class Target( Logger ):
 
 
   # Retrive the reference value from the target
-  def reference( self, storegate, baseparh, etbinidx=None, etabinidx=None, useFalseAlarm=False ):
+  def reference( self, storegate, basepath, etbinidx=None, etabinidx=None, useFalseAlarm=False ):
     
     # The refrence is a str and need to access the histogram directory
-    if type(self._reference) is str:
+    if type(self._refname) is str:
       # etbin and etabin is mandatory in this case
       if (etbinidx is None) or (etabinidx is None):
         MSG_FATAL( self,"Can not access the reference. You must pass et/eta bin index as argument.")
-      
       binningname = ('et%d_eta%d') % (etbinidx,etabinidx)
       if self.expertAndExperimentalMethods().doSP:
         det, fa, sp = CalculateMaxSP(
@@ -97,7 +96,7 @@ class Target( Logger ):
     
     # Appling the scale parameter (relax) into the calculated efficiency
     if self.expertAndExperimentalMethods().scaleParameter:
-      factor = self.expertAndExperimentalMethods().scaleParameter; diff = (1-edd)*abs(factor) 
+      factor = self.expertAndExperimentalMethods().scaleParameter; diff = (1-eff)*abs(factor) 
       eff = eff+diff if factor > 0.0 else eff-diff
       passed = eff*total
 

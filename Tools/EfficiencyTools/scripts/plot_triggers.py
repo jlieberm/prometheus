@@ -11,8 +11,7 @@ import os
 
 
 
-
-mainLogger = Logger.getModuleLogger("PlotTool")
+mainLogger = Logger.getModuleLogger("PlotTools", LoggingLevel.INFO)
 # Mute ROOT logger
 gROOT.ProcessLine("gErrorIgnoreLevel = kFatal;")
 
@@ -100,14 +99,13 @@ try:
 except:
   mainLogger.warning("The output directory %s exist into the local path", args.outputDir)
 
+mainLogger.info("Start...")
 ### Retrieve all histograms from each path
 from EfficiencyTools.utilities import GetHistogramRootPaths, GetHistogramFromMany, is_high_et, GetProfile
 mainLogger.info('Get histograms from files....')
 objects = []; summary = []
 for idx, files_ref in enumerate(files):
-  print len(files_ref)
   paths_ref, keys =  GetHistogramRootPaths( triggerList, removeInnefBefore=args.removeInnefBefore, is_emulation=is_emulated_trigger[idx], logger=mainLogger )
-  print 'done'
   objects.append( GetHistogramFromMany(files_ref, paths_ref, keys, prefix='Getting reference...', logger=mainLogger) )
   s={}
   for trigger in triggerList:

@@ -1,7 +1,7 @@
 __all__ = ['StandardQuantitiesDrawer']
 
 from DrawerBase import *
-from Gaugi.utilites import retrieve_kw, ensureExtension
+from Gaugi.utilities import retrieve_kw, ensureExtension
 
 class StandardQuantitiesDrawer(DrawerBase):
 

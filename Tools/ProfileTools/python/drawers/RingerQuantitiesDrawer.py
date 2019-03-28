@@ -1,7 +1,7 @@
 __all__ = ['RingerQuantitiesDrawer']
 
 from DrawerBase import *
-from Gaugi.utilites import retrieve_kw, ensureExtension
+from Gaugi.utilities import retrieve_kw, ensureExtension
 
 from collections import OrderedDict
 layers = OrderedDict([ ('PS', 8),

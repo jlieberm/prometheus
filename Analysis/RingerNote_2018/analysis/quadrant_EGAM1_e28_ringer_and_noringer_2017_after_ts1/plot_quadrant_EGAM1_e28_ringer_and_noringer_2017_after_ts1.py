@@ -44,7 +44,7 @@ alg.setEtaBinningValues(etalist)
 ToolSvc += alg
 
 outputs = [
-            'quadrant_EGAM1_e28_ringer_and_noringer_2017_after_ts1',
+            'plot_quadrant_EGAM1_e28_ringer_and_noringer_2017_after_ts1',
             ]
 
 

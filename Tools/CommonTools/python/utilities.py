@@ -13,7 +13,7 @@ def RetrieveBinningIdx(et,eta,etbins,etabins, logger=None):
         if eta >= etabins[etaBinIdx] and eta <= etabins[etaBinIdx+1]:
           return etBinIdx, etaBinIdx
 
-  if logger:  logger.warning('Can not retrieve the correct et (%1.3f)/eta (%1.3f) idx.',et,eta)
+  #if logger:  logger.warning('Can not retrieve the correct et (%1.3f)/eta (%1.3f) idx.',et,eta)
   return -1, -1
 
 
