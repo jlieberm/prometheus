@@ -1,4 +1,5 @@
 
+source setup_modules.sh --head
 mkdir build
 cd build
 cmake ..
