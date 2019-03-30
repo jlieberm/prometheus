@@ -57,7 +57,7 @@ job_build:
     variables:
       # example base path for an Experiment environment
       ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
-      GIT_SUBMODULE_STRATEGY: recursive 
+      #GIT_SUBMODULE_STRATEGY: recursive 
     script:
       #- mkdir -p ~/.ssh
           #- echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
@@ -66,8 +66,8 @@ job_build:
         - yum install -y man 
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
         - set +e && source setup_here.sh; set -e
-          #- set +e && source setup_module.sh; set -e
-          #- source setup_module.sh --head
+        - set +e && source setup_module.sh; set -e
+        - source setup_module.sh --head
         - source buildthis.sh
 
 
