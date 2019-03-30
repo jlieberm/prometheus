@@ -1,6 +1,6 @@
 
-source setup_module.sh
-source setup_module.sh --head
+#source setup_module.sh
+#source setup_module.sh --head
 
 mkdir build
 cd build
