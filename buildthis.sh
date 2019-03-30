@@ -1,5 +1,6 @@
 
-source setup_modules.sh --head
+git submodule init
+git submodule update
 mkdir build
 cd build
 cmake ..
