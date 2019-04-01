@@ -18,3 +18,4 @@ cmt/boost_test.cxx.o
 MoreFilesForYou-*
 .asetup.save
 build
+CMakeLists.txt
