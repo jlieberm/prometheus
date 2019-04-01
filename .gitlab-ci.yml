@@ -36,9 +36,7 @@ job_cvmfs:
   script:
     # access CVMFS
     - ls /cvmfs/atlas.cern.ch/
-    
     # It is possible to load an Experiment environment from CVMFS as follows:
-    
     # First, install any package required by the specific experiment script
     # (exact list to be seen with maintainers of the experiment environment)
     - yum install -y man 
@@ -67,31 +65,9 @@ job_build:
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
         - set +e && source setup_here.sh; set -e
         - set +e && source setup_module.sh; set -e
-        - source setup_module.sh --head
+        - rm -rf Gaugi
+        - git clone https://gitlab.cern.ch/jodafons/gaugi.git
         - source buildthis.sh
-
-
-    #job_gaugi_atlas:
-    #    #image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
-    #    tags:
-    #      # Make you job be executed in a shared runner that has CVMFS mounted
-    #      - cvmfs
-    #    variables:
-    #      # example base path for an Experiment environment
-    #      ATLAS_LOCAL_ROOT_BASE: /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase
-    # 
-    #    script:
-    #        - yum install -y man 
-    #        - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
-    #        - set +e && source setup_here.sh; set -e
-    #        - source buildthis.sh
-    #        - cd build/
-    #        - ls *
-    #        #- source build/x86_64-slc6-gcc62-opt/setup.sh
-    #        #- source Validation/test/test_gaugi_atlas.sh
-
-
-
 
 
 
