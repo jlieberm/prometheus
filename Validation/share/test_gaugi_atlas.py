@@ -1,8 +1,8 @@
 
-from Gaugi import EventATLASLoop
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus import EventATLASLoop
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel
-from Gaugi import ToolSvc, ToolMgr
+from prometheus import ToolSvc, ToolMgr
 import argparse
 
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -38,10 +38,10 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
                           )
 
 
-from Gaugi import Algorithm
+from prometheus import Algorithm
 ToolSvc += Algorithm( "AlgTest" )
 
-from Gaugi import job
+from prometheus import job
 job.initialize()
 job.execute()
 job.finalize()
