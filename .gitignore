@@ -19,3 +19,7 @@ MoreFilesForYou-*
 .asetup.save
 build
 CMakeLists.txt
+.python-version
+
+
+

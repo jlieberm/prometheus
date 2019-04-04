@@ -1,7 +1,7 @@
 
 __all__ = ['ShowerShapes']
 
-from Gaugi.enumerations  import Dataframe as DataframeEnum
+from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from Gaugi.types import NotSet
 from EventCommon import EDM

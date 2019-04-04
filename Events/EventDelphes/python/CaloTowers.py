@@ -1,10 +1,9 @@
 
 __all__ = ['CaloTowers']
 
-from prometheus.core.EnumCollection import Dataframe as DataframeEnum
-from prometheus.core.StatusCode     import StatusCode
-from prometheus.dataframe.EDM       import EDM
-from RingerCore                     import EnumStringification
+from prometheus.enumerations  import Dataframe as DataframeEnum
+from Gaugi import StatusCode, EnumStringification
+from EventCommon import EDM
 import numpy as np
 
 

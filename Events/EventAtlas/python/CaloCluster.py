@@ -4,7 +4,7 @@ __all__ = ["CaloCluster"]
 
 from EventCommon import EDM
 from Gaugi  import StatusCode
-from Gaugi  import Dataframe as DataframeEnum
+from prometheus import Dataframe as DataframeEnum
 
 
 class CaloCluster(EDM):

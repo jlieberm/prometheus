@@ -3,7 +3,7 @@ __all__ = ['EDM']
 
 from Gaugi.messenger import Logger
 from Gaugi import NotSet, EnumStringification, StatusCode
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger.macros import *
 
 

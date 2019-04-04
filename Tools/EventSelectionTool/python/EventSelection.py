@@ -2,7 +2,8 @@
 __all__ = ['EventSelection', 'EtCutType', 'SelectionType']
 
 
-from Gaugi import Algorithm, StatusCode, NotSet
+from prometheus import Algorithm
+from Gaugi import StatusCode, NotSet
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger.macros import *
 from Gaugi.constants import GeV

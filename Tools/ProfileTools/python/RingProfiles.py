@@ -48,7 +48,7 @@ class RingProfiles( ProfileToolBase ):
     else: # Offline
       obj = context.getHandler( 'ElectronContainer' )
     sg = selg.getStoreGateSvc()
-    from prometheus.tools.atlas.common.constants import GeV
+    from Gaugi.constants import GeV
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
       MSG_WARNING( self, "Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())

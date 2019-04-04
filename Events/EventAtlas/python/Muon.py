@@ -1,7 +1,7 @@
 
 __all__ = ['Muon']
 
-from Gaugi.enumerations  import Dataframe as DataframeEnum
+from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
 from EventCommon import EDM
 from Gaugi.utilities import stdvector_to_list

@@ -4,7 +4,7 @@ __all__ = ['Electron', 'ElectronPid', 'EgammaParameters']
 
 from EventCommon import EDM
 from Gaugi  import StatusCode, EnumStringification
-from Gaugi.enumerations  import Dataframe as DataframeEnum
+from prometheus.enumerations  import Dataframe as DataframeEnum
 from EventAtlas.TrackParticle   import TrackCaloMatchType 
 import math
 

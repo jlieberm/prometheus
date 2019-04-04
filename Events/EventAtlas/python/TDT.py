@@ -4,7 +4,7 @@ __all__ = ["TDT", "DecisionCore", "AcceptType"]
 
 
 
-from Gaugi.enumerations  import Dataframe as DataframeEnum
+from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from EventCommon import EDM
 from Gaugi.utilities import stdvector_to_list

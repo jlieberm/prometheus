@@ -37,7 +37,7 @@ def installElectronL2CaloRingerSelector_v5( toolname = "EgammaEmulation" ):
 
     ]
 
-  from Gaugi import ToolSvc as toolSvc
+  from prometheus import ToolSvc as toolSvc
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
@@ -74,7 +74,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "EgammaEmulation" ):
 
     ]
 
-  from Gaugi import ToolSvc as toolSvc
+  from prometheus import ToolSvc as toolSvc
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
@@ -109,7 +109,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
 
     ]
 
-  from Gaugi import ToolSvc as toolSvc
+  from prometheus import ToolSvc as toolSvc
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:

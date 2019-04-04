@@ -3,7 +3,7 @@
 __all__ = ['AlgorithmTool']
 
 
-from Gaugi import Algorithm
+from prometheus import Algorithm
 
 class AlgorithmTool( Algorithm ):
 

@@ -3,7 +3,7 @@ __all__ = ['QuadrantTool']
 
 
 from Gaugi import StatusCode
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.utilities import retrieve_kw, mkdir_p
 from Gaugi.types import NotSet
 from CommonTools import AlgorithmTool

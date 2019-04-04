@@ -14,7 +14,7 @@ def installTrigEgammaL2CaloSelectors( toolname = "EgammaEmulation" ):
       TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloLoose"   , IDinfo='lhloose'  ) ,
       TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloVLoose"  , IDinfo='lhvloose' ) ,
     ]
-  from Gaugi import ToolSvc as toolSvc
+  from prometheus import ToolSvc as toolSvc
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:

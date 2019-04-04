@@ -2,7 +2,7 @@
 __all__ = ['RingerSelectorTool']
 
 
-from Gaugi import Algorithm
+from prometheus import Algorithm
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
 from Gaugi.types import NotSet

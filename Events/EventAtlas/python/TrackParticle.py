@@ -2,7 +2,7 @@
 __all__ = ["TrackCaloMatchType","SummaryType","TrackParticle"]
 
 
-from Gaugi.enumerations  import Dataframe as DataframeEnum
+from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from EventCommon import EDM
 
