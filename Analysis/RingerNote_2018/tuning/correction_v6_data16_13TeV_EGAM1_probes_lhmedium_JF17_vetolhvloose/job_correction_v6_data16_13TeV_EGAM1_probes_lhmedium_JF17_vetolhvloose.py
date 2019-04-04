@@ -3,10 +3,10 @@
 
 
 
-from Gaugi import EventATLASLoop
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus import EventATLASLoop
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi import ToolSvc, ToolMgr
+from prometheus import ToolSvc, ToolMgr
 import argparse
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -113,7 +113,7 @@ ToolSvc += alg
 
 
 
-from Gaugi import job
+from prometheus import job
 job.initialize()
 job.execute()
 job.finalize()
