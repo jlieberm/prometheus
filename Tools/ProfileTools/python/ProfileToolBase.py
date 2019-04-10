@@ -2,7 +2,7 @@ __all__ = ['ProfileToolBase']
 
 from CommonTools  import AlgorithmTool
 from Gaugi import StatusCode
-from Gaugi.utilities import retrieve_kw
+from Gaugi import retrieve_kw
  
 class ProfileToolBase( AlgorithmTool ):
 

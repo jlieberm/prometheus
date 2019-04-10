@@ -1,7 +1,7 @@
 __all__ = ['RingerQuantitiesDrawer']
 
 from DrawerBase import *
-from Gaugi.utilities import retrieve_kw, ensureExtension
+from Gaugi import retrieve_kw, ensureExtension
 
 from collections import OrderedDict
 layers = OrderedDict([ ('PS', 8),
@@ -28,7 +28,7 @@ class RingerQuantitiesDrawer(DrawerBase):
     DrawerBase.__init__(self, kw)
 
   def plot(self, **kw):
-    from Gaugi.utilities import mkdir_p
+    from Gaugi import mkdir_p
     mkdir_p( self.outputPath )
     self.plotRingProfiles(**kw)
 

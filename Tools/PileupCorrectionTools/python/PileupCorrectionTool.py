@@ -414,7 +414,7 @@ class PileupCorrectionTool( AlgorithmTool ):
 
   def generate_plots(self, dirname):
     
-    from Gaugi.utilities import progressbar
+    from Gaugi import progressbar
     from functions import ApplyThresholdLinearCorrection
     from drawers import PlotEff, Plot2DHist
     from itertools import product

@@ -2,7 +2,7 @@ __all__ = ['DrawerBase', 'histToUnitArea', 'sumHists', 'getBounderies', 'colorGr
           , 'fadeToBlack', 'fadeToWhite', 'getBinText', 'formatQuantity', 'addTopLabels'
           , 'rearrange', 'formatBinsLegend', 'retrieveSpecialBinsLegend', 'returnArgument']
 
-from Gaugi.utilities import retrieve_kw, ensureExtension, progressbar
+from Gaugi import retrieve_kw, ensureExtension, progressbar
 from Gaugi.messenger import Logger
 import os
 
@@ -194,7 +194,7 @@ class DrawerBase(Logger):
 
   def __init__(self, d = {}, **kw):
     from Gaugi.storage import restoreStoreGate
-    from Gaugi.utilities import retrieve_kw
+    from Gaugi import retrieve_kw
     import numpy as np
     from ROOT import gROOT, kTRUE, kAzure
     gROOT.SetBatch(kTRUE)
