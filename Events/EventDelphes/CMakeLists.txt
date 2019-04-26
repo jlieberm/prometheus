@@ -52,6 +52,7 @@ else()
   add_library(EventDelphes  OBJECT EventDelphesDict.cxx)
   install(FILES ${HEADERS}  DESTINATION EventDelphes)
 
+  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EventDelphes)
 
 
 endif()

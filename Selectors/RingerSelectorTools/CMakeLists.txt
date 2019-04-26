@@ -49,6 +49,7 @@ else()
   add_library(RingerSelectorTools  OBJECT ${SOURCES} RingerSelectorToolsDict.cxx)
   install(FILES ${HEADERS}  DESTINATION RingerSelectorTools)
 
+  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python RingerSelectorTools)
 
 
 endif()

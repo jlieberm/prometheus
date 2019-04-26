@@ -7,5 +7,7 @@ if($ENV{Athena_SET_UP})
   atlas_subdir( CommonTools )
   # Install files from the package:
   atlas_install_python_modules( python/*.py )
+else()
+  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CommonTools)
 endif()
 

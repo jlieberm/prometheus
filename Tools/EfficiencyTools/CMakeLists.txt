@@ -8,4 +8,6 @@ if($ENV{Athena_SET_UP})
   # Install files from the package:
   atlas_install_python_modules( python/*.py python/drawers )
   atlas_install_scripts( scripts/*.py )
+else()
+  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EfficiencyTools)
 endif()

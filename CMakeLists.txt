@@ -11,13 +11,14 @@ find_package(ROOT COMPONENTS EG Eve Geom Gui GuiHtml GenVector Hist Physics Matr
 include(${ROOT_USE_FILE})
 include(Gaugi/cmake/InstallGaugiFunctions.cmake)
 
-gaugi_build_directories()
+gaugi_initialize()
 
 set( Python_ADDITIONAL_VERSIONS 2.7.13 2.7.5)
 find_package( PythonInterp REQUIRED)
 find_package( PythonLibs REQUIRED)
-find_package( Boost COMPONENTS python)
-
+find_package( Boost COMPONENTS python system filesystem)
+include_directories( ${Boost_INCLUDE_DIR} )
+link_directories(${Boost_LIBRARY_DIR})
 
 ### If needed to find numpy check caffe script
 ### https://github.com/PMBio/peer/blob/master/cmake/FindNumpy.cmake 
@@ -88,13 +89,7 @@ add_library(prometheus SHARED
   $<TARGET_OBJECTS:RingerSelectorTools> 
 )
 
-target_link_Libraries(prometheus ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_Libraries(prometheus ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES})
 
 
-
-message(STATUS ${CMAKE_PROJECT_DIR})
-message(STATUS ${CMAKE_SOURCE_DIR})
-message(STATUS ${CMAKE_BINARY_DIR})
-message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
-message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 

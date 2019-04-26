@@ -20,6 +20,7 @@ else()
     #Create the CustomClasses library with the ROOT dictionary.
     add_library(PathResolver OBJECT  ${SOURCES} PathResolverDict.cxx)
   endif()
+  
 endif()
 
 
