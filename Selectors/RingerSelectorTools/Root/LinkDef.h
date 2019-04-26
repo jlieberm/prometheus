@@ -1,6 +1,6 @@
 
 //#include "RingerSelectorTools/IAsgElectronRingerSelector.h"
-#include "RingerSelectorTools/AsgElectronRingerSelector.h"
+#include "RingerSelectorTools/ElectronRingerSelector.h"
 
 #ifdef __CINT__
 
@@ -10,7 +10,7 @@
 #pragma link C++ nestedclass;
 
 //#pragma link C++ class prometheus::IAsgElectronRingerSelector+;
-#pragma link C++ class prometheus::AsgElectronRingerSelector+;
+#pragma link C++ class prometheus::ElectronRingerSelector+;
 
 
 #endif

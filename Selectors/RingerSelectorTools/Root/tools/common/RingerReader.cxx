@@ -20,7 +20,8 @@
 using namespace Ringer;
 
 RingerReader::RingerReader(std::string  name):
-  asg::AsgMessaging(name),
+  IMsgService(name),
+  MsgService(MSG::INFO),
   m_name(name)
 {
   m_etaBins=nullptr;
@@ -59,7 +60,7 @@ void RingerReader::InitBranch(TTree* fChain, std::string branch_name, T* param){
      bname = std::string(fChain->GetAlias(bname.c_str()));
 
   if (!fChain->FindBranch(bname.c_str()) && message) {
-    ATH_MSG_WARNING( " unknown branch " << bname );
+    MSG_WARNING( " unknown branch " << bname );
     return; 
   }
   fChain->SetBranchStatus(bname.c_str(), 1.);
@@ -88,7 +89,7 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
   m_useConvLayer=nullptr; 
   discriminators.clear();
 
-  ATH_MSG_INFO( "Checking discriminators CalibPath: "<< calibPath );
+  MSG_INFO( "Checking discriminators CalibPath: "<< calibPath );
 
   auto fullpath = PathResolverFindCalibFile(calibPath);
 	TFile file(fullpath.c_str(),"READ");
@@ -111,9 +112,9 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
         for(unsigned l=0; l<m_nodes->size(); l++) tfnames.push_back("tanh"); // This is default for this version
 	  	  discriminators.push_back( std::make_shared<MultiLayerPerceptron>(*m_nodes,*m_weights,*m_bias,tfnames,m_etBins->at(0),
                                                                           m_etBins->at(1),m_etaBins->at(0),m_etaBins->at(1), -999., 999.) ); 
-        ATH_MSG_INFO( "Added new discriminator into the list." );
+        MSG_INFO( "Added new discriminator into the list." );
 	    }catch(std::bad_alloc &){
-        ATH_MSG_ERROR("Can not alloc cutDefs on memory." );
+        MSG_ERROR("Can not alloc cutDefs on memory." );
         return false;
       }
     }	// Loop over ttree events	
@@ -160,7 +161,7 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
       try{
 
         if(m_useConvLayer->at(0)){
-          ATH_MSG_INFO( "Alloc Convolutional Neural Object into the stack..." );
+          MSG_INFO( "Alloc Convolutional Neural Object into the stack..." );
           /* To be include in the future
           discriminators.push_back(new ConvMultiLayerPerceptron( 
                                     // Dense layers
@@ -187,9 +188,9 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
 
         }
         
-        ATH_MSG_INFO( "Added new discriminator into the list." );
+        MSG_INFO( "Added new discriminator into the list." );
 	    }catch(std::bad_alloc &){
-        ATH_MSG_ERROR(  "Can not alloc cutDefs on memory." );
+        MSG_ERROR(  "Can not alloc cutDefs on memory." );
         return false;
       }
 
@@ -203,17 +204,17 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
 
   }
   else{
-    ATH_MSG_WARNING("version not supported" );
+    MSG_WARNING("version not supported" );
     return false;
   }
 
-  ATH_MSG_INFO( "Config file version                         : " << version );
-  ATH_MSG_INFO( "RemoveOutputTansigTF?                       : " << (m_removeOutputTansigTF?"Yes":"No") );
-  ATH_MSG_INFO( "Total of discriminators retrievied is       : " << discriminators.size() );
-  ATH_MSG_INFO( "UseCaloRings?                               : " << m_useCaloRings );
-  ATH_MSG_INFO( "UseShowerShape?                             : " << m_useShowerShape );
-  ATH_MSG_INFO( "UseTrack?                                   : " << m_useTrack );
-  ATH_MSG_INFO( "UseTileCal?                                 : " << m_useTileCal );
+  MSG_INFO( "Config file version                         : " << version );
+  MSG_INFO( "RemoveOutputTansigTF?                       : " << (m_removeOutputTansigTF?"Yes":"No") );
+  MSG_INFO( "Total of discriminators retrievied is       : " << discriminators.size() );
+  MSG_INFO( "UseCaloRings?                               : " << m_useCaloRings );
+  MSG_INFO( "UseShowerShape?                             : " << m_useShowerShape );
+  MSG_INFO( "UseTrack?                                   : " << m_useTrack );
+  MSG_INFO( "UseTileCal?                                 : " << m_useTileCal );
   file.Close();
   
   return true;
@@ -231,7 +232,7 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
   m_thresholds=nullptr;
 
   cutDefs.clear();
-  ATH_MSG_INFO("Checking thresholds CalibPath: "<< calibPath );
+  MSG_INFO("Checking thresholds CalibPath: "<< calibPath );
  	auto fullpath = PathResolverFindCalibFile(calibPath);
 	TFile file(fullpath.c_str(),"READ");
   auto version = ((TParameter<int>*)file.Get("__version__"))->GetVal();
@@ -253,7 +254,7 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
                                           -999. , 
                                           999.));
       }catch(std::bad_alloc &){
-        ATH_MSG_ERROR( "Can not alloc cutDefs on memory." );
+        MSG_ERROR( "Can not alloc cutDefs on memory." );
         return false;
       }
 	  }	// Loop over ttree events	
@@ -285,7 +286,7 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
                                            m_muBins->at(1)) );
  
 	    }catch(std::bad_alloc &){
-        ATH_MSG_ERROR( "Can not alloc cutDefs on memory." );
+        MSG_ERROR( "Can not alloc cutDefs on memory." );
         return false;
       }
     }	// Loop over ttree events	
@@ -296,15 +297,15 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
     m_removeOutputTansigTF  = ((TParameter<bool>*)file.Get("metadata/RemoveOutputTansigTF"))->GetVal();
   
   }else{
-    ATH_MSG_WARNING("version not supported" );
+    MSG_WARNING("version not supported" );
     return false;
   }
   
   file.Close(); 
-  ATH_MSG_INFO( "Config file version                         : " << version );
-  ATH_MSG_INFO( "Total of cutDefs retrievied is              : " << cutDefs.size() );
-  ATH_MSG_INFO( "Using pileup correction                     : " << (m_doPileupCorrection?"Yes":"No") );
-  ATH_MSG_INFO( "Using lumi cut                              : " << (m_lumiCut) );
+  MSG_INFO( "Config file version                         : " << version );
+  MSG_INFO( "Total of cutDefs retrievied is              : " << cutDefs.size() );
+  MSG_INFO( "Using pileup correction                     : " << (m_doPileupCorrection?"Yes":"No") );
+  MSG_INFO( "Using lumi cut                              : " << (m_lumiCut) );
   return true;
 }
 

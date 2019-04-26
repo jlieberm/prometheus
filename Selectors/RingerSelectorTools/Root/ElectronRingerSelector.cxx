@@ -1,53 +1,49 @@
 
 
 
-#include "RingerSelectorTools/AsgElectronRingerSelector.h"
+#include "RingerSelectorTools/ElectronRingerSelector.h"
 
 
 using namespace prometheus;
 
-AsgElectronRingerSelector::AsgElectronRingerSelector(std::string name):
-  asg::AsgTool(name),
+ElectronRingerSelector::ElectronRingerSelector(std::string name):
+  IMsgService(name),
+  MsgService(MSG::INFO),
   m_selectorTool()
+{;}
+
+
+ElectronRingerSelector::~ElectronRingerSelector()
 {
-  declareProperty("ConstantsCalibPath"  , m_constantsCalibPath=""              );
-  declareProperty("ThresholdsCalibPath" , m_thresholdsCalibPath=""             );
+  MSG_INFO("Finalizing this tool....");
 }
 
 
-AsgElectronRingerSelector::~AsgElectronRingerSelector()
-{
-
-  ATH_MSG_INFO("Finalizing this tool....");
-}
-
-
-StatusCode AsgElectronRingerSelector::initialize()
+bool ElectronRingerSelector::initialize()
 {
   m_selectorTool.setConstantsCalibPath( m_constantsCalibPath ); 
   m_selectorTool.setThresholdsCalibPath( m_thresholdsCalibPath ); 
 
-  if(m_selectorTool.initialize().isFailure())
-    return StatusCode::FAILURE;
+  if(!m_selectorTool.initialize())
+    return false;
   
-  m_accept.addCut("NeuralCut","pass by neural threshold");
-  ATH_MSG_INFO("RingerSelectorTools initialization completed successfully.");
-  return StatusCode::SUCCESS;
+  MSG_INFO("RingerSelectorTools initialization completed successfully.");
+  return true;
 }
 
 
-StatusCode AsgElectronRingerSelector::finalize(){
+bool ElectronRingerSelector::finalize(){
   
-  if(m_selectorTool.finalize().isFailure())
-    return StatusCode::FAILURE;
-  ATH_MSG_INFO("RingerSelectorTools finalization completed successfully.");
-  return StatusCode::SUCCESS;
+  if(!m_selectorTool.finalize())
+    return false;
+  MSG_INFO("RingerSelectorTools finalization completed successfully.");
+  return true;
 }
 
 
 
 
-double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
+double  ElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
                                               double eratio, double reta, double rphi, double rhad, double weta2,
                                               double f1, double f3 ) 
 {
@@ -58,7 +54,7 @@ double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double 
 
 
 
-double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
+double  ElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
                                               double eratio, double reta, double rphi, double rhad, double weta2,
                                               double f1, double f3, double deltaeta1, double deltaPoverP, 
                                               double deltaPhiReescaled, double d0significance, double d0pvunbiased, 
@@ -75,7 +71,7 @@ double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double 
 
 
 
-double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
+double  ElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu,
                                               double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
                                               double d0significance, double d0pvunbiased, double eProbabilityHT)
 {
@@ -88,13 +84,13 @@ double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double 
 }
 
 
-double  AsgElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu) 
+double  ElectronRingerSelector::calculate( std::vector<float>& rings, double et, double eta, double mu) 
 {
   return m_selectorTool.calculate(rings,et,eta,mu);
 }
 
 
-double  AsgElectronRingerSelector::calculate( double et, double eta, double mu,
+double  ElectronRingerSelector::calculate( double et, double eta, double mu,
                                               double deltaeta1, double deltaPoverP, double deltaPhiReescaled,
                                               double d0significance, double d0pvunbiased, double eProbabilityHT)
 {
@@ -107,22 +103,20 @@ double  AsgElectronRingerSelector::calculate( double et, double eta, double mu,
 }
 
 
-const Root::TAccept& AsgElectronRingerSelector::accept( double discriminant, double et, double eta, double mu)
+bool ElectronRingerSelector::accept( double discriminant, double et, double eta, double mu)
 {
-  bool passed =  m_selectorTool.accept( discriminant, et,eta,mu);
-  m_accept.setCutResult("NeuralCut", passed);
-  return m_accept;
+  return m_selectorTool.accept( discriminant, et,eta,mu);
 }
 
 
 
 
-float AsgElectronRingerSelector::output()
+float ElectronRingerSelector::output()
 {
   return m_selectorTool.output();
 }
 
-float AsgElectronRingerSelector::outputBeforeTheActivationFunction()
+float ElectronRingerSelector::outputBeforeTheActivationFunction()
 {
   return m_selectorTool.outputBeforeTheActivationFunction();
 }

@@ -2,12 +2,10 @@
 # Package: prometheus
 ################################################################################
 
-# Declare the package name:
-atlas_subdir( EfficiencyTools )
-
-
-# Install files from the package:
-atlas_install_python_modules( python/*.py python/drawers )
-atlas_install_scripts( scripts/*.py )
-
-
+if($ENV{Athena_SET_UP})
+  # Declare the package name:
+  atlas_subdir( EfficiencyTools )
+  # Install files from the package:
+  atlas_install_python_modules( python/*.py python/drawers )
+  atlas_install_scripts( scripts/*.py )
+endif()

@@ -12,7 +12,8 @@
 using namespace Ringer;
 
 RingerSelectorTool::RingerSelectorTool():
-  asg::AsgMessaging("RingerSelectorTool"),
+  IMsgService("RingerSelectorTool"),
+  MsgService(MSG::INFO),
   m_reader("RingerReader"),
   m_useTrack(false),
   m_useCaloRings(true),
@@ -23,16 +24,16 @@ RingerSelectorTool::RingerSelectorTool():
 
 RingerSelectorTool::~RingerSelectorTool()
 {
-  ATH_MSG_INFO("Finalizing this tool....");
+  MSG_INFO("Finalizing this tool....");
 }
 
 
-StatusCode  RingerSelectorTool::initialize()
+bool  RingerSelectorTool::initialize()
 {
   if(!m_thresholdsCalibPath.empty()){
     if(!m_reader.retrieve(m_thresholdsCalibPath, m_cutDefs)){
-      ATH_MSG_ERROR("Can not retrieve the information from " << m_thresholdsCalibPath );
-      return StatusCode::FAILURE;
+      MSG_ERROR("Can not retrieve the information from " << m_thresholdsCalibPath );
+      return false;
     }
     // retrieve metadata
     m_doPileupCorrection = m_reader.doPileupCorrection();
@@ -42,8 +43,8 @@ StatusCode  RingerSelectorTool::initialize()
   // Retrieve the NeuralNetwork list
   if(!m_constantsCalibPath.empty()){
     if(!m_reader.retrieve(m_constantsCalibPath, m_discriminators)){
-      ATH_MSG_ERROR("Can not retrieve all information from " << m_constantsCalibPath );
-      return StatusCode::FAILURE;
+      MSG_ERROR("Can not retrieve all information from " << m_constantsCalibPath );
+      return false;
     }
 
     m_useShowerShape=m_reader.useShowerShape();
@@ -60,17 +61,17 @@ StatusCode  RingerSelectorTool::initialize()
   
   
 
-  ATH_MSG_INFO("Using the activation function in the last layer? " <<  (m_removeOutputTansigTF ? "No":"Yes") );
-  ATH_MSG_INFO("Using the Correction?                            " <<  (m_doPileupCorrection ? "Yes":"No") );
-  ATH_MSG_INFO("Using lumi threshold equal: "  <<  m_lumiCut );
-  ATH_MSG_INFO("Initialization completed successfully." );
-  return StatusCode::SUCCESS;
+  MSG_INFO("Using the activation function in the last layer? " <<  (m_removeOutputTansigTF ? "No":"Yes") );
+  MSG_INFO("Using the Correction?                            " <<  (m_doPileupCorrection ? "Yes":"No") );
+  MSG_INFO("Using lumi threshold equal: "  <<  m_lumiCut );
+  MSG_INFO("Initialization completed successfully." );
+  return true;
 
 }
 
 
-StatusCode  RingerSelectorTool::finalize(){
-  return StatusCode::SUCCESS;
+bool  RingerSelectorTool::finalize(){
+  return true;
 }
 
 
@@ -87,7 +88,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
   // Apply the discriminator
   if(retrieve(et,eta,mu,discr,preproc)){
     
-    //ATH_MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
+    //MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
     std::vector<float> refRings(rings.size());
     refRings.assign(rings.begin(), rings.end());
  
@@ -115,7 +116,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
 
 
   }else{
-    ATH_MSG_DEBUG("There is no discriminator into this Fex." );
+    MSG_DEBUG("There is no discriminator into this Fex." );
   }//
   return output;
 }
@@ -140,7 +141,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
  ///Apply the discriminator
   if(retrieve(et,eta,mu,discr,preproc)){
     
-    //ATH_MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
+    //MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
     std::vector<float> refRings(rings.size());
     refRings.assign(rings.begin(), rings.end());
  
@@ -176,7 +177,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
 
 
   }else{
-    ATH_MSG_DEBUG( "There is no discriminator into this Fex." );
+    MSG_DEBUG( "There is no discriminator into this Fex." );
   }//
   return output;
 }
@@ -200,7 +201,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
   // Apply the discriminator
   if(retrieve(et,eta,mu,discr,preproc)){
     
-    //ATH_MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
+    //MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
     std::vector<float> refRings(rings.size());
     refRings.assign(rings.begin(), rings.end());
     if(preproc)  preproc->execute(refRings);
@@ -226,7 +227,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
 
 
   }else{
-    ATH_MSG_DEBUG( "There is no discriminator into this Fex." );
+    MSG_DEBUG( "There is no discriminator into this Fex." );
   }//
   return output;
 }
@@ -243,7 +244,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
 
   ///Apply the discriminator
   if(retrieve(et,eta,mu,discr,preproc)){
-    //ATH_MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
+    //MSG_DEBUG(( "ringer->rings().size() is: " <<rings.size());
     std::vector<float> refRings(rings.size());
     refRings.assign(rings.begin(), rings.end());
     // Apply preprocessor
@@ -262,7 +263,7 @@ double  RingerSelectorTool::calculate( std::vector<float>& rings, double et, dou
 
 
   }else{
-    ATH_MSG_DEBUG( "There is no discriminator into this Fex." );
+    MSG_DEBUG( "There is no discriminator into this Fex." );
   }//
 
   return output;
@@ -303,7 +304,7 @@ double  RingerSelectorTool::calculate( double et, double eta, double mu,
     }
 
   }else{
-    ATH_MSG_DEBUG( "There is no discriminator into this Fex." );
+    MSG_DEBUG( "There is no discriminator into this Fex." );
   }//
   return output;
 }
@@ -329,12 +330,12 @@ const {
             // Limited Pileup
             if(avgmu>m_lumiCut)
               avgmu=m_lumiCut;
-            //ATH_MSG_DEBUG(("Apply avgmu == " << avgmu);
+            //MSG_DEBUG(("Apply avgmu == " << avgmu);
             threshold = m_cutDefs[i]->threshold(avgmu);
-            //ATH_MSG_DEBUG(("With correction, thr = "<<threshold);
+            //MSG_DEBUG(("With correction, thr = "<<threshold);
           }else{
             threshold = m_cutDefs[i]->threshold();
-            //ATH_MSG_DEBUG( "Without correction, thr = "<<threshold );
+            //MSG_DEBUG( "Without correction, thr = "<<threshold );
           }
         }
       }
@@ -342,7 +343,7 @@ const {
   }// Loop over cutDefs
 
   if(discriminant >= threshold){
-    //ATH_MSG_DEBUG( "Event approved by discriminator." );
+    //MSG_DEBUG( "Event approved by discriminator." );
     return true;
     //m_accept.setCutResult("NeuralCut", true);
   }
@@ -364,8 +365,8 @@ const {
   
   if(m_discriminators.size() > 0){
     for(unsigned i=0; i<m_discriminators.size(); ++i){
-      //ATH_MSG_INFO(m_discriminators[i]->etmin()<<"<Et(" <<et<< ")<="<<m_discriminators[i]->etmax());
-      //ATH_MSG_INFO(m_discriminators[i]->etamin()<<"<Eta(" <<eta<< ")<="<<m_discriminators[i]->etamax());
+      //MSG_INFO(m_discriminators[i]->etmin()<<"<Et(" <<et<< ")<="<<m_discriminators[i]->etmax());
+      //MSG_INFO(m_discriminators[i]->etamin()<<"<Eta(" <<eta<< ")<="<<m_discriminators[i]->etamax());
       if(mu > m_discriminators[i]->mumin() && mu <= m_discriminators[i]->mumax()){
         if(et > m_discriminators[i]->etmin() && et <= m_discriminators[i]->etmax()){
           if(eta > m_discriminators[i]->etamin() && eta <= m_discriminators[i]->etamax()){

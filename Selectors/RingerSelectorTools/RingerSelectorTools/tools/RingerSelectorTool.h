@@ -18,14 +18,15 @@
 #include "RingerSelectorTools/tools/procedures/MultiLayerPerceptron.h"
 #include "RingerSelectorTools/tools/procedures/Norm1.h"
 
-#include "AsgTools/AsgMessaging.h"
+#include "Gaugi/MsgStream.h"
+#include "Gaugi/defines.h"
 #include <memory>
 #include <string>
 
 
 namespace Ringer{
 
-  class RingerSelectorTool: public asg::AsgMessaging
+  class RingerSelectorTool: public MsgService
   {
   
     public:
@@ -35,9 +36,9 @@ namespace Ringer{
       /// Standard destructor
       ~RingerSelectorTool();
   
-      StatusCode initialize();
+      bool initialize();
   
-      StatusCode finalize();
+      bool finalize();
   
       bool accept( double discriminant, double et, double eta, double mu) const;
   
