@@ -28,7 +28,7 @@ class EventATLAS( Logger ):
   def __init__(self, name , **kw):
     # Retrieve all information needed
     Logger.__init__(self, **kw)
-    from Gaugi.utilities import retrieve_kw
+    from Gaugi import retrieve_kw
     self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                      )
     self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"               )
     self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                      )
@@ -38,17 +38,19 @@ class EventATLAS( Logger ):
     self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
     #kw['logger'] = retrieve_kw(kw, 'logger', Logger.getModuleLogger(self.name, LoggingLevel.retrieve( self._level ) ) )
     if self._fList:
-      from Gaugi.utilities import csvStr2List, expandFolders
+      from Gaugi import csvStr2List, expandFolders
       self._fList = csvStr2List ( self._fList )
       self._fList = expandFolders( self._fList )
     
     # Loading libraries
-    if ROOT.gSystem.Load('libEventAtlasLib') < 0:
-       MSG_DEBUG( self, "Could not load EventAtlas library", ImportError)
-    elif ROOT.gSystem.Load('libprometheus') < 0:
-       MSG_DEBUG( self, "Could not load prometheus library", ImportError)
-    else:
-      MSG_FATAL( self, "Could not load event library)"
+    try:
+
+      ROOT.gSystem.Load('libprometheus')
+    except:
+      try:
+        ROOT.gSystem.Load('libEventAtlasLib')
+      except:
+        MSG_FATAL( self, "Could not load event library")
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
@@ -78,7 +80,7 @@ class EventATLAS( Logger ):
 
     ### Prepare to loop:
     self._t = ROOT.TChain()
-    from Gaugi.utilities import progressbar
+    from Gaugi import progressbar
     for inputFile in progressbar(self._fList, len(self._fList), prefix="Creating collection tree...", logger=self._logger):
       # Check if file exists
       self._f  = ROOT.TFile.Open(inputFile, 'read')

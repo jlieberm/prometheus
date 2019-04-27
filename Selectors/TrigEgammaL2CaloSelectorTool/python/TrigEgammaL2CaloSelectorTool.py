@@ -15,7 +15,7 @@ class _TrigEgammaL2CaloSelectorTool( Logger ):
   def __init__(self, name, **kw):
     
     Logger.__init__(self)
-    from Gaugi.utilities import retrieve_kw
+    from Gaugi import retrieve_kw
     self._hadeTthr        = retrieve_kw( kw, 'HADETthr'				, NotSet	)
     self._carcorethr      = retrieve_kw( kw, 'CARCOREthr'			, NotSet	)
     self._caeratiothr     = retrieve_kw( kw, 'CAERATIOthr'		, NotSet	)
@@ -189,7 +189,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
 
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
-    from Gaugi.utilities import retrieve_kw
+    from Gaugi import retrieve_kw
     self._IDinfo = retrieve_kw( kw, 'IDinfo', 'lhvloose')
     self._tools = []
 

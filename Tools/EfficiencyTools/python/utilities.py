@@ -74,7 +74,7 @@ class TriggerInfo(object):
 def GetHistogramFromMany( files, paths, keys , prefix='Loading...' , logger=None):
   
   from monet.utilities import sumHists as SumHists
-  from Gaugi.utilities import progressbar
+  from Gaugi import progressbar
   from copy import deepcopy 
   # internal open function
   def Open( path ):
@@ -180,7 +180,7 @@ def GetHistogramRootPaths( triggerList, removeInnefBefore=False, is_emulation=Fa
   plot_names = ['et','eta','mu']
   level_names = ['L1Calo','L2Calo','L2','EFCalo','HLT']
   levels_input = ['L1Calo','L1Calo','L1Calo','L2','EFCalo']
-  from Gaugi.utilities import progressbar
+  from Gaugi import progressbar
   paths=[]; keys=[]
   entries=len(triggerList)
   step = int(entries/100) if int(entries/100) > 0 else 1

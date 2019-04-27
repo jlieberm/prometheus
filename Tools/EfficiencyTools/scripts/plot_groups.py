@@ -2,7 +2,7 @@
 
 from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor
 from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi.utilities import expandFolders, progressbar
+from Gaugi import expandFolders, progressbar
 from EfficiencyTools.utilities import GetHistogramFromMany, is_high_et
 from EfficiencyTools.drawers import PlotProfiles
 from EfficiencyTools.utilities import *

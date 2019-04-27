@@ -7,7 +7,7 @@ __all__ = ["TDT", "DecisionCore", "AcceptType"]
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from EventCommon import EDM
-from Gaugi.utilities import stdvector_to_list
+from Gaugi import stdvector_to_list
 from Gaugi.messenger.macros import *
 
 
@@ -71,7 +71,7 @@ class TDT(EDM):
   def initialize(self):
 
     import ROOT
-    from Gaugi.utilities import stdvector_to_list
+    from Gaugi import stdvector_to_list
     if not (self._dataframe is DataframeEnum.PhysVal_v2):
       MSG_WARNING( self, 'Not possible to initialize this metadata using this dataframe. skip!')
       return StatusCode.SUCCESS

@@ -5,7 +5,7 @@ __all__ = ['Photon']
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
 from EventCommon import EDM
-from Gaugi.utilities import stdvector_to_list
+from Gaugi import stdvector_to_list
 
 
 class Photon(EDM):

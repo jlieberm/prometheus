@@ -164,7 +164,7 @@ class QuadrantTool( AlgorithmTool ):
   def plot(self, dirnames, pdfoutputs, pdftitles, runLabel='' ,doPDF=True):
     
     from itertools import product
-    from Gaugi.utilities import progressbar
+    from Gaugi import progressbar
     from monet.AtlasStyle import SetAtlasStyle
     SetAtlasStyle()
  

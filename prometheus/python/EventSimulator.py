@@ -29,7 +29,7 @@ class EventSimulator( Logger ):
   def __init__(self, name, **kw):
     # Retrieve all information needed
     Logger.__init__(self, **kw)
-    from Gaugi.utilities import retrieve_kw
+    from Gaugi import retrieve_kw
     self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                          )
     self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"                   )
     self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                          )
@@ -38,7 +38,7 @@ class EventSimulator( Logger ):
     self._name       = name
     self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
     if self._fList:
-      from Gaugi.utilities import csvStr2List, expandFolders
+      from Gaugi import csvStr2List, expandFolders
       self._fList = csvStr2List ( self._fList )
       self._fList = expandFolders( self._fList )
     
@@ -76,7 +76,7 @@ class EventSimulator( Logger ):
 
     # Use this to hold the fist good 
     metadataInputFile = None
-    from Gaugi.utilities import progressbar
+    from Gaugi import progressbar
     ### Prepare to loop:
     self._t = ROOT.TChain()
     for inputFile in progressbar(self._fList, len(self._fList), prefix= "Creating collection tree ", logger=self._logger):
