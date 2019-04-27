@@ -3,21 +3,55 @@
 [![pipeline status](https://gitlab.cern.ch/jodafons/prometheus/badges/master/pipeline.svg)](https://gitlab.cern.ch/jodafons/prometheus/commits/master)
 ## The Prometheus Analysis Framework
 
-This is the analysis framework inspired by the athena/Gaugi core and used by the ringer Brazil group. 
-This was develped by many other students and concentrate most part of the analysis for Run 2. This framework 
-is used as based by the ringer simulator for article production purpose. This repository can be compiled with 
-and without the athena enviroments. Follow all instructions below to compile and use this python framework.
 
 
 ## The Gaugi core:
 
-This external repository hold most part of the python core used by the prometheus framework. There are many
-utilities functions, types, services  and classes inside this core. See the gaugi readme for more information how to
-use this package and explore all utilities inside of the python Gaugi module.
 
 ## The simulator:
 
-The folder `Simulator` is used to hold all simulator package and 
-For article purpose. Need to be used with the Geant framework
+## Requirements
 
+- root (https://gitlab.cern.ch/jodafons/root.git)
+- boost
+- numpy
+- python (2.7)
+
+
+## Install the custom Root CERN package (Required)
+
+
+
+## Before the installation
+
+```
+# dowload all submodules
+source setup_module.sh
+# put everything to master
+source setup_module.sh --head
+```
+
+
+
+## Standalone Installation
+
+```
+# setup all standalone envs
+source setup_standalone.sh
+# build and compile
+source buildthis.sh
+# setup the libs and modules
+source setup_prometheus
+```
+
+## Athena Installation
+
+```
+# setup all ATLAS envs
+source setup_athena.sh
+# build and compile
+source buildthis.sh
+# setup the libs and modules
+source build/x86-*/setup.sh
+```
 
