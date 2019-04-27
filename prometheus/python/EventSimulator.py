@@ -44,7 +44,12 @@ class EventSimulator( Logger ):
     
     # Loading libraries
     if ROOT.gSystem.Load('libEventGeantLib') < 0:
-       MSG_FATAL( self, "Could not load prometheus library", ImportError)
+      MSG_DEBUG( self, "Could not load EventGeant library", ImportError)
+    elif ROOT.gSystem.Load('libprometheus') < 0:
+      MSG_DEBUG( self, "Could not load prometheus library", ImportError)
+    else:
+      MSG_FATAL( self, "Could not load library", ImportError)
+    
 
     self._containersSvc = {}
     self._storegateSvc = NotSet

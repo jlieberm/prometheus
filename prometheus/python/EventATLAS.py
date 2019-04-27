@@ -44,8 +44,11 @@ class EventATLAS( Logger ):
     
     # Loading libraries
     if ROOT.gSystem.Load('libEventAtlasLib') < 0:
-       MSG_FATAL( self, "Could not load prometheus library", ImportError)
-
+       MSG_DEBUG( self, "Could not load EventAtlas library", ImportError)
+    elif ROOT.gSystem.Load('libprometheus') < 0:
+       MSG_DEBUG( self, "Could not load prometheus library", ImportError)
+    else:
+      MSG_FATAL( self, "Could not load event library)"
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
