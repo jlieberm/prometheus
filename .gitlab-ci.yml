@@ -61,7 +61,8 @@ job_build:
           #- echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           #- echo -e "$SSH_DEPLOY_KEY" > ~/.ssh/id_rsa
           #- chmod 600 ~/.ssh/id_rsa
-        - yum install -y man 
+        - yum install -y man
+        - yum install -y cmake3
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
         - set +e && source setup_standalone.sh; set -e
         - set +e && source setup_module.sh; set -e

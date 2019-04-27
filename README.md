@@ -22,6 +22,7 @@
 - boost
 - numpy
 - python (2.7)
+- cmake 3
 
 
 ## Install the custom Root CERN package (Required)
