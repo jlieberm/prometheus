@@ -1,5 +1,5 @@
 
-if($ENV{Athena_SET_UP})
+if($ENV{Athena_SETUP} STREQUAL "on")
   message(STATUS "This package is default in athena envs. Dont need to be installed.")
 
 else()

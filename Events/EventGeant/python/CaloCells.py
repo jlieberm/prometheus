@@ -3,7 +3,7 @@ __all__ = ['CaloCells', 'CaloCell','CaloGAN_Definitions']
 
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 from EventCommon import EDM
 import numpy as np
 

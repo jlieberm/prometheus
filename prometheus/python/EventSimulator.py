@@ -5,7 +5,7 @@ from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi import StatusCode
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 
 
 # Import all root classes

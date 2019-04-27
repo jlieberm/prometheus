@@ -1,7 +1,7 @@
 __all__ = ["EventContext"]
 
 from Gaugi.messenger  import Logger
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 from Gaugi import StatusCode
 
 

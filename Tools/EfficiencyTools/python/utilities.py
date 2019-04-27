@@ -4,7 +4,7 @@ __all__ = ["TriggerInfo", "GetHistogramFromMany","GetProfile",
 
 from Gaugi.messenger import Logger
 from Gaugi.messenger.macros import *
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 
 
 class TriggerInfo(object):

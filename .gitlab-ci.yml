@@ -63,10 +63,11 @@ job_build:
           #- chmod 600 ~/.ssh/id_rsa
         - yum install -y man 
         - set +e && source ${ATLAS_LOCAL_ROOT_BASE}/user/atlasLocalSetup.sh; set -e
-        - set +e && source setup_here.sh; set -e
+        - set +e && source setup_standalone.sh; set -e
         - set +e && source setup_module.sh; set -e
-        - rm -rf Gaugi
-        - git clone https://gitlab.cern.ch/jodafons/gaugi.git
+        - set +e && source setup_module.sh --head; set -e
+          #- rm -rf Gaugi
+          #- git clone https://gitlab.cern.ch/jodafons/gaugi.git
         - source buildthis.sh
 
 

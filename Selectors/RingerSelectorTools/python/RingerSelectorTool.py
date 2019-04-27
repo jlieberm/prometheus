@@ -5,7 +5,7 @@ __all__ = ['RingerSelectorTool']
 from prometheus import Algorithm
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 import numpy as np
 
 from EventAtlas import *

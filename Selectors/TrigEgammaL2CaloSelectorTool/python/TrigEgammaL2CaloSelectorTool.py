@@ -3,7 +3,7 @@ __all__ = ['TrigEgammaL2CaloSelectorTool']
 
 from Gaugi.messenger.macros import *
 from Gaugi.messenger import Logger
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 from Gaugi import StatusCode
 from prometheus import Algorithm
 import numpy as np

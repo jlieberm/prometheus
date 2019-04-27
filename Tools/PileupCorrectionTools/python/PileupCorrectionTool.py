@@ -14,7 +14,7 @@ class PileupCorrectionTool( AlgorithmTool ):
   def __init__(self, name):
     AlgorithmTool.__init__(self, name)
     self._basepath = 'Event/PileupCorrection'
-    from Gaugi.types import NotSet
+    from Gaugi.gtypes import NotSet
     self._threshold_etbins   = NotSet
     self._threshold_etabins  = NotSet
     import collections

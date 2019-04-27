@@ -4,7 +4,7 @@
 
 from Gaugi.utilities import progressbar, expandFolders
 from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 from ROOT import gROOT
 import argparse
 import os

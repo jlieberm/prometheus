@@ -2,7 +2,7 @@
 # Package: prometheus
 ################################################################################
 
-if($ENV{Athena_SET_UP})
+if($ENV{Athena_SETUP} STREQUAL "on")
   # Declare the package name:
   atlas_subdir( EventDelphes )
   

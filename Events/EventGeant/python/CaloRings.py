@@ -3,7 +3,7 @@ __all__ = ['CaloRings']
 
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
-from Gaugi.types import NotSet
+from Gaugi.gtypes import NotSet
 from EventCommon import EDM
 from copy import copy
 import numpy as np
