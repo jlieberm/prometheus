@@ -1,5 +1,6 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/Naereen/)
+
 ## The Prometheus Analysis Framework
 
 
@@ -43,7 +44,8 @@ framework, PROOF, that can considerably speed up an analysis.
 mkdir .bin
 cd .bin
 # download the root
-git clone ssh://git@gitlab.cern.ch:7999/jodafons/root.git
+git clone https://gitlab.cern.ch/jodafons/root.git
+# checkout the custom branch
 git checkout v6-16-00-custom
 # create the build dir
 mkdir build
@@ -108,4 +110,12 @@ source buildthis.sh
 # setup the libs and modules
 source build/x86-*/setup.sh
 ```
+
+
+## Contribution
+
+- Dr. João Victor da Fonseca Pinto, UFRJ/COPPE, CERN/ATLAS (jodafons@cern.ch) [maintainer, developer]
+- Dr. Werner Freund, UFRJ/COPPE, CERN/ATLAS (wsfreund@cern.ch) [developer]
+- Msc. Micael Verissimo, UFRJ/COPPE, CERN/ATLAS (mverissi@cern.ch) [developer]
+
 
