@@ -85,6 +85,7 @@ else()
   add_subdirectory(Selectors/TrigEgammaL2CaloSelectorTool)
   
   
+  add_subdirectory(Simulator/Tools/SimulatorTools)
   
   add_library(prometheus SHARED
     $<TARGET_OBJECTS:Gaugi> 

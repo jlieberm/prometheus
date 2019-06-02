@@ -9,6 +9,6 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class edm::Geant+;
+#pragma link C++ struct edm::Geant+;
 
 #endif

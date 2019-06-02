@@ -10,6 +10,7 @@ import numpy as np
 # Do not change this definitions.
 # the from: https://github.com/hep-lbdl/CaloGAN/tree/master/generation
 class CaloGAN_Definitions(EnumStringification):
+  # Definition <eta,phi> is <x,y> coordinates
   LAYER_SPECS = [(3, 96), (12, 12), (12, 6)]
   LAYER_DIV = np.cumsum(map(np.prod, LAYER_SPECS)).tolist()
   LAYER_DIV = zip([0] + LAYER_DIV, LAYER_DIV)
@@ -33,7 +34,7 @@ class CaloCell(object):
   
   def y(self):
     return self._y
-  
+ 
   def setEnergy(self,v):
     self._energy=v
  
@@ -42,6 +43,12 @@ class CaloCell(object):
  
   def setY(self,v):
     self._y=v
+
+  def eta(self):
+    return self.x()
+
+  def phi(self):
+    return self.y()
 
   def layer(self):
     return self._layer
@@ -100,21 +107,21 @@ class CaloCells(EDM):
   def _get_cells(self, layer):
     # See: https://github.com/hep-lbdl/CaloGAN/tree/master/generation
     # Get the calo GAN cells schemma
-    # First layer definitions: 96 X 3
+    # First layer definitions: 3 X 96
     if layer is CaloGAN_Definitions.FIRST_LAYER:
       cells = np.array([ getattr(self._event, 'cell_%d'%c) for c in range(CaloGAN_Definitions.LAYER_DIV[0][0],
         CaloGAN_Definitions.LAYER_DIV[0][1] )])
-      return cells.reshape((96,3))
+      return cells.reshape((3,96))
     # Second layer definicions: 12 X 12
     elif layer is CaloGAN_Definitions.SECOND_LAYER:
       cells = np.array([ getattr(self._event, 'cell_%d'%c) for c in range(CaloGAN_Definitions.LAYER_DIV[1][0],
         CaloGAN_Definitions.LAYER_DIV[1][1] )])
       return cells.reshape((12,12))
-    # Third Layer definitions: 6 X 12
+    # Third Layer definitions: 12 x 6 
     elif layer is CaloGAN_Definitions.THIRD_LAYER:
       cells = np.array([ getattr(self._event, 'cell_%d'%c) for c in range(CaloGAN_Definitions.LAYER_DIV[2][0],
         CaloGAN_Definitions.LAYER_DIV[2][1] )])
-      return cells.reshape((6,12))
+      return cells.reshape((12,6))
     else:
       self._logger.warning('Invalid layer definition for CaloGAN')      
  

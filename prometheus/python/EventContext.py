@@ -1,3 +1,4 @@
+
 __all__ = ["EventContext"]
 
 from Gaugi.messenger  import Logger
@@ -24,7 +25,6 @@ class EventContext(Logger):
   def getHandler(self,key):
     return None if not key in self._containers.keys() else self._containers[key]
 
-
   def getEntries(self):
     return self._tree.GetEntries()
 
@@ -35,7 +35,6 @@ class EventContext(Logger):
     return self._current_entry
 
   def execute(self):
-    #self._logger.info('Execute entry: %d',self.getEntry())
     self._tree.GetEntry( self.getEntry() )
     for key, edm in self._containers.iteritems():
       if edm.execute().isFailure():

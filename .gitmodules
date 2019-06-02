@@ -7,3 +7,6 @@
 [submodule "External/pytex"]
 	path = External/pytex
 	url = https://gitlab.cern.ch/jodafons/pytex.git
+[submodule "Simulator/External/geant4"]
+	path = Simulator/External/geant4
+	url = https://gitlab.cern.ch/jodafons/geant4.git

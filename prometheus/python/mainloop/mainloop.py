@@ -109,15 +109,15 @@ class EventSimulatorLoop( EventSimulator ):
 
   def finalize( self ):
     MSG_INFO( self, 'Finalizing all tools...')
-    if super(EventSimulatorLoop,self).finalize().isFailure():
-      MSG_FATAL( self, 'Impossible to finalize the EventLooper services.')
-
-    MSG_DEBUG( self, "Finalizing tools...")
     for alg in self._alg_tools:
       if alg.isFinalized():
         continue
       if alg.finalize().isFailure():
         MSG_ERROR( self, 'The tool %s return status code different of SUCCESS',alg.name)
+    
+    if super(EventSimulatorLoop,self).finalize().isFailure():
+      MSG_FATAL( self, 'Impossible to finalize the EventLooper services.')
+    
     MSG_DEBUG( self, "Everything was finished... tchau!")
     return StatusCode.SUCCESS
 
@@ -253,14 +253,13 @@ class EventATLASLoop( EventATLAS ):
 
   def finalize( self ):
     MSG_INFO( self, 'Finalizing all tools...')
-    if super(EventATLASLoop,self).finalize().isFailure():
-      MSG_FATAL( self, 'Impossible to finalize the EventLooper services.')
-
     for alg in self._alg_tools:
       if alg.isFinalized():
         continue
       if alg.finalize().isFailure():
         MSG_ERROR( self, 'The tool %s return status code different of SUCCESS',alg.name)
+    if super(EventATLASLoop,self).finalize().isFailure():
+      MSG_FATAL( self, 'Impossible to finalize the EventLooper services.')
     return StatusCode.SUCCESS
 
   def push_back( self, alg ):
@@ -306,7 +305,6 @@ class Job(Logger):
   
   def initialize(self):
     from prometheus import ToolMgr as manager
-    print manager
     for evt in manager:
       if evt.initialize().isFailure():
         MSG_FATAL( self, "Can not initialize the event %s", evt.name() )
