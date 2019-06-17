@@ -22,20 +22,13 @@
 // * use  in  resulting  scientific  publications,  and indicate your *
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
-//
-// $Id: SteppingAction.cc 69223 2013-04-23 12:36:10Z gcosmo $
-// 
-/// \file SteppingAction.cc
-/// \brief Implementation of the SteppingAction class
 
 #include "SteppingAction.hh"
 #include "RunData.hh"
 #include "DetectorConstruction.hh"
-
 #include "G4Step.hh"
 #include "G4RunManager.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::SteppingAction(
                       const DetectorConstruction* detectorConstruction)
@@ -44,24 +37,23 @@ SteppingAction::SteppingAction(
 {
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SteppingAction::~SteppingAction()
 { 
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int SteppingAction::WhichZBin(double zpos){
-
-  //zsegmentation = TH1F("","",3,np.array([-240.,-150.,197.,240.]))
   if (zpos < -150.) return 0;
   else if (zpos < 197.) return 1;
   else return 2;
-
 }
 
+
+
+// define 480 mm X 480 mm X 480 mm as RoI
 int SteppingAction::WhichXYbin(double xpos, double ypos, int zbin){
+
   int xbin = -1;
   int ybin = -1;
   int nbins1x = 3;
@@ -85,12 +77,9 @@ int SteppingAction::WhichXYbin(double xpos, double ypos, int zbin){
     }
   }
 
-
   int lvl1 = nbins1x * nbins1y;
   int lvl2 = nbins2x * nbins2y;
   int lvl3 = nbins3x * nbins3y;
-
-
 
   if ((xbin == -1) || (ybin == -1)) {
     return lvl1 + lvl2 + lvl3 + zbin;
@@ -107,60 +96,25 @@ int SteppingAction::WhichXYbin(double xpos, double ypos, int zbin){
   }
 
 
-
-  // return zbin*1e4 + xbin*1e2 + ybin;
-  //sampling1_eta = TH2F("","",3,-240.,240.,480/5,-240.,240.)
-  //sampling2_eta = TH2F("","",480/40,-240.,240.,480/40,-240.,240.)
-  //sampling3_eta = TH2F("","",480/40,-240.,240.,480/80,-240.,240.)
 }
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-// Collect energy and track length step by step
-
-  // get volume of the current step
-  // G4VPhysicalVolume* volume 
-  //   = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   
   // energy deposit
   G4double edep = step->GetTotalEnergyDeposit();
-  
-  // step length
-  // G4double stepLength = 0.;
-  // if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
-  //   stepLength = step->GetStepLength();
-  // }
 
   G4StepPoint* point1 = step->GetPreStepPoint();
-  G4StepPoint* point2 = step->GetPostStepPoint();
+  //G4StepPoint* point2 = step->GetPostStepPoint();
   G4ThreeVector pos1 = point1->GetPosition();
-  G4ThreeVector pos2 = point2->GetPosition();
+  //G4ThreeVector pos2 = point2->GetPosition();
 
-  //G4cout << "sqr " << pos1.z() << " " << pos2.z() << " " << pos1.x() << " " << pos2.x() << " " << edep << " " << step->GetTrack()->GetDefinition()->GetParticleName() << " " << step->GetTrack()->GetKineticEnergy() << G4endl;
-      
-  //G4cout << "sqr " << pos1.x() << " " << pos1.y() << " " << pos1.z() << " " << edep << G4endl;
   int mybin = WhichXYbin(pos1.x(),pos1.y(),WhichZBin(pos1.z()));
-  // int mybin = 0;
-  //G4cout << "zbin " << WhichZBin(pos1.z()) << " " << mybin << " " << mybin%100 << std::endl;
   
   RunData* runData = static_cast<RunData*>
     (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  // runData->Add(mybin, edep, stepLength); 
-  runData->Add(mybin, edep); 
-
-  /*
-  if ( volume == fDetConstruction->GetAbsorberPV() ) {
-    runData->Add(kAbs, edep, stepLength);
-  }
-  else if ( volume == fDetConstruction->GetGapPV() ) {
-    runData->Add(kGap, edep, stepLength);
-  }
-  else{
-    runData->Add(kAbs, edep, stepLength);
-    G4cout << "where am i ??? " << G4endl;
-  }
-  */
+  runData->AddCell(mybin, edep); 
+  //runData->AddPoint(pos1.x(), pos1.y(), pos1.z(), edep);
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -33,7 +33,7 @@ class EventSimulator( Logger ):
     self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                          )
     self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"                   )
     self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                          )
-    self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.Geant           )
+    self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.Lorenzet          )
     self._nov        = retrieve_kw( kw, 'nov'       , -1                              )
     self._name       = name
     self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
@@ -43,10 +43,7 @@ class EventSimulator( Logger ):
       self._fList = expandFolders( self._fList )
     
     # Loading libraries
-    try:
-      ROOT.gSystem.Load('libprometheus')
-    except:
-      ROOT.gSystem.Load('libEventGeantLib')
+    ROOT.gSystem.Load('libprometheus')
     
 
     self._containersSvc = {}
@@ -112,10 +109,10 @@ class EventSimulator( Logger ):
     self._t.SetBranchStatus("*", False)
 
     # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.Geant:
+    if self._dataframe is DataframeEnum.Lorenzet:
       #self._t.SetBranchStatus("*", False)
       from ROOT import edm
-      self._event = edm.Geant()
+      self._event = edm.Lorenzet()
       self._t.GetEntry(0)
     elif self._dataframe is DataframeEnum.Delphes:
       try:
@@ -139,8 +136,8 @@ class EventSimulator( Logger ):
     self._entries = self._t.GetEntries()
     MSG_INFO( self, "Creating containers...")
     # Allocating containers
-    if self._dataframe is DataframeEnum.Geant:
-      from EventGeant import CaloCells, CaloRings, ShowerShapes
+    if self._dataframe is DataframeEnum.Lorenzet:
+      from EventLorenzet import CaloCells, CaloRings, ShowerShapes
     elif self._dataframe is DataframeEnum.Delphes:
       from EventDelphes import CaloTowers
     else:
@@ -214,7 +211,7 @@ class EventSimulator( Logger ):
     return self._entries
 
   def getEntry( self, entry ):
-    if self._dataframe is DataframeEnum.Geant:
+    if self._dataframe is DataframeEnum.Lorenzet:
       self._t.GetEntry( entry )
     elif self._dataframe is DataframeEnum.Delphes:
       self._t.ReadEntry( entry )

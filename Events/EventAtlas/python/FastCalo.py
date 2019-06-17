@@ -5,6 +5,7 @@ from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
 from EventCommon import EDM
 from Gaugi import stdvector_to_list
+from math import cosh
 import math
 
 class CaloSampling(object):
@@ -186,6 +187,14 @@ class FastCalo(EDM):
     else:
       self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")
       return -999
+
+
+  def reta(self):
+    return self.e237() / float(self.e277())
+
+  def eratio(self):
+    base = (self.emaxs1() + self.e2tsts1())
+    return (self.emaxs1() - self.e2tsts1()) / float(base)
 
 
   def e237(self):

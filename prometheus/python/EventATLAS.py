@@ -153,7 +153,7 @@ class EventATLAS( Logger ):
 
     self._containersSvc.update({
                             'HLT__FastCaloContainer'     : FastCalo(),
-                            #'HLT__FastElectronContainer' : FastElectron(),
+                            'HLT__FastElectronContainer' : FastElectron(),
                             'HLT__ElectronContainer'     : Electron(),
                             'HLT__CaloClusterContainer'  : CaloCluster(),
                             'HLT__TrackParticleContainer': TrackParticle(),

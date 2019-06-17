@@ -57,6 +57,23 @@ class CaloCell(object):
     self._layer=v
 
 
+class CaloPoint(object):
+  def __init__(self, x, y, z, energy):
+    self._x = x; self._y = y; self._z = z
+    self._energy = energy
+
+  def x(self):
+    return self._x
+
+  def y(self):
+    return self._y
+
+  def z(self):
+    return self._z
+
+  def energy(self):
+    return self._energy
+
 
 class CaloCells(EDM):
 
@@ -64,6 +81,10 @@ class CaloCells(EDM):
                       #'EventNumber',
                       #'RunNumber',
                       'TotalEnergy',
+                      'point_x',
+                      'point_y',
+                      'point_z',
+                      'point_energy',
                     ]
   __eventBranches.extend(['cell_%d'%(i) for i in range(507)])
                       
@@ -97,14 +118,14 @@ class CaloCells(EDM):
         obj=CaloCell(); obj.setX(x); obj.setY(y); obj.setEnergy(c[x][y]); obj.setLayer(layer)
         object_list.append(obj)
       return object_list
-    self._first_sampling  = convert2obj(self._get_cells(Layer.FIRST_LAYER ) , Layer.FIRST_LAYER )
-    self._second_sampling = convert2obj(self._get_cells(Layer.SECOND_LAYER) , Layer.SECOND_LAYER)
-    self._third_sampling  = convert2obj(self._get_cells(Layer.THIRD_LAYER ) , Layer.THIRD_LAYER )
+    self._first_sampling  = convert2obj(self.get_raw_cells(Layer.FIRST_LAYER ) , Layer.FIRST_LAYER )
+    self._second_sampling = convert2obj(self.get_raw_cells(Layer.SECOND_LAYER) , Layer.SECOND_LAYER)
+    self._third_sampling  = convert2obj(self.get_raw_cells(Layer.THIRD_LAYER ) , Layer.THIRD_LAYER )
     return StatusCode.SUCCESS
 
 
   # private method 
-  def _get_cells(self, layer):
+  def get_raw_cells(self, layer):
     # See: https://github.com/hep-lbdl/CaloGAN/tree/master/generation
     # Get the calo GAN cells schemma
     # First layer definitions: 3 X 96
@@ -142,6 +163,13 @@ class CaloCells(EDM):
       self._logger.warning('Invalid layer definition for CaloGAN')      
 
 
-
-
+  def getPoints(self):
+    points = list()
+    for idx in range(self._event.point_x.size()):
+      p = CaloPoint( self._event.point_x.at(idx), 
+                         self._event.point_y.at(idx),
+                         self._event.point_z.at(idx),
+                         self._event.point_energy.at(idx))
+      points.append(p)
+    return points
 

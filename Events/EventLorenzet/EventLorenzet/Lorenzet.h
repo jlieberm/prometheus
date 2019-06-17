@@ -1,5 +1,5 @@
-#ifndef GEANT_H
-#define GEANT_H
+#ifndef LORENZET_H
+#define LORENZET_H
 
 #include <TROOT.h>
 #include "Rtypes.h"
@@ -7,11 +7,17 @@
 #include "vector"
 namespace edm{
 
-struct Geant {
+struct Lorenzet {
 
   
   int    EventNumber; 
   int    RunNumber; 
+  
+  std::vector<Double_t> *point_x;
+  std::vector<Double_t> *point_y;
+  std::vector<Double_t> *point_z;
+  std::vector<Double_t> *point_energy;
+  
   Double_t  TotalEnergy;
   Double_t  cell_0;
   Double_t  cell_1;

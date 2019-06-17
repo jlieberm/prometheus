@@ -4,10 +4,9 @@
 
 if($ENV{Athena_SETUP} STREQUAL "on")
   # Declare the package name:
-  atlas_subdir( SimulatorTools )
+  atlas_subdir( CollectorTool )
   # Install files from the package:
   atlas_install_python_modules( python/*.py )
-  atlas_install_scripts( scripts/*.py )
 else()
-  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python SimulatorTools)
+  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CollectorTool)
 endif()

@@ -31,7 +31,7 @@ class ShowerShapes(EDM):
   def execute(self):
 
     from copy import deepcopy
-    from EventGeant import CaloGAN_Definitions as Layer
+    from EventLorenzet import CaloGAN_Definitions as Layer
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 
@@ -43,10 +43,17 @@ class ShowerShapes(EDM):
     # Shower shape: Eratio
     # Eratio = (E1max - E2max)/(E1max + E2max) where E1max and E2max is the first and second cell in
     # the first EM (strips) layer with most energy
-    energies = deepcopy(layers[0])
-    E1max, index = self._maxCell( energies ); energies.pop(index)
-    E2max, _  = self._maxCell( energies )
-    self._eratio = (E1max.energy()-E2max.energy()) / float(E1max.energy()+E2max.energy()) if (E1max.energy()+E1max.energy())>0.0 else 0.0
+    def eratio( cells ):
+      energies = deepcopy(cells)
+      E1max, index = self._maxCell( energies ); energies.pop(index)
+      E2max, _  = self._maxCell( energies )
+      return (E1max.energy()-E2max.energy()) / float(E1max.energy()+E2max.energy()) if (E1max.energy()+E1max.energy())>0.0 else 0.0
+
+    self._eratio1 = eratio( layers[0] )
+    self._eratio2 = eratio( layers[1] )
+    self._eratio3 = eratio( layers[2] )
+
+
 
     # Shower shape: Reta
     # The second EM layers is 12 X 12 cells. To calculate the Reta we must do:
@@ -61,22 +68,50 @@ class ShowerShapes(EDM):
     self._rphi = E_3X3 / float(E_3X7) if E_3X7>0.0 else 0.0
 
 
-    # Shower shapes: f1 and f3
-    E_back = self._sumCells( layers[2] )
-    E_middle = self._sumCells( layers[1] )
-    E_front = self._sumCells( layers[0] )
-    self._f1 = E_front/float(E_middle) if E_middle>0.0 else 0.0
-    self._f3 = E_back/float(E_middle) if E_middle>0.0 else 0.0
+    # E total
+    E1 = self._sumCells( layers[0] )
+    E2 = self._sumCells( layers[1] )
+    E3 = self._sumCells( layers[2] )
+
+    # energy layers
+    self._etot = E1+E2+E3
+    self._e1 = E1
+    self._e2 = E2
+    self._e3 = E3
+    self._f1 = E1/float(self._etot)
+    self._f2 = E2/float(self._etot)
+    self._f3 = E3/float(self._etot)
 
 
 
     return StatusCode.SUCCESS
 
 
-  def eratio(self):
-    return self._eratio
+  def eratio1(self):
+    return self._eratio1
+
+  def eratio2(self):
+    return self._eratio2
+
+  def eratio3(self):
+    return self._eratio3
+
+  def e1(self):
+    return self._e1
+
+  def e2(self):
+    return self._e2
+
+  def e3(self):
+    return self._e3
+
+  def etot(self):
+    return self._etot
 
   def f1(self):
+    return self._f1
+
+  def f2(self):
     return self._f1
 
   def f3(self):
@@ -87,6 +122,7 @@ class ShowerShapes(EDM):
 
   def rphi(self):
     return self._rphi
+
 
 
   def _maxCell( self, containers ):

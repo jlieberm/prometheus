@@ -49,7 +49,7 @@ class CaloRings(EDM):
 
   def execute(self):
 
-    from EventGeant import CaloGAN_Definitions as Layer
+    from EventLorenzet import CaloGAN_Definitions as Layer
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 

@@ -33,8 +33,8 @@
 
 #include "G4Run.hh"
 #include "globals.hh"
+#include <vector>
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 enum {
   kAbs = 0,
@@ -43,18 +43,12 @@ enum {
   kNumCells = 504 + 3 // 3 overflow bins for the three calo layers
 };  
 
-///  Run data class
-///
-/// It defines data members to hold the energy deposit and track lengths
-/// of charged particles in Absober and Gap layers.
-/// 
-/// In order to reduce the number of data members a 2-dimensions array 
-/// is introduced for each quantity:
-/// - fEdep[], fTrackLength[].
-///
-/// The data are collected step by step in SteppingAction, and
-/// the accumulated values are filled in histograms and entuple
-/// event by event in EventAction.
+struct point{
+  G4double x;
+  G4double y;
+  G4double z;
+  G4double energy;
+};
 
 class RunData : public G4Run
 {
@@ -62,47 +56,41 @@ public:
   RunData();
   virtual ~RunData();
 
-  // void Add(G4int id, G4double de, G4double dl);
-  void Add(G4int id, G4double de);
+  void AddPoint( G4double x, G4double y, G4double z, G4double de );
+  void AddCell(G4int id, G4double de);
   void FillPerEvent();
-  
   void Reset();
 
-  // Get methods
-  // G4String  GetVolumeName(G4int id) const;
   G4double  GetEdep(G4int id) const;
   G4double GetTotalEnergy(){return TotalEnergy;};
   void SetTotalEnergy(G4double e){TotalEnergy = e;};
-  // G4double  GetTrackLength(G4int id) const; 
 
 private:
-  // G4String  fVolumeNames[kDim];
-  G4double  fEdep[kNumCells];
+  
+  G4double  m_cell_energy[kNumCells];
   G4double TotalEnergy;
-  // G4double  fTrackLength[kDim];
+  std::vector<point> m_points;
+  std::vector<G4double> m_point_x;
+  std::vector<G4double> m_point_y;
+  std::vector<G4double> m_point_z;
+  std::vector<G4double> m_point_energy;
 };
 
-// inline functions
 
-// inline void RunData::Add(G4int id, G4double de, G4double dl) {
-inline void RunData::Add(G4int id, G4double de) {
-  fEdep[id] += de; 
-  // fTrackLength[id] += dl;
+
+inline void RunData::AddPoint( G4double x, G4double y, G4double z, G4double de ){
+  point p = {x,y,z,de};
+  m_points.push_back( p );
 }
 
-// inline G4String  RunData::GetVolumeName(G4int id) const {
-//   return fVolumeNames[id];
-// }
+inline void RunData::AddCell(G4int id, G4double de) {
+  m_cell_energy[id] += de; 
+}
 
 inline G4double  RunData::GetEdep(G4int id) const {
-  return fEdep[id];
+  return m_cell_energy[id];
 }   
 
-// inline G4double  RunData::GetTrackLength(G4int id) const {
-//   return fTrackLength[id];
-// }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
 

@@ -1,5 +1,5 @@
 
-#include "EventGeant/Geant.h"
+#include "EventLorenzet/Lorenzet.h"
 
 #ifdef __CINT__
 
@@ -9,6 +9,6 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ struct edm::Geant+;
+#pragma link C++ struct edm::Lorenzet+;
 
 #endif

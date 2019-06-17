@@ -15,7 +15,7 @@ gROOT.ProcessLine("gErrorIgnoreLevel = kFatal;");
 
 
 # kGray_2
-local_these_colors = [kBlack,kBlue-4,kRed-2,kAzure+2,kGreen+1,kMagenta+1,kCyan+1,kOrange+1
+local_these_colors = [kBlack,kBlue-4,kRed-2,kAzure+2,kMagenta+2,kGray+1,kCyan+1,kOrange+1
                 ,kBlack+2,kRed+3,kBlue+3,kGreen+3,kMagenta+3,kCyan+3,kOrange+3
                 ,kGray,kRed-7,kBlue-7,kGreen-7,kMagenta-7,kCyan-7,kOrange-7
                 ,kYellow+2,kRed-5,kBlue-5,kGreen-5,kMagenta-5,kCyan-5,kOrange-5
@@ -250,7 +250,7 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
       outname = localpath+'/'+dirpath+'/'+level+pname+'_'+histname+'.pdf'
       res = PlotProfiles( h_ref+h_test, legends = legends, outname=outname, runLabel=args.runLabel, extraText1=extraText1, 
                           doFitting=False, doRatioCanvas=args.doRatio,xlabel=xlabel_names[jdx],theseColors=these_colors,theseMarker=these_marker,
-                          theseTransColors=these_transcolors, legendX1=0.50,
+                          theseTransColors=these_transcolors, legendX1=0.65,
                           SaveAsC=True)  
 
     #Loop over histograms

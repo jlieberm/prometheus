@@ -27,15 +27,15 @@ class RingerSelectorTool(Algorithm):
 
   def initialize(self):
     import cppyy
-    cppyy.loadDict("RingerSelectorTools")
+    cppyy.loadDict("libprometheus")
     from ROOT import prometheus
     # create the ASG selector tool
-    self._asg = prometheus.AsgElectronRingerSelector(self._name)
+    self._asg = prometheus.ElectronRingerSelector(self._name)
     # set other properties
-    self._asg.setProperty('ConstantsCalibPath', self._constantsCalibPath )
-    self._asg.setProperty('ThresholdsCalibPath', self._thresholdsCalibPath )
+    self._asg.setConstantsCalibPath( self._constantsCalibPath )
+    self._asg.setThresholdsCalibPath( self._thresholdsCalibPath )
     # Initialize the ASG Tool
-    if(self._asg.initialize().isFailure()):
+    if( not self._asg.initialize()):
       MSG_FATAL( self, 'Can not initialize the Ringer Selector ASG.')
     
     MSG_INFO( self, "RingerSelectorTool was initialized." )

@@ -68,6 +68,7 @@ else()
   add_subdirectory(Gaugi)
   add_subdirectory(prometheus)
   add_subdirectory(Tools/CommonTools)
+  add_subdirectory(Tools/CollectorTool)
   add_subdirectory(Tools/EfficiencyTools)
   add_subdirectory(Tools/EmulationTools)
   add_subdirectory(Tools/EventSelectionTool)
@@ -78,19 +79,19 @@ else()
   add_subdirectory(Events/EventAtlas)
   add_subdirectory(Events/EventCommon)
   add_subdirectory(Events/EventDelphes)
-  add_subdirectory(Events/EventGeant)
+  add_subdirectory(Events/EventLorenzet)
   add_subdirectory(External/monet)
   add_subdirectory(External/pytex)
   add_subdirectory(Selectors/RingerSelectorTools)
   add_subdirectory(Selectors/TrigEgammaL2CaloSelectorTool)
   
   
-  add_subdirectory(Simulator/Tools/SimulatorTools)
+  add_subdirectory(Simulator/Tools/LorenzetTools)
   
   add_library(prometheus SHARED
     $<TARGET_OBJECTS:Gaugi> 
     $<TARGET_OBJECTS:EventAtlas> 
-    $<TARGET_OBJECTS:EventGeant> 
+    $<TARGET_OBJECTS:EventLorenzet> 
     $<TARGET_OBJECTS:EventDelphes> 
     $<TARGET_OBJECTS:PathResolver> 
     $<TARGET_OBJECTS:RingerSelectorTools> 

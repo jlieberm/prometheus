@@ -22,72 +22,108 @@
 // * use  in  resulting  scientific  publications,  and indicate your *
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
-//
-// $Id: RunData.cc 69223 2013-04-23 12:36:10Z gcosmo $
-//
-/// \file RunData.cc
-/// \brief Implementation of the RunData class
 
 #include "RunData.hh"
 #include "Analysis.hh"
-
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunData::RunData() : G4Run()//, fNumCells(4815)
 {
-  // fVolumeNames[0] = "Absorber";
-  // fVolumeNames[1] = "Gap";
- 
+
+  // set printing event number per each event
+  G4RunManager::GetRunManager()->SetPrintProgress(1);     
+
+  // Create analysis manager
+  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+  
+  // Create directories 
+  analysisManager->SetVerboseLevel(1);
+  analysisManager->SetFirstHistoId(1);
+  analysisManager->CreateNtuple("fancy_tree", "Edep and TrackL");
+
+
+  // Create all cells branches
+  int total_bins = 504 + 3;  // 3 overflow bins for the three calo layers
+  for (int i = 0; i < total_bins; ++i) {
+    std::stringstream out; out << i;
+    analysisManager->CreateNtupleDColumn("cell_" + out.str());
+  }
+
+  //m_point_x = new std::vector<G4double>();
+  //m_point_y = new std::vector<G4double>();
+  //m_point_z = new std::vector<G4double>();
+  //m_point_energy = new std::vector<G4double>();
+
+
+  // Create the total energy branch
+  analysisManager->CreateNtupleDColumn("TotalEnergy");
+  analysisManager->CreateNtupleDColumn("point_x", m_point_x);
+  analysisManager->CreateNtupleDColumn("point_y", m_point_y);
+  analysisManager->CreateNtupleDColumn("point_z", m_point_z);
+  analysisManager->CreateNtupleDColumn("point_energy",m_point_energy);
+  analysisManager->FinishNtuple();
+
+
+
   for ( G4int i=0; i < kNumCells; i++) {
-    fEdep[i] = 0.;
-    // fTrackLength[i] = 0.; 
+    m_cell_energy[i] = 0.;
   }  
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 RunData::~RunData()
 {;}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
 
 void RunData::FillPerEvent()
 {
-  // get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-  //accumulate statistic
-  //
 
   for (int i = 0; i < kNumCells; ++i) {
-    // analysisManager->CreateNtupleDColumn("cell_" + std::to_string(i));
-    analysisManager->FillNtupleDColumn(i, fEdep[i]);
+    analysisManager->FillNtupleDColumn(i, m_cell_energy[i]);
   }
   analysisManager->FillNtupleDColumn(kNumCells, GetTotalEnergy());
 
-  // for ( G4int i=0; i<kDim; i++) {
-  //   // fill histograms
-  //   // analysisManager->FillH1(i+1, fEdep[i]);
-  //   // analysisManager->FillH1(kDim+i+1, fTrackLength[i]);
+   
+  // Fill all simulated points
+  for(int i = 0; i < m_points.size(); ++i){
+    m_point_x.push_back( m_points.at(i).x );
+    m_point_y.push_back( m_points.at(i).y );
+    m_point_z.push_back( m_points.at(i).z );
+    m_point_energy.push_back( m_points.at(i).energy );
+  }
+  
 
-  //   // fill ntuple
-  //   analysisManager->FillNtupleDColumn(i, fEdep[i]);
-  //   analysisManager->FillNtupleDColumn(kDim+i, fTrackLength[i]);
-  // }  
+  /*
+  for(unsigned int i = 0; i < m_points.size(); ++i){
+
+    analysisManager->FillNtupleDColumn(kNumCells+1, m_points.at(i).x      );
+    analysisManager->FillNtupleDColumn(kNumCells+2, m_points.at(i).y      );
+    analysisManager->FillNtupleDColumn(kNumCells+3, m_points.at(i).z      );
+    analysisManager->FillNtupleDColumn(kNumCells+4, m_points.at(i).energy );
+    //analysisManager->FillNtupleDColumn(kNumCells+1, m_point_x);
+    //analysisManager->FillNtupleDColumn(kNumCells+2, m_point_y);
+    //analysisManager->FillNtupleDColumn(kNumCells+3, m_point_z);
+    //analysisManager->FillNtupleDColumn(kNumCells+4, m_point_energy);
+  }*/
 
   analysisManager->AddNtupleRow();  
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void RunData::Reset()
 { 
   for ( G4int i=0; i<kNumCells; i++) {
-    fEdep[i] = 0.;
-    // fTrackLength[i] = 0.; 
-  }  
+    m_cell_energy[i] = 0.;
+  } 
+
+  m_points.clear();
+  m_point_x.clear();
+  m_point_y.clear();
+  m_point_z.clear();
+  m_point_energy.clear();
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

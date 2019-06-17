@@ -2,7 +2,7 @@ __all__ = ['Interpreter']
 
 from prometheus import Algorithm
 from Gaugi import StatusCode
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus import Dataframe as DataframeEnum
 from Gaugi.messenger.macros import *
 
 
