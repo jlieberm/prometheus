@@ -3,12 +3,15 @@ __all__ = ["Collector"]
 
 from prometheus import Algorithm
 from prometheus import Dataframe as DataframeEnum
-from Gaugi import StatusCode, NotSet, retrieve_kw
+from Gaugi import StatusCode, NotSet, retrieve_kw, progressbar
+from Gaugi import csvStr2List, expandFolders, save, load
 from Gaugi.messenger.macros import *
+from Gaugi.messenger  import Logger
 from Gaugi.constants import GeV
 from Gaugi.enumerations import StatusWatchDog
 from Gaugi import EnumStringification
 import numpy as np
+
 
 
 
@@ -45,7 +48,8 @@ class Collector( AlgorithmTool ):
     AlgorithmTool.initialize(self) 
     for etBinIdx in range(len(self._etbins)-1):
       for etaBinIdx in range(len(self._etabins)-1):
-        self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = []
+        self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = None
+        #self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = []
 
     self._event_label.append( 'avgmu' )
 
@@ -101,7 +105,11 @@ class Collector( AlgorithmTool ):
     return StatusCode.SUCCESS
 
   def fill( self, key , event ):
-    self._event[key].append(event)
+
+    if self._event[key]:
+      self._event[key].append( event )
+    else:
+      self._event[key] = [event]
 
   def execute(self, context):
     
@@ -126,8 +134,6 @@ class Collector( AlgorithmTool ):
     if (len(self._save_these_bins) > 0) and (not key in self._save_these_bins):
         return StatusCode.SUCCESS
     
-
-
 
     event_row = list()
     # event info
@@ -183,7 +189,7 @@ class Collector( AlgorithmTool ):
         passed = self.accept(feature)
       else:
         # Get de decision from Offline electron
-        passed = el.accept(feature)
+        passed = elCont.accept(feature)
       event_row.append( passed )
 
     self.fill(key , event_row)
@@ -193,39 +199,30 @@ class Collector( AlgorithmTool ):
   
 
   def finalize( self ):
+    
+    from Gaugi import save, mkdir_p
+    for etBinIdx in range(len(self._etbins)-1):
+      for etaBinIdx in range(len(self._etabins)-1):
+       
+        key =  'et%d_eta%d' % (etBinIdx,etaBinIdx)         
+        mkdir_p( self._outputname ) 
+        if self._event[key] is None: 
+          continue
 
-    d = { "labels"  : self._event_label }
-    d.update( self._event )
+        d = { 
+            "features"  : self._event_label,
+            "etBins"    : self._etbins,
+            "etaBins"   : self._etabins,
+            "etBinIdx"  : etBinIdx,
+            "etaBinIdx" : etaBinIdx
+            }
 
-    import pickle
-    f = open( self._outputname, 'w' )
-    pickle.dump(d, f)
-    f.close()
+        d[ 'pattern_'+key ] = np.array( self._event[key] )
+        MSG_INFO( self, 'Saving %s with : (%d, %d)', key, d['pattern_'+key].shape[0], d['pattern_'+key].shape[1] )
+        save( d, self._outputname+'/'+self._outputname+"_"+key , protocol = 'savez_compressed')
     return StatusCode.SUCCESS
 
 
 
-def merge( fList , outputname):
 
-  from Gaugi import csvStr2List, expandFolders
-  fList = csvStr2List ( fList )
-  fList = expandFolders( fList )
-
-  import pickle
-  f = fList.pop()
-  d = pickle.load(open(f,'r'))
-
-  while len(fList)>0:
-    f = fList.pop()
-    print f
-    dd = pickle.load(open(f,'r'))
-    for key in dd.keys():
-      if key is 'labels': continue
-      d[key].extend( dd[key] )
-  import numpy as np
-  merge = open(outputname,'w')
-  for key in d.keys():
-    d[key] = np.array(d[key])
-  
-  pickle.dump(d, merge)
 

@@ -1,17 +1,16 @@
 
 
-from prometheus.drawers.functions.TAxisFunctions          import *
-from prometheus.drawers.functions.PlotFunctions           import *
-from prometheus.drawers.functions.PlotHelper              import *
-from prometheus.tools.atlas.common.constants  import *
-from ROOT                                     import TH1,TH1F, TH2F, TProfile,TCanvas, TFile, TPad
-from ROOT                                     import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow
+from monet.TAxisFunctions          import *
+from monet.PlotFunctions           import *
+#from monet.PlotHelper              import *
+from ROOT                          import TH1,TH1F, TH2F, TProfile,TCanvas, TFile, TPad
+from ROOT                          import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow
 import numpy as np
 import math, ROOT
 import os
 
 from ROOT import gStyle
-#gStyle.SetOptStat(1)
+gStyle.SetOptStat(0)
 
 drawopt='hist'
 divide=''
@@ -95,8 +94,8 @@ def AddTopLabels(can, legend, extra=None,textsize=10):
   DrawText(can,text_lines,.40,.68,.70,.93,totalentries=4)
 
 
-f_ringer    = TFile("expert-monitoring-ringer.root",'r')
-f_noringer  = TFile("expert-monitoring-noringer.root",'r')
+f_ringer    = TFile("cern_data/ringer.root",'r')
+f_noringer  = TFile("cern_data/noringer.root",'r')
 
 
 def plot_fex_totaltime():
@@ -111,13 +110,17 @@ def plot_fex_totaltime():
   h1.SetFillColor(kAzure-4)
   h1.SetMarkerColor(kAzure-4)
   h2.SetLineColor(kBlack)
+  h1.SetName('')
+  h2.SetName('')
+  h1.SetAxisRange(0.5,5.5,'X')
+  h2.SetAxisRange(0.5,5.5,'X')
   AddHistogram(outcan,h1,drawopt=drawopt) 
   AddHistogram(outcan,h2,drawopt=drawopt) 
   h1.SetStats(False)
   h2.SetStats(False)
   AtlasTemplate(outcan)
   
-  bot = TPad("pad_bot", "This is the bottom pad",0.5,0.2,0.93,0.7)
+  bot = TPad("pad_bot", "This is the bottom pad",0.47,0.2,0.87,0.7)
   bot.SetBottomMargin(0.10/float(bot.GetHNDC()))
   bot.SetTopMargin   (0.02/float(bot.GetHNDC()))
   bot.SetRightMargin (0.05)
@@ -146,69 +149,12 @@ def plot_fex_totaltime():
              squarebox=False, doFixLength=False)
   
   AutoFixAxes(outcan,ignoreErrors=False)
-  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
+  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1)
   SetAxisLabels(outcan,"[ms]",'Count')
   FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
   #AddBinLines(outcan,h1,useCanvasHistsMax=False,useHistMax=False)
   outcan.SaveAs("EgammaFex_TotalTime.pdf")
 
-
-
-
-def plot_fex_samp2time():
-
-  h1 = TH1F(); h2 = TH1F(); h3 = TH1F()
-  outcan = TCanvas( 'canvas', "", 700, 500 ) 
-  f_noringer.GetObject("T2CaloEgamma_eGamma/Execute_Time", h1)
-  f_noringer.GetObject("T2CaloEgamma_eGamma/ESamp2Total_Time", h2)
-  outcan.cd()
-  h1.SetLineColor(kAzure-5)
-  h1.SetFillColor(kAzure-4)
-  h1.SetMarkerColor(kAzure-4)
-  #h2.SetLineColor(kBlack)
-  AddHistogram(outcan,h1,drawopt=drawopt) 
-  #AddHistogram(outcan,h2,drawopt=drawopt) 
-  h1.SetStats(False)
-  #h2.SetStats(False)
-  AtlasTemplate(outcan)
-  
-  bot = TPad("pad_bot", "This is the bottom pad",0.5,0.2,0.93,0.7)
-  bot.SetBottomMargin(0.10/float(bot.GetHNDC()))
-  bot.SetTopMargin   (0.02/float(bot.GetHNDC()))
-  bot.SetRightMargin (0.05)
-  bot.SetLeftMargin  (0.16)
-  bot.SetFillColor(0)
-  bot.Draw(drawopt)
-  bot.cd()
-  #h2.SetAxisRange(0., 2.5,"X")
-  h2.SetLineColor(kBlack)
-  h2.SetLineWidth(1)
-  h2.SetFillColor(16)
-  h2.Draw()
-  
-  #DrawText(bot,['Ringer Extraction', 'Mean = %1.4f'%h3.GetMean(), 'Std  = %1.4f'%h3.GetStdDev()],.40,.68,.70,.93,totalentries=4)
-  DrawText(bot,['EgammaSampl2 Only'],.20,.70,.60,.95,totalentries=4)
-  #bot.Update()
-  #outcan.Update()
-  AddHistogram(bot,h2,drawopt=drawopt) 
-  #stat = SetBoxes(bot,[h3])
-  AutoFixAxes(bot,ignoreErrors=False)
-  FormatCanvasAxes(bot, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  FixYaxisRanges(bot, ignoreErrors=True, yminc=-eps )
- 
-  FormatCanvasAxes(bot, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  FixYaxisRanges(bot, ignoreErrors=True, yminc=-eps )
-  
-  MakeLegend(outcan,.50,.77,.89,.97,option='p',textsize=14, names=['Without Ringer (FastCalo extraction)'], ncolumns=1, 
-             squarebox=False, doFixLength=False)
- 
-  
-  AutoFixAxes(outcan,ignoreErrors=False)
-  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  SetAxisLabels(outcan,"[ms]",'Count')
-  FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
-  #AddBinLines(outcan,h1,useCanvasHistsMax=False,useHistMax=False)
-  outcan.SaveAs("EgammaFex_Samp2Time.pdf")
 
 
 
@@ -218,9 +164,9 @@ def plot_hypo_totaltime():
   h1 = TH1F(); h2 = TH1F(); h_noringer = TH1F()
   outcan = TCanvas( 'canvas', "", 700, 500 ) 
 
-  f_ringer.GetObject("TrigL2CaloRingerHypo_e17_lhloose/Execute_Time", h1)
+  f_ringer.GetObject("TrigL2CaloRingerHypo_e26_lhtight/Execute_Time", h1)
   #f_ringer.GetObject("TrigL2CaloRingerHypo_e17_lhloose/Execute_Time", h2)
-  f_ringer.GetObject("TrigL2CaloRingerFex_e17_lhloose/Execute_Time", h2)
+  f_ringer.GetObject("TrigL2CaloRingerFex_e26_lhtight/Execute_Time", h2)
   #f_ringer.GetObject("TrigL2CaloRingerFex_e17_lhloose/Execute_Time", h3)
   
   # make shift
@@ -231,7 +177,7 @@ def plot_hypo_totaltime():
     h_shift.SetBinContent( bin+offset, h2.GetBinContent(bin) )
   h_ringer = h_shift
 
-  f_noringer.GetObject("TrigL2CaloHypo_e17_lhloose/Execute_Time", h_noringer)
+  f_noringer.GetObject("TrigL2CaloHypo_e26_lhtight/Execute_Time", h_noringer)
   
 
   #h_noringer.RebinX(5)
@@ -255,88 +201,91 @@ def plot_hypo_totaltime():
  
   
   AutoFixAxes(outcan,ignoreErrors=False)
-  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
+  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1)
   SetAxisLabels(outcan,"[ms]",'Count')
   FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
   
-  
-  
-  
-  #bot = TPad("pad_bot", "This is the bottom pad",0.5,0.2,0.93,0.7)
-  #bot.SetBottomMargin(0.10/float(bot.GetHNDC()))
-  #bot.SetTopMargin   (0.02/float(bot.GetHNDC()))
-  #bot.SetRightMargin (0.05)
-  #bot.SetLeftMargin  (0.16)
-  #bot.SetFillColor(0)
-  #bot.Draw(drawopt)
-  #bot.cd()
-
-  ##h3.SetLineColor(15)
-  ##h3.SetLineWidth(1)
-  ##h3.SetFillColor(16)
-  ##h3.Draw()
-  #
-  #h4 = TH1F(); h5 = TH1F(); h6 = TH1F()
-  #f_ringer.GetObject("TrigL2CaloRingerFex_e17_lhloose/Normalization_Time", h4)
-  #f_ringer.GetObject("TrigL2CaloRingerFex_e17_lhloose/Propagation_Time", h5)
-  #f_ringer.GetObject("TrigL2CaloRingerFex_e17_lhloose/StoreOutput_Time", h6)
-  ##DrawText(bot,['Ringer Extraction', 'Mean = %1.4f'%h3.GetMean(), 'Std  = %1.4f'%h3.GetStdDev()],.40,.68,.70,.93,totalentries=4)
-
-
-
-  #h4.RebinX(2)
-  #h5.RebinX(2)
-  #h4.SetAxisRange(0., 0.01,"X")
-  #h5.SetAxisRange(0., 0.01,"X")
-  ##AddHistogram(bot,h6,drawopt=drawopt) 
-  #h6.SetLineColor(16)
-  #h6.SetFillColor(15)
-  #h6.SetMarkerColor(16)
-  #h5.SetLineColor(kBlack)
-  #h5.SetMarkerColor(kBlack)
-  #h4.SetMarkerColor(kRed)
-  #AddHistogram(bot,h4,drawopt=drawopt) 
-  #AddHistogram(bot,h5,drawopt=drawopt) 
-  ##AddHistogram(bot,h6,drawopt=drawopt) 
-  #DrawText(bot,['Ringer Hypothesis Steps', 
-  #              'Norm. Time: %1.3f#pm%1.3f ms'%(h4.GetMean(),h4.GetStdDev()),
-  #              'Prop. Time: %1.3f#pm%1.3f ms'%(h5.GetMean(),h5.GetStdDev()),
-  #              #'Store Time: See distribution',
-  #              #'Decision Time: %1.4f#pm%1.4f ms'%(h1.GetMean(),h1.GetStdDev()),
-  #              ],.30,.68,.70,.93,totalentries=4)
-
-
-  ##stat = SetBoxes(bot,[h3])
-  #AutoFixAxes(bot,ignoreErrors=False)
-  #FormatCanvasAxes(bot, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-  #FixYaxisRanges(bot, ignoreErrors=True, yminc=-eps )
- 
-  
-  
-  
-  
-  
-  
-  #AddBinLines(outcan,h1,useCanvasHistsMax=False,useHistMax=False)
   outcan.SaveAs("EgammaHypo_TotalTime.pdf")
 
 
 
+def plot_primary_trigger_time():
+
+  h1 = TH2F(); h2 = TH2F();
+
+  h3 = TProfile(); h4 = TProfile()
+  f_ringer.GetObject("TIMERS/TrigSteer_HLT_Chains_runsummary", h3)
+  f_noringer.GetObject("TIMERS/TrigSteer_HLT_Chains_runsummary", h4)
+
+
+  outcan = TCanvas( 'canvas', "", 700, 500 ) 
+
+  f_ringer.GetObject("TIMERS/TrigSteer_HLT_Chains", h1)
+  f_noringer.GetObject("TIMERS/TrigSteer_HLT_Chains", h2)
+  import time
+  h1 = h1.ProjectionY('xproj1'+str(time.time()),0,1)
+  h2 = h2.ProjectionY('xproj2'+str(time.time()),0,1)
+
+  h1.SetLineColor(kAzure-5)
+  h1.SetFillColor(kAzure-4)
+  h1.SetMarkerColor(kAzure-4)
+  
+  h2.SetLineColor(kBlack)
+  
+  h1.SetAxisRange(0,700,'X')
+  h2.SetAxisRange(0,700,'X')
+  AddHistogram(outcan,h1,drawopt=drawopt) 
+  AddHistogram(outcan,h2,drawopt=drawopt) 
+  AtlasTemplate(outcan)
+  MakeLegend(outcan,.50,.77,.89,.97,option='p',textsize=14, names=['e26_lhtight_nod0_ivarloose',
+    'e26_lhtight_nod0_noringer_ivarloose'], ncolumns=1, 
+             squarebox=False, doFixLength=False)
+  
+  AutoFixAxes(outcan,ignoreErrors=False)
+  FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1)
+  SetAxisLabels(outcan,"[ms]",'Count')
+  FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
+  outcan.SaveAs("test.pdf")
+  
 
 
 
+def plot_primary_trigger_time_summary():
 
 
+  h1 = TProfile(); h2 = TProfile()
+  f_ringer.GetObject("TIMERS/TrigSteer_HLT_Chains_runsummary", h1)
+  f_noringer.GetObject("TIMERS/TrigSteer_HLT_Chains_runsummary", h2)
+  print h1.GetBinContent(1)
+  print h2.GetBinContent(1)
 
-
-
-
-
-
-
-
-
-
+  outcan = TCanvas( 'canvas', "", 700, 500 ) 
+  h1.SetLineColor(kAzure-5)
+  h1.SetFillColor(kAzure-4)
+  h1.SetMarkerColor(kAzure-4)
+  h2.SetLineColor(kBlack)
+  
+  outcan.SaveAs( "plot_chain_summary.C" )
+  h1.SetMaximum(50)
+  h1.SetAxisRange(0,2,'X')
+  h2.SetAxisRange(0,2,'X')
+  h1.SetAxisRange(0,50,'Y')
+  h2.SetAxisRange(0,50,'Y')
+  AddHistogram(outcan,h1,drawopt=drawopt) 
+  AddHistogram(outcan,h2,drawopt=drawopt) 
+  #FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
+  AtlasTemplate(outcan)
+  MakeLegend(outcan,.50,.77,.89,.97,option='p',textsize=14, names=['e26_lhtight_nod0_ivarloose',
+    'e26_lhtight_nod0_noringer_ivarloose'], ncolumns=1, 
+             squarebox=False, doFixLength=False)
+  
+  #AutoFixAxes(outcan,ignoreErrors=False)
+  FormatCanvasAxes(outcan, XLabelSize=9, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1)
+  SetAxisLabels(outcan,"Chains",'[ms]')
+  
+  #FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
+  outcan.SaveAs("plot_chain_summary.pdf")
+  
 
 
 
@@ -344,8 +293,7 @@ def plot_hypo_totaltime():
 
 plot_hypo_totaltime()
 plot_fex_totaltime()
-plot_fex_samp2time()
-
+plot_primary_trigger_time_summary()
 
 
 

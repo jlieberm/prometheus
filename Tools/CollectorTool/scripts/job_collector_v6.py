@@ -33,6 +33,11 @@ parser.add_argument('--egam7', action='store_true',
     dest='doEgam7', required = False, 
     help = "The colelcted sample came from EGAM7 skemma.")
 
+parser.add_argument('--jf17', action='store_true', 
+    dest='jf17', required = False, 
+    help = "The colelcted sample came from JF17 skemma.")
+
+
 import sys,os
 if len(sys.argv)==1:
   parser.print_help()
@@ -44,8 +49,8 @@ args = parser.parse_args()
 
 ToolMgr += EventATLASLoop(  "EventATLASLoop",
                             inputFiles = args.inputFiles, 
-                            treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                            #treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                            #treePath= '*/HLT/Physval/Egamma/fakes' if args.jf17 else '*/HLT/Physval/Egamma/probes',
+                            treePath= '*/HLT/Egamma/Egamma/fakes' if args.jf17 else '*/HLT/Egamma/Egamma/probes',
                             nov = args.nov,
                             #nov = 1000,
                             dataframe = DataframeEnum.PhysVal_v2, 
@@ -65,9 +70,12 @@ evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 if args.doEgam7:
   #pidname = '!VeryLooseLLH_DataDriven_Rel21_Run2_2018'
   pidname = '!el_lhvloose'
+elif args.jf17:
+  pidname = '!mc_isTruthElectronAny'
 else:
   #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
   pidname = 'el_lhmedium'
+  #pidname = 'el_lhtight'
 
 
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
@@ -92,7 +100,8 @@ from CollectorTool import Collector
 alg = Collector( 'Collector' , outputname = args.outputFile.replace('.root',''), doTrack = True )
 
 etbins  = [15.0, 20.0, 30.0, 40.0, 50.0, 1000000.0]
-etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
+#etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
+etabins = [0.0, 0.8, 1.37, 1.54, 2.50]
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger  = True

@@ -2,10 +2,10 @@
 
 
 import argparse
-from Gaugi import EventATLASLoop
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus import EventATLASLoop
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi import ToolSvc, ToolMgr
+from prometheus import ToolSvc, ToolMgr
 
 
 
@@ -29,7 +29,7 @@ args = parser.parse_args()
 
 from QuadrantTools import QuadrantTool
 alg = QuadrantTool("Quadrant")
-from Gaugi.storage import restoreStoreGate
+from Gaugi  import restoreStoreGate
 sg =  restoreStoreGate( args.inputFile )
 alg.setStoreGateSvc(sg)
 
