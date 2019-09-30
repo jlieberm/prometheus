@@ -112,7 +112,6 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
         for(unsigned l=0; l<m_nodes->size(); l++) tfnames.push_back("tanh"); // This is default for this version
 	  	  discriminators.push_back( std::make_shared<MultiLayerPerceptron>(*m_nodes,*m_weights,*m_bias,tfnames,m_etBins->at(0),
                                                                           m_etBins->at(1),m_etaBins->at(0),m_etaBins->at(1), -999., 999.) ); 
-        MSG_INFO( "Added new discriminator into the list." );
 	    }catch(std::bad_alloc &){
         MSG_ERROR("Can not alloc cutDefs on memory." );
         return false;
@@ -188,7 +187,6 @@ bool RingerReader::retrieve( std::string &calibPath, std::vector< std::shared_pt
 
         }
         
-        MSG_INFO( "Added new discriminator into the list." );
 	    }catch(std::bad_alloc &){
         MSG_ERROR(  "Can not alloc cutDefs on memory." );
         return false;
