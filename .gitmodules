@@ -1,12 +1,12 @@
 [submodule "Gaugi"]
 	path = Gaugi
-  url = https://gitlab.cern.ch/jodafons/gaugi.git
+  	url = https://github.com/jodafons/Gaugi.git
 [submodule "External/monet"]
 	path = External/monet
-	url = https://gitlab.cern.ch/jodafons/monet.git
+	url = https://github.com/jodafons/monet.git
 [submodule "External/pytex"]
 	path = External/pytex
-	url = https://gitlab.cern.ch/jodafons/pytex.git
+	url = https://github.com/jodafons/pytex.git
 ##[submodule "Simulator/External/geant4"]
 ##	path = Simulator/External/geant4
 ##	url = https://gitlab.cern.ch/jodafons/geant4.git
