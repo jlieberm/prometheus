@@ -14,15 +14,28 @@ rm -rf lib
 mkdir lib
 for file in "`pwd`"/**/*.pcm
 do
-  echo "$file"
+  echo "ln -sf $file lib"
   ln -sf $file lib
 done 
 
-for file in "`pwd`"/**/*.so
-do
-  echo "$file"
-  ln -sf $file lib
-done 
+
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  for file in "`pwd`"/*.dylib
+  do
+    echo "ln -sf $file lib"
+    ln -sf $file lib
+  done 
+
+else
+  for file in "`pwd`"/*.so
+  do
+    echo "ln -sf $file lib"
+    ln -sf $file lib
+  done 
+fi
+
+
 
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
