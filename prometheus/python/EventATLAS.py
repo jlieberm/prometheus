@@ -24,7 +24,7 @@ unique_sequence = uniqueid()
 # This class is responsible to build all containers object and
 # manager the storegate and histogram services for all classes.
 class EventATLAS( Logger ):
-    
+
   def __init__(self, name , **kw):
     # Retrieve all information needed
     Logger.__init__(self, **kw)
@@ -41,7 +41,7 @@ class EventATLAS( Logger ):
       from Gaugi import csvStr2List, expandFolders
       self._fList = csvStr2List ( self._fList )
       self._fList = expandFolders( self._fList )
-    
+
     # Loading libraries
     try:
       ROOT.gSystem.Load('libprometheus')
@@ -50,7 +50,7 @@ class EventATLAS( Logger ):
 
     self._containersSvc = {}
     self._storegateSvc = NotSet
-    self._id = unique_sequence.next()
+    self._id = next(unique_sequence)
 
   def name(self):
     return self._name
@@ -71,7 +71,7 @@ class EventATLAS( Logger ):
 
     MSG_INFO( self, 'Initializing EventReader...')
 
-    # Use this to hold the fist good 
+    # Use this to hold the fist good
     metadataInputFile = None
 
     ### Prepare to loop:
@@ -85,7 +85,7 @@ class EventATLAS( Logger ):
         continue
       # Inform user whether TTree exists, and which options are available:
       MSG_DEBUG( self, "Adding file: %s", inputFile)
-      try: 
+      try:
         # Custon directory token
         if '*' in self._treePath:
           dirname = self._f.GetListOfKeys()[0].GetName()
@@ -139,13 +139,13 @@ class EventATLAS( Logger ):
     from EventAtlas import EmTauRoI
     from EventAtlas import EventInfo
     from EventAtlas import MonteCarlo
-    from EventAtlas import TDT 
-    # Initialize the base of this container. 
+    from EventAtlas import TDT
+    # Initialize the base of this container.
     # Do not change this key names!
     self._containersSvc  = {
                             # event dataframe containers
-                            'EventInfoContainer'         : EventInfo(), 
-                            'MonteCarloContainer'        : MonteCarlo(), 
+                            'EventInfoContainer'         : EventInfo(),
+                            'MonteCarloContainer'        : MonteCarlo(),
                             'ElectronContainer'          : Electron(),
                             'CaloClusterContainer'       : CaloCluster(),
                             'TrackParticleContainer'     : TrackParticle(),
@@ -159,27 +159,27 @@ class EventATLAS( Logger ):
                             'HLT__TrackParticleContainer': TrackParticle(),
                             'HLT__EmTauRoIContainer'     : EmTauRoI(),
                             })
-                            
+
 
     if self._dataframe is DataframeEnum.PhysVal_v2:
       self._containersSvc.update({
                             # metadata containers
                             'HLT__TDT'                   : TDT(),
                             })
- 
+
 
     # force the event id number for this event looper
     self._containersSvc['EventInfoContainer'].setId( self.id() )
     # Add decoration for ATLAS event information
     self._containersSvc['EventInfoContainer'].setDecor( "is_fakes", True if 'fakes' in self._treePath else False)
-    
+
     from prometheus import EventContext
     self._context = EventContext(self._t)
 
 
     # configure all EDMs needed
-    for key, edm  in self._containersSvc.iteritems():
-      
+    for key, edm  in self._containersSvc.items():
+
       self.getContext().setHandler(key,edm)
       # add properties
       edm.dataframe = self._dataframe
@@ -187,16 +187,16 @@ class EventATLAS( Logger ):
       edm.level = self._level
       edm.event = self._event
       edm.setContext(self.getContext())
-      
+
       # enable hlt property by the container key name
       if 'HLT' in key:
         edm.is_hlt = True
-      
+
       # set basepath into the root file
       if edm.useMetadataParams():
-        edm.setMetadataParams( {'basepath':metadataInputFile[1].rsplit('/',1)[0], 
+        edm.setMetadataParams( {'basepath':metadataInputFile[1].rsplit('/',1)[0],
                                  'file':metadataInputFile[0]} ) # remove the last name after '/' (tree name)
-      # If initializations is failed, we must remove this from the container 
+      # If initializations is failed, we must remove this from the container
       # service
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
@@ -210,13 +210,13 @@ class EventATLAS( Logger ):
       MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
 
     self.getContext().initialize()
-    
+
     return StatusCode.SUCCESS
 
 
 
   def execute(self):
-    for key, edm in self._containersSvc.iteritems():
+    for key, edm in self._containersSvc.items():
       if edm.execute().isFailure():
         MSG_WARNING( self,  'Can not execute the edm %s', key )
     return StatusCode.SUCCESS

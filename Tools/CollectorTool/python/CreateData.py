@@ -17,7 +17,7 @@ import numpy as np
 class ReaderPool( Logger ):
 
   def __init__(self, fList, reader, nFilesPerJob, nthreads):
-    
+
     Logger.__init__(self)
     from Gaugi import csvStr2List
     from Gaugi import expandFolders
@@ -25,7 +25,7 @@ class ReaderPool( Logger ):
     self._fList = expandFolders( fList )
     def chunks(l, n):
       """Yield successive n-sized chunks from l."""
-      for i in xrange(0, len(l), n):
+      for i in range(0, len(l), n):
         yield l[i:i + n]
     self._fList = [l for l in chunks(self._fList, nFilesPerJob)]
     self.process_pipe = []
@@ -42,13 +42,13 @@ class ReaderPool( Logger ):
         proc = SafeProcess( self._reader , job_id)
         proc(f)
         self.process_pipe.append( (job_id, proc) )
-      
+
       for proc in self.process_pipe:
         if not proc[1].is_alive():
           MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]) )
           self._outputs.append( proc[1].get( None ))
           self.process_pipe.remove(proc)
-    
+
     # Check pipe process
     # Protection for the last jobs
     while len(self.process_pipe)>0:
@@ -57,13 +57,13 @@ class ReaderPool( Logger ):
           MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]) )
           self._outputs.append( proc[1].get( None  ))
           self.process_pipe.remove(proc)
-   
-    return self._outputs 
+
+    return self._outputs
 
 
 
 class DataReader( Logger ):
-  
+
   def __init__( self, skip_these_keys,**kw ):
     Logger.__init__(self, kw)
     self._skip_these_keys = skip_these_keys
@@ -71,7 +71,7 @@ class DataReader( Logger ):
 
   def __call__(self, inputFiles  ):
     obj  =None
-    for idx, f in progressbar(enumerate(inputFiles), len(inputFiles), 'Reading...: ', 60,  logger = self._logger): 
+    for idx, f in progressbar(enumerate(inputFiles), len(inputFiles), 'Reading...: ', 60,  logger = self._logger):
       d = dict(load(f))
       obj = self.merge(d,obj,self._skip_these_keys) if obj else d
     return obj
@@ -83,10 +83,10 @@ class DataReader( Logger ):
       if cls.skip_key(key, skip_these_keys):  continue
       if to_dict[key] is not None:
         to_dict[key] = np.concatenate( (to_dict[key], from_dict[key]) )
-      else: 
+      else:
         to_dict[key] = from_dict[key]
     return to_dict
-  
+
   @classmethod
   def skip_key( cls, key, skip_these_keys ):
     for skip_this_key in skip_these_keys:
@@ -114,17 +114,17 @@ class CreateData(Logger):
 
 
   def __call__( self, sgnFileList, bkgFileList, ofile):
-  
+
     # get all keys
     paths = expandFolders(sgnFileList)
-    jobIDs = sorted(list(set([self._pat.match(f).group('binID')  for f in paths if self._pat.match(f) is not None]))) 
+    jobIDs = sorted(list(set([self._pat.match(f).group('binID')  for f in paths if self._pat.match(f) is not None])))
     npatterns = {}
     etBins = None; etaBins = None
 
     debug=False
 
     for id in jobIDs:
-      
+
       sgnSubFileList = []
       for f in expandFolders(sgnFileList):
         if id in f:  sgnSubFileList.append(f)
@@ -137,9 +137,9 @@ class CreateData(Logger):
       outputs = reader()
       sgnDict = outputs.pop()
       if len(outputs)>0:
-        for from_dict in progressbar(outputs, len(outputs), 'Mearging signal files: ', 60,  logger = self._logger): 
+        for from_dict in progressbar(outputs, len(outputs), 'Mearging signal files: ', 60,  logger = self._logger):
           DataReader.merge( from_dict, sgnDict, self._skip_these_keys )
-      
+
       bkgSubFileList = []
       for f in expandFolders(bkgFileList):
         if id in f:  bkgSubFileList.append(f)
@@ -154,7 +154,7 @@ class CreateData(Logger):
       outputs = reader()
       bkgDict = outputs.pop()
       if len(outputs)>0:
-        for from_dict in progressbar(outputs, len(outputs), 'Mearging background files: ', 60,  logger = self._logger): 
+        for from_dict in progressbar(outputs, len(outputs), 'Mearging background files: ', 60,  logger = self._logger):
           DataReader.merge( from_dict, bkgDict, self._skip_these_keys )
 
 
@@ -165,7 +165,7 @@ class CreateData(Logger):
             "etBinIdx"  : sgnDict["etBinIdx"],
             "etaBinIdx" : sgnDict["etaBinIdx"],
             }
-      
+
       #if not etBins:  etBins = sgnDict["etBins"]
       etBins = sgnDict["etBins"]
       #if not etaBins:  etaBins = sgnDict["etaBins"]
@@ -183,11 +183,11 @@ class CreateData(Logger):
       else:
         MSG_INFO(self, 'bkgData_%s : empty', id)
       MSG_INFO( self, "Saving: %s", ofile+'_'+id)
-      
+
       npatterns['sgnPattern_'+id] = int(sgnDict['pattern_'+id].shape[0])
       npatterns['bkgPattern_'+id] = int(bkgDict['pattern_'+id].shape[0])
       save( d, ofile+'_'+id , protocol = 'savez_compressed')
- 
+
     self.plotNSamples( npatterns, etBins, etaBins )
 
 
@@ -214,7 +214,7 @@ class CreateData(Logger):
         key = 'et%d_eta%d'%(etBin,etaBin)
         ttest.SetTextColor(4)
         ttest.DrawText( .5 + etBin, .75 + etaBin, 's: ' + str(npatterns['sgnPattern_'+key]) )
-        
+
         ttest.SetTextColor(2)
         ttest.DrawText( .5 + etBin, .25 + etaBin, 'b: ' + str(npatterns['bkgPattern_'+key]) )
 
@@ -230,7 +230,7 @@ class CreateData(Logger):
           histo1.GetXaxis().SetBinLabel(etBin+1, str(etaBin))
     c1.SetGrid()
     c1.Update()
-    c1.SaveAs(outname)   
+    c1.SaveAs(outname)
 
 
 

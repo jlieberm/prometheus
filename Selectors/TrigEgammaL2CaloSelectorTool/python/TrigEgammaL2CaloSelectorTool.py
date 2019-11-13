@@ -13,7 +13,7 @@ import math
 class _TrigEgammaL2CaloSelectorTool( Logger ):
 
   def __init__(self, name, **kw):
-    
+
     Logger.__init__(self)
     from Gaugi import retrieve_kw
     self._hadeTthr        = retrieve_kw( kw, 'HADETthr'				, NotSet	)
@@ -37,7 +37,7 @@ class _TrigEgammaL2CaloSelectorTool( Logger ):
 
     # get the equivalent L1 EmTauRoi object in athena
     emTauRoi = pClus.emTauRoI()
-    PassedCuts=0 
+    PassedCuts=0
     # initialise monitoring variables for each event
     dPhi          = -1.0
     eT_T2Calo     = -1.0
@@ -48,59 +48,59 @@ class _TrigEgammaL2CaloSelectorTool( Logger ):
     Wstot         = -1.0
     F3            = -1.0
     F1            = -1.0
-    
+
     # fill local variables for RoI reference position
     phiRef = emTauRoi.phi()
     etaRef = emTauRoi.eta()
-   
+
     if etaRef > 2.6:
       self._logger.debug('The cluster had eta coordinates beyond the EM fiducial volume.')
       return False
 
 
-    # correct phi the to right range (probably not needed anymore)   
-    if  math.fabs(phiRef) > np.pi: phiRef -= 2*np.pi; # correct phi if outside range 
-    
+    # correct phi the to right range (probably not needed anymore)
+    if  math.fabs(phiRef) > np.pi: phiRef -= 2*np.pi; # correct phi if outside range
+
     absEta = math.fabs( pClus.eta() )
     etaBin = -1
     if absEta > self._etabin[-1]:
       absEta=self._etabin[-1]
     # get the corrct eta bin range
     for idx, value in enumerate(self._etabin):
-      if ( absEta > self._etabin[idx] and absEta < self._etabin[idx+1] ): 
+      if ( absEta > self._etabin[idx] and absEta < self._etabin[idx+1] ):
       	etaBin = idx;
-    
-    # Is in crack region?	
+
+    # Is in crack region?
     inCrack = True if (absEta > 2.37 or (absEta > 1.37 and absEta < 1.52)) else False
-    
+
     # Deal with angle diferences greater than Pi
     dPhi =  math.fabs(pClus.phi() - phiRef);
     dPhi = dPhi if (dPhi < np.pi) else  (2*np.pi - dPhi)
-  
 
-    # calculate cluster quantities // definition taken from TrigElectron constructor     
+
+    # calculate cluster quantities // definition taken from TrigElectron constructor
     if ( pClus.emaxs1() + pClus.e2tsts1() ) > 0 :
     	energyRatio = ( pClus.emaxs1() - pClus.e2tsts1() ) / float( pClus.emaxs1() + pClus.e2tsts1() )
-    
+
     # (VD) here the definition is a bit different to account for the cut of e277 @ EF
-    if ( pClus.e277()!= 0.): 
+    if ( pClus.e277()!= 0.):
     	rCore = pClus.e237() / float(pClus.e277())
-    
+
     # fraction of energy deposited in 1st sampling
     #if ( math.fabs(pClus.energy()) > 0.00001) :
     #	F1 = (pClus.energy(CaloSampling.EMB1)+pClus.energy(CaloSampling.EME1))/float(pClus.energy())
     F1 = pClus.f1()
 
     eT_T2Calo  = float(pClus.et());
-    
+
     if ( eT_T2Calo!=0 and pClus.eta()!=0 ):
     	 hadET_T2Calo = pClus.ehad1()/math.cosh(math.fabs(pClus.eta()))/eT_T2Calo
-    
+
     # extract Weta2 varable
     Weta2 = pClus.weta2()
     # extract Wstot varable
     Wstot = pClus.wstot()
-    
+
     # extract F3 (backenergy i EM calorimeter
     #e0 = pClus.energy(CaloSampling.PreSamplerB) + pClus.energy(CaloSampling.PreSamplerE)
     #e1 = pClus.energy(CaloSampling.EMB1) 				+ pClus.energy(CaloSampling.EME1)
@@ -113,49 +113,49 @@ class _TrigEgammaL2CaloSelectorTool( Logger ):
     # apply cuts: DeltaEta(clus-ROI)
     if ( math.fabs(pClus.eta() - etaRef) > self._detacluster ):
       return False
-    
+
     PassedCuts+=1  #Deta
-    
+
     # DeltaPhi(clus-ROI)
     if ( dPhi > self._dphicluster ):
     	self._logger.debug('dphi > dphicluster')
     	return False
 
     PassedCuts+=1 #DPhi
-    
+
     # eta range
     if ( etaBin==-1 ):  # VD
       self._logger.debug("Cluster eta: %1.3f  outside eta range ",absEta )
       return False
     else:
       self._logger.debug("eta bin used for cuts ")
-    
+
     PassedCuts+=1 # passed eta cut
-    
+
     # Rcore
     if ( rCore < self._carcorethr[etaBin] ):  return False
     PassedCuts+=1 # Rcore
-    
+
     # Eratio
     if ( inCrack or F1<self._F1thr[etaBin] ):
       self._logger.debug("TrigEMCluster: InCrack= %d F1=%1.3f",inCrack,F1 )
-    else: 
+    else:
       if ( energyRatio < self._caeratiothr[etaBin] ): return False
-    
+
     PassedCuts+=1 # Eratio
     if(inCrack): energyRatio = -1; # Set default value in crack for monitoring.
-    
+
     # ET_em
     if ( eT_T2Calo*1e-3 < self._eTthr[etaBin]): return False
     PassedCuts+=1 # ET_em
-    
-    hadET_cut = 0.0; 
+
+    hadET_cut = 0.0;
     # find which ET_had to apply : this depends on the ET_em and the eta bin
     if ( eT_T2Calo >  self._eT2thr[etaBin] ):
       hadET_cut = self._hadeT2thr[etaBin]
     else:
-      hadET_cut = self._hadeTthr[etaBin] 
-    
+      hadET_cut = self._hadeTthr[etaBin]
+
     # ET_had
     if ( hadET_T2Calo > hadET_cut ): return False
     PassedCuts+=1 #ET_had
@@ -179,7 +179,7 @@ class _TrigEgammaL2CaloSelectorTool( Logger ):
   def finalize(self):
     return StatusCode.SUCCESS
 
-     
+
 
 
 
@@ -205,7 +205,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   def initialize(self):
 
     # take from hypo config
-    from TrigEgammaL2CaloSelectorCuts import L2CaloCutMaps
+    from .TrigEgammaL2CaloSelectorCuts import L2CaloCutMaps
     from Gaugi.constants  import GeV
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
 

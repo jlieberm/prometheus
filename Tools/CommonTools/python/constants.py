@@ -1,7 +1,7 @@
 __all__ = ['nvtx_bins','zee_etbins','jpsiee_etbins','coarse_etbins','default_etabins','ringer_tuning_etbins',
           'ringer_tuning_etabins', 'RingerLayers','ringLowerEdges','ringHighEdges','ringNBins',
           'lh_thres_etabins', 'lh_thres_etbins', 'lh_tuning_etabins', 'lh_tuning_etbins',
-          'standardQuantitiesEtaEdge', 'standardQuantitiesHighEdges', 'standardQuantitiesLowerEdges', 
+          'standardQuantitiesEtaEdge', 'standardQuantitiesHighEdges', 'standardQuantitiesLowerEdges',
           'standardQuantitiesSpecialBins', 'standardQuantitiesNBins', 'standardQuantitiesPDFsHighEdges',
           'standardQuantitiesPDFsLowerEdges', 'standardQuantitiesPDFsNBins', 'specialElectronBins', 'basicInfoQuantities',
           'basicInfoNBins', 'basicInfoLowerEdges', 'basicInfoHighEdges','fudge_etbins','fudge_etabins',
@@ -66,7 +66,7 @@ zee_etbins = [0.,2.,4.,6.,8.,10.,12.,14.,16.,18.,20.,22.,24.,26.,28.,
 
 
 
-jpsiee_etbins =[ 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 
+jpsiee_etbins =[ 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5,
                  8.0, 8.5, 9.0, 9.5, 10.0,10.5,11.0,11.5,12.0,12.5,13.0,13.5,14.0,14.5, 15.0]
 
 nvtx_bins = [                                         -0.5,
@@ -108,7 +108,7 @@ scalefactor_etabins     = [-2.47, -2.37, -1.54, -1.37, -0.8, 0.0,  0.8 , 1.37, 1
 
 
 
-nEtaLHTuning = len(lh_tuning_etabins) - 1 
+nEtaLHTuning = len(lh_tuning_etabins) - 1
 nEtLHTuning =  len(lh_tuning_etbins) - 1
 
 standardQuantitiesSpecialBins = {
@@ -141,7 +141,7 @@ standardQuantitiesLowerEdges = { "f1":                         -0.02,
                                 "d0significance":             0.00,
                                 "eProbabilityHT":             -0.05,
                                 "TRT_PID":                    -1.00,
-                                "DeltaPOverP":                -1.2,    
+                                "DeltaPOverP":                -1.2,
                               }
 standardQuantitiesHighEdges = {
                               "f1":                        0.7,
@@ -174,9 +174,9 @@ standardQuantitiesNBins = {
                            "deltaPhiRescaled2":     200,
                            "trackd0pvunbiased":     200,
                            "d0significance":        100,
-                           "eProbabilityHT":        100, 
-                           "TRT_PID" :              100, 
-                           "DeltaPOverP":           100, 
+                           "eProbabilityHT":        100,
+                           "TRT_PID" :              100,
+                           "DeltaPOverP":           100,
                           }
 
 standardQuantitiesPDFsLowerEdges = {
@@ -305,7 +305,7 @@ standardQuantitiesLowerEdges = { "f1":                         -0.02,
                                 "d0significance":             0.00,
                                 "eProbabilityHT":             -0.05,
                                 "TRT_PID":                    -1.00,
-                                "DeltaPOverP":                -1.2,    
+                                "DeltaPOverP":                -1.2,
                               }
 standardQuantitiesHighEdges = {
                               "f1":                        0.7,
@@ -338,9 +338,9 @@ standardQuantitiesNBins = {
                            "deltaPhiRescaled2":     200,
                            "trackd0pvunbiased":     200,
                            "d0significance":        100,
-                           "eProbabilityHT":        100, 
-                           "TRT_PID" :              100, 
-                           "DeltaPOverP":           100, 
+                           "eProbabilityHT":        100,
+                           "TRT_PID" :              100,
+                           "DeltaPOverP":           100,
                           }
 
 specialElectronBins = { 'f1' : [0]
@@ -396,7 +396,7 @@ electronQuantities = { 'et' : 'E_{T}'
 def electronLatexStr(var):
   try:
     return electronQuantities[var]
-  except KeyError, e:
+  except KeyError as e:
     raise KeyError( 'Latex string is unavailable for quantity: %s' % str(var) )
 
 basicInfoQuantities = { 'et' : 'E_{T}'
@@ -409,7 +409,7 @@ basicInfoQuantities = { 'et' : 'E_{T}'
 def basicInfoLatexStr(var):
   try:
     return basicInfoQuantities[var]
-  except KeyError, e:
+  except KeyError as e:
     raise KeyError( 'Latex string is unavailable for quantity: %s' % str(var) )
 
 

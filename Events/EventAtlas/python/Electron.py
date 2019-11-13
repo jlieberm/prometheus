@@ -5,7 +5,7 @@ __all__ = ['Electron', 'ElectronPid', 'EgammaParameters']
 from EventCommon import EDM
 from Gaugi  import StatusCode, EnumStringification
 from prometheus.enumerations  import Dataframe as DataframeEnum
-from EventAtlas.TrackParticle   import TrackCaloMatchType 
+from EventAtlas.TrackParticle   import TrackCaloMatchType
 import math
 
 class ElectronPid(EnumStringification):
@@ -23,94 +23,94 @@ class ElectronPid(EnumStringification):
 class EgammaParameters(EnumStringification):
 
      	# brief uncalibrated energy (sum of cells) in presampler in a 1x1 window in cells in eta X phi
-      e011 = 0     
+      e011 = 0
       # brief uncalibrated energy (sum of cells) in presampler in a 3x3 window in cells in eta X phi
-      e033 = 1     
+      e033 = 1
       # brief uncalibrated energy (sum of cells) in strips in a 3x2 window in cells in eta X phi
-      e132 = 2     
+      e132 = 2
       # brief uncalibrated energy (sum of cells) in strips in a 15x2 window in cells in eta X phi
-      e1152 = 3    
+      e1152 = 3
       # brief transverse energy in the first sampling of the hadronic calorimeters behind the cluster calculated from ehad1
-      ethad1 = 4   
+      ethad1 = 4
       # brief ET leakage into hadronic calorimeter with exclusion of energy in CaloSampling::TileGap3
-      ethad = 5    
+      ethad = 5
       # brief E leakage into 1st sampling of had calo (CaloSampling::HEC0 + CaloSampling::TileBar0 + CaloSampling::TileExt0)
-      ehad1 = 6    
-      # brief E1/E = fraction of energy reconstructed in the first sampling, where E1 is energy in all strips belonging to the 
+      ehad1 = 6
+      # brief E1/E = fraction of energy reconstructed in the first sampling, where E1 is energy in all strips belonging to the
       # cluster and E is the total energy reconstructed in the electromagnetic calorimeter cluster
-      f1 = 7      
+      f1 = 7
       # brief fraction of energy reconstructed in 3rd sampling
-      f3 = 8      
-      # brief E1(3x1)/E = fraction of the energy reconstructed in the first longitudinal compartment of the electromagnetic 
-      # calorimeter, where E1(3x1) the energy reconstructed in +/-3 strips in eta, centered around the maximum energy strip and 
+      f3 = 8
+      # brief E1(3x1)/E = fraction of the energy reconstructed in the first longitudinal compartment of the electromagnetic
+      # calorimeter, where E1(3x1) the energy reconstructed in +/-3 strips in eta, centered around the maximum energy strip and
       # E is the energy reconstructed in the electromagnetic calorimeter
-      f1core = 9  
-      # brief E3(3x3)/E fraction of the energy reconstructed in the third compartment of the electromagnetic calorimeter, 
+      f1core = 9
+      # brief E3(3x3)/E fraction of the energy reconstructed in the third compartment of the electromagnetic calorimeter,
       # where E3(3x3), energy in the back sampling, is the sum of the energy contained in a 3x3 window around the maximum energy cell
-      f3core = 10   
+      f3core = 10
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 3x3 (in cell units eta X phi)
-      e233 = 11     
+      e233 = 11
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 3x5
-      e235 = 12     
+      e235 = 12
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 5x5
-      e255 = 13     
+      e255 = 13
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 3x7
-      e237 = 14     
+      e237 = 14
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 7x7
-      e277 = 15    
+      e277 = 15
       # brief uncalibrated energy (sum of cells) of the third sampling in a rectangle of size 3x3
-      e333 = 16     
+      e333 = 16
       # brief uncalibrated energy (sum of cells) of the third sampling in a rectangle of size 3x5
-      e335 = 17     
+      e335 = 17
       # brief uncalibrated energy (sum of cells) of the third sampling in a rectangle of size 3x7
-      e337 = 18     
+      e337 = 18
       # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 7x7
-      e377 = 19     
-      # brief shower width using +/-3 strips around the one with the maximal energy deposit: 
-      # w3 strips = sqrt{sum(Ei)x(i-imax)^2/sum(Ei)}, where i is the number of the strip and imax the strip number of the most energetic one 
-      weta1 = 20    
-      # brief the lateral width is calculated with a window of 3x5 cells using the energy weighted  sum over all cells, 
-			# which depends on the particle impact point inside the cell: weta2 = 
-      # sqrt(sum Ei x eta^2)/(sum Ei) -((sum Ei x eta)/(sum Ei))^2, where Ei is the energy of the i-th cell 
-      weta2 = 21    
+      e377 = 19
+      # brief shower width using +/-3 strips around the one with the maximal energy deposit:
+      # w3 strips = sqrt{sum(Ei)x(i-imax)^2/sum(Ei)}, where i is the number of the strip and imax the strip number of the most energetic one
+      weta1 = 20
+      # brief the lateral width is calculated with a window of 3x5 cells using the energy weighted  sum over all cells,
+			# which depends on the particle impact point inside the cell: weta2 =
+      # sqrt(sum Ei x eta^2)/(sum Ei) -((sum Ei x eta)/(sum Ei))^2, where Ei is the energy of the i-th cell
+      weta2 = 21
       # brief 2nd max in strips calc by summing 3 strips
-      e2ts1 = 22   
+      e2ts1 = 22
       # brief energy of the cell corresponding to second energy maximum in the first sampling
-      e2tsts1 = 23  
-      # brief shower shape in the shower core : [E(+/-3)-E(+/-1)]/E(+/-1), where E(+/-n) is 
+      e2tsts1 = 23
+      # brief shower shape in the shower core : [E(+/-3)-E(+/-1)]/E(+/-1), where E(+/-n) is
       # the energy in +- n strips around the strip with highest energy
-      fracs1 = 24   
+      fracs1 = 24
       # brief same as egammaParameters::weta1 but without corrections  on particle impact point inside the cell
-      widths1 = 25  
+      widths1 = 25
       # brief same as egammaParameters::weta2 but without corrections on particle impact point inside the cell
-      widths2 = 26  
-      # brief relative position in eta within cell in 1st sampling 
-      poscs1 = 27  
+      widths2 = 26
+      # brief relative position in eta within cell in 1st sampling
+      poscs1 = 27
       # brief relative position in eta within cell in 2nd sampling
-      poscs2= 28   
-      # brief uncorr asymmetry in 3 strips in the 1st sampling 
-      asy1 = 29    
+      poscs2= 28
+      # brief uncorr asymmetry in 3 strips in the 1st sampling
+      asy1 = 29
       # brief difference between shower cell and predicted track in +/- 1 cells
-      pos = 30 
-      # brief Difference between the track and the shower positions: 
-      # sum_{i=i_m-7}^{i=i_m+7}E_i x (i-i_m) / sum_{i=i_m-7}^{i=i_m+7}E_i, 
-      # The difference between the track and the shower positions measured 
-      # in units of distance between the strips, where i_m is the impact cell 
-      # for the track reconstructed in the inner detector and E_i is the energy 
+      pos = 30
+      # brief Difference between the track and the shower positions:
+      # sum_{i=i_m-7}^{i=i_m+7}E_i x (i-i_m) / sum_{i=i_m-7}^{i=i_m+7}E_i,
+      # The difference between the track and the shower positions measured
+      # in units of distance between the strips, where i_m is the impact cell
+      # for the track reconstructed in the inner detector and E_i is the energy
       # reconstructed in the i-th cell in the eta direction for constant phi given by the track parameters
-      pos7 = 31 
+      pos7 = 31
       # brief  barycentre in sampling 1 calculated in 3 strips
-      barys1 =32   
-      # brief shower width is determined in a window detaxdphi = 0,0625x~0,2, corresponding typically to 20 strips in 
+      barys1 =32
+      # brief shower width is determined in a window detaxdphi = 0,0625x~0,2, corresponding typically to 20 strips in
       # eta : wtot1=sqrt{sum Ei x ( i-imax)^2 / sum Ei}, where i is the strip number and imax the strip number of the first local maximum
-      wtots1 = 33   
+      wtots1 = 33
       # brief energy reconstructed in the strip with the minimal value between the first and second maximum
-      emins1 = 34   
+      emins1 = 34
       # brief energy of strip with maximal energy deposit
-      emaxs1 = 35    
-      # brief  1-ratio of energy in 3x3 over 3x7 cells; 
+      emaxs1 = 35
+      # brief  1-ratio of energy in 3x3 over 3x7 cells;
       #        E(3x3) = E0(1x1) + E1(3x1) + E2(3x3) + E3(3x3); E(3x7) = E0(3x3) + E1(15x3) + E2(3x7) + E3(3x7)
-      r33over37allcalo = 36     
+      r33over37allcalo = 36
       # brief core energy in em calo  E(core) = E0(3x3) + E1(15x2) + E2(5x5) + E3(3x5)
       ecore = 37
       # brief  e237/e277
@@ -132,7 +132,7 @@ class Electron(EDM):
 
   # define all skimmed branches here.
   __eventBranches = {
-      "SkimmedNtuple" : {"Electron":[ 
+      "SkimmedNtuple" : {"Electron":[
                          # default skimmed ntuple branches
                          "TightLLH_DataDriven_Rel21_Run2_2018",
                          "MediumLLH_DataDriven_Rel21_Run2_2018",
@@ -143,17 +143,17 @@ class Electron(EDM):
                          #"LooseLLH_DataDriven_Rel21_Run2_2017",
                          #"VeryLooseLLH_DataDriven_Rel21_Run2_2017",
                          'el_pt',
-                         'el_et', 
-                         'el_eta', 
-                         'el_phi', 
-                         'el_reta', 
-                         'el_eratio' , 
-                         'el_weta2', 
-                         'el_wtots1', 
-                         'el_rhad', 
-                         'el_rhad1', 
+                         'el_et',
+                         'el_eta',
+                         'el_phi',
+                         'el_reta',
+                         'el_eratio' ,
+                         'el_weta2',
+                         'el_wtots1',
+                         'el_rhad',
+                         'el_rhad1',
                          'el_rphi' ,
-                         'el_f1', 
+                         'el_f1',
                          'el_f3',
                          'el_e277',
                          'el_deltaEta1',
@@ -161,7 +161,7 @@ class Electron(EDM):
                          'el_deltaPhi2',
                          'el_deltaPhiRescaled2',
                          'el_calo_ringsE'],
-                         
+
                          "HLT__Electron":[
                          # default skimmed ntuple for trigger branches
                          "trig_EF_TightLLH_DataDriven_Rel21_Run2_2018",
@@ -173,17 +173,17 @@ class Electron(EDM):
                          #"trig_EF_LooseLLH_DataDriven_Rel21_Run2_2017",
                          #"trig_EF_VeryLooseLLH_DataDriven_Rel21_Run2_2017",
                          'trig_EF_el_pt',
-                         'trig_EF_el_et', 
-                         'trig_EF_el_eta', 
-                         'trig_EF_el_phi', 
-                         'trig_EF_el_reta', 
-                         'trig_EF_el_eratio' , 
-                         'trig_EF_el_weta2', 
-                         'trig_EF_el_wtots1', 
-                         'trig_EF_el_rhad', 
-                         'trig_EF_el_rhad1', 
+                         'trig_EF_el_et',
+                         'trig_EF_el_eta',
+                         'trig_EF_el_phi',
+                         'trig_EF_el_reta',
+                         'trig_EF_el_eratio' ,
+                         'trig_EF_el_weta2',
+                         'trig_EF_el_wtots1',
+                         'trig_EF_el_rhad',
+                         'trig_EF_el_rhad1',
                          'trig_EF_el_rphi' ,
-                         'trig_EF_el_f1', 
+                         'trig_EF_el_f1',
                          'trig_EF_el_f3',
                          'trig_EF_el_e277',
                          'trig_EF_el_deltaEta1',
@@ -192,16 +192,16 @@ class Electron(EDM):
                          'trig_EF_el_deltaPhiRescaled2',
                          #'trig_EF_el_calo_ringsE'
                          ],
- 
+
 
 
                          },
 
       "PhysVal"       : {'Electron':[
-                          
+
                           'el_hasCalo',
                           'el_hasTrack',
-                          
+
                           # shower shapes
                           'el_e',
                           'el_et',
@@ -226,14 +226,14 @@ class Electron(EDM):
                           'el_e277',
                           'el_etCone',
                           'el_ptCone',
-                          
-                          # trackCaloMatch branches 
+
+                          # trackCaloMatch branches
                           'el_deltaEta1',
                           'el_deta2',
                           'el_dphi2',
                           'el_dphiresc',
                           'el_deltaPhiRescaled2',
-                          
+
                           # selector branches
                           'el_loose',
                           'el_medium',
@@ -241,27 +241,27 @@ class Electron(EDM):
                           'el_lhvloose',
                           'el_lhloose',
                           'el_lhmedium',
-                          'el_lhtight', 
+                          'el_lhtight',
                           'el_multiLepton',
-                          
+
                           # extra calo branches
                           'el_calo_et',
                           'el_calo_eta',
                           'el_calo_phi',
                           'el_calo_etaBE2',
                           'el_calo_e',
-                          
-                          # Extra 
+
+                          # Extra
                           'el_ringsE',
                           'el_nGoodVtx',
                           'el_nPileupPrimaryVtx',
- 
+
                         ],
                         'HLT__Electron':[
-                          
+
                           'trig_EF_el_hasCalo',
                           'trig_EF_el_hasTrack',
-                          
+
                           # shower shapes
                           'trig_EF_el_e',
                           'trig_EF_el_et',
@@ -293,7 +293,7 @@ class Electron(EDM):
                           'trig_EF_el_deta2',
                           'trig_EF_el_dphi2',
                           'trig_EF_el_dphiresc',
-                          
+
                           # selector branches
                           'trig_EF_el_loose',
                           'trig_EF_el_medium',
@@ -316,8 +316,8 @@ class Electron(EDM):
                           'trig_EF_calo_lhvloose',
                           'trig_EF_calo_lhloose',
                           'trig_EF_calo_lhmedium',
-                          'trig_EF_calo_lhtight', 
-                          ] 
+                          'trig_EF_calo_lhtight',
+                          ]
                           }
                 }
 
@@ -330,7 +330,7 @@ class Electron(EDM):
         branches = self.__eventBranches['SkimmedNtuple']["HLT__Electron"]
       else:
         branches = self.__eventBranches['SkimmedNtuple']["Electron"]
-      # Link all branches 
+      # Link all branches
       for branch in branches:
         self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
         self._branches.append(branch) # hold all branches from the body class
@@ -339,7 +339,7 @@ class Electron(EDM):
         branches = self.__eventBranches["PhysVal"]["HLT__Electron"]
       else:
         branches = self.__eventBranches["PhysVal"]["Electron"]
-      # loop over branches  
+      # loop over branches
       for branch in branches:
         self.setBranchAddress( self._tree, branch  , self._event)
         self._branches.append(branch) # hold all branches from the body class
@@ -376,7 +376,7 @@ class Electron(EDM):
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:  
+      if self._is_hlt:
         return getattr(self._event, ('elCand%d_trig_EF_el_eta')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_eta')%(self._elCand))
@@ -477,7 +477,7 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_weta2')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_weta2')%(self._elCand))
-    
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self._event.trig_EF_el_weta2[self.getPos()]
@@ -499,7 +499,7 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_rhad')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_rhad')%(self._elCand))
-    
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self._event.trig_EF_el_Rhad[self.getPos()]
@@ -519,7 +519,7 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_rhad1')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_rhad1')%(self._elCand))
- 
+
 
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
@@ -542,7 +542,7 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_rphi')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_rphi')%(self._elCand))
-    
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self._event.trig_EF_el_Rphi[self.getPos()]
@@ -562,7 +562,7 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_f1')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_f1')%(self._elCand))
- 
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self._event.trig_EF_el_f1[self.getPos()]
@@ -582,8 +582,8 @@ class Electron(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_f3')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_f3')%(self._elCand))
- 
-    
+
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self._event.trig_EF_el_f3[self.getPos()]
@@ -641,50 +641,50 @@ class Electron(EDM):
 
 
   def showerShapeValue( self, showerShapeType ):
-    
+
     # brief (emaxs1-e2tsts1)/(emaxs1+e2tsts1)
     if showerShapeType is EgammaParameters.Eratio:
-			return self.eratio()
+        return self.eratio()
     # brief  e237/e277
     elif showerShapeType is EgammaParameters.Reta:
-			return self.reta()
+        return self.reta()
     # brief  e233/e237
     elif showerShapeType is EgammaParameters.Rphi:
-			return self.rphi()
-    # brief E1/E = fraction of energy reconstructed in the first sampling, where E1 is energy in all strips belonging to the 
+        return self.rphi()
+    # brief E1/E = fraction of energy reconstructed in the first sampling, where E1 is energy in all strips belonging to the
     # cluster and E is the total energy reconstructed in the electromagnetic calorimeter cluster
     elif showerShapeType is EgammaParameters.f1:
-			return self.f1()
+        return self.f1()
     # brief fraction of energy reconstructed in 3rd sampling
     elif showerShapeType is EgammaParameters.f3:
-			return self.f3()
+        return self.f3()
     # brief shower width is determined in a window detaxdphi = 0,0625x~0,2, corresponding typically to 20 strips in
     # eta : wtot1=sqrt{sum Ei x ( i-imax)^2 / sum Ei}, where i is the strip number and imax the strip number of the first local maximum
     elif showerShapeType is EgammaParameters.wtots1:
-			return self.wtots1()
-    # brief shower width using +/-3 strips around the one with the maximal energy deposit: 
-    # w3 strips = sqrt{sum(Ei)x(i-imax)^2/sum(Ei)}, where i is the number of the strip and imax the strip number of the most energetic one 
+        return self.wtots1()
+    # brief shower width using +/-3 strips around the one with the maximal energy deposit:
+    # w3 strips = sqrt{sum(Ei)x(i-imax)^2/sum(Ei)}, where i is the number of the strip and imax the strip number of the most energetic one
     elif showerShapeType is EgammaParameters.weta1:
-			return self.weta1()
-    # brief shower width using +/-3 strips around the one with the maximal energy deposit: 
+        return self.weta1()
+    # brief shower width using +/-3 strips around the one with the maximal energy deposit:
       # w3 strips = sqrt{sum(Ei)x(i-imax)^2/sum(Ei)}, where i is the number of the strip and imax the strip number of the most energetic one
     elif showerShapeType is EgammaParameters.weta2:
-			return self.weta2()
+        return self.weta2()
     # brief uncalibrated energy (sum of cells) of the middle sampling in a rectangle of size 7x7
     elif showerShapeType is EgammaParameters.e277:
-			return self.e277()
+        return self.e277()
     # brief e2tsts1-emins1
     elif showerShapeType is EgammaParameters.DeltaE:
-			return self.deltaE()
+        return self.deltaE()
     # brief ethad1/et
     elif showerShapeType is EgammaParameters.Rhad1:
-			return self.rhad1()
+        return self.rhad1()
     # brief ethad/et
     elif showerShapeType is EgammaParameters.Rhad:
-			return self.rhad()
+        return self.rhad()
     else:
-      self._logger.warning('Unknow ShowerShape type. %s', EgammaParameters.tostring(showerShapeType))
-      return -999
+        self._logger.warning('Unknow ShowerShape type. %s', EgammaParameters.tostring(showerShapeType))
+        return -999
 
 
   # trackCaloMatchValue
@@ -702,7 +702,7 @@ class Electron(EDM):
     else:
       self._logger.warning("Impossible to retrieve the value of deltaEta1. Unknow dataframe")
       return -999
- 
+
   def deta1(self):
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       if self._is_hlt:
@@ -717,8 +717,8 @@ class Electron(EDM):
     else:
       self._logger.warning("Impossible to retrieve the value of deltaEta1. Unknow dataframe")
       return -999
- 
-  
+
+
   # trackCaloMatchValue
   def deta2(self):
     """
@@ -800,45 +800,45 @@ class Electron(EDM):
   def trackCaloMatchValue( self, matchType ):
 
     # brief difference between the cluster eta (presampler) and
-    # the eta of the track extrapolated to the presampler 
+    # the eta of the track extrapolated to the presampler
     if matchType is TrackCaloMatchType.deltaEta0:
       return -999
-    # brief difference between the cluster eta (first sampling) and the eta of the track extrapolated to the 
-    # first sampling: |eta_stripscluster -eta_ID|, where eta_stripscluster is computed 
-    # in the first sampling of the electromagnetic calorimeter, where the granularity is very fine, and eta_ID is the pseudo-rapidity 
-    # of the track extrapolated to the calorimeter 
+    # brief difference between the cluster eta (first sampling) and the eta of the track extrapolated to the
+    # first sampling: |eta_stripscluster -eta_ID|, where eta_stripscluster is computed
+    # in the first sampling of the electromagnetic calorimeter, where the granularity is very fine, and eta_ID is the pseudo-rapidity
+    # of the track extrapolated to the calorimeter
     if matchType is TrackCaloMatchType.deltaEta1:
       return self.deltaEta1()
-    # brief difference between the cluster eta (second sampling) and the eta of the track extrapolated to the second sampling 
+    # brief difference between the cluster eta (second sampling) and the eta of the track extrapolated to the second sampling
     if matchType is TrackCaloMatchType.deltaEta2:
       return self.deltaEta2()
     # brief difference between the cluster eta (3rd sampling) and
-    # the eta of the track extrapolated to the 3rd sampling 
+    # the eta of the track extrapolated to the 3rd sampling
     if matchType is TrackCaloMatchType.deltaPhi0:
       return -999
     # brief difference between the cluster eta (1st sampling) and
-    # the eta of the track extrapolated to the 1st sampling (strips) 
+    # the eta of the track extrapolated to the 1st sampling (strips)
     if matchType is TrackCaloMatchType.deltaPhi1:
       return -999
     # brief difference between the cluster phi (second sampling) and the phi of the track
     # extrapolated to the second sampling : |phi_middlecluster -phi_ID|, where phi_middlecluster
     # is computed in the second compartment of the electromagnetic calorimeter and phi_ID is the
-    # azimuth of the track extrapolated to the calorimeter 
+    # azimuth of the track extrapolated to the calorimeter
     if matchType is TrackCaloMatchType.deltaPhi2:
       return self.deltaPhi2()
     # brief difference between the cluster phi (presampler) and
     # the eta of the track extrapolated to the presampler  from the perigee with a rescaled
-    # momentum. 
+    # momentum.
     if matchType is TrackCaloMatchType.deltaPhiRescaled0:
       return self.deltaPhiRescaled0()
     # brief difference between the cluster eta (1st sampling) and
     # the eta of the track extrapolated to the 1st sampling (strips) from the perigee with a rescaled
-    # momentum. 
+    # momentum.
     if matchType is TrackCaloMatchType.deltaPhiRescaled1:
       return -999
     # brief difference between the cluster phi (second sampling) and the phi of the track
     # extrapolated to the second sampling from the perigee with a rescaled
-    # momentum. 
+    # momentum.
     if matchType is TrackCaloMatchType.deltaPhiRescaled2:
       return self.deltaPhiRescaled2()
 
@@ -868,7 +868,7 @@ class Electron(EDM):
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Electron object.")
         return -999
-      else:  
+      else:
         return getattr(self._event, ('elCand%d_el_calo_ringsE')%(self._elCand))
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
@@ -891,7 +891,7 @@ class Electron(EDM):
       else:
         rings = stdvector_to_list(getattr(self._event, ('elCand%d_el_calo_ringsE')%(self._elCand)))
         return True if len(rings)!=0 else False
-    
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Electron object.")
@@ -905,7 +905,7 @@ class Electron(EDM):
 
 
   def size(self):
-    """		
+    """
     	Retrieve the electro container size
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
@@ -924,7 +924,7 @@ class Electron(EDM):
     return False if self.size()>0 else True
 
   def __iter__(self):
-    self.setPos(-1) # force to be -1 
+    self.setPos(-1) # force to be -1
     if self.size()>0:
       while (self.getPos()+1) < self.size():
         self.setPos(self.getPos()+1)
@@ -939,7 +939,7 @@ class Electron(EDM):
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
 
       return self.retrieve('CaloClusterContainer')
-    
+
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       # The electron object is empty
       if self.empty():
@@ -990,7 +990,7 @@ class Electron(EDM):
 
 
   def accept( self,  pidname ):
-   
+
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
 
       if pidname in self.__eventBranches["SkimmedNtuple"]['HLT__Electron'] and self._is_hlt:

@@ -9,7 +9,7 @@ from Gaugi import StatusCode
 class EventContext(Logger):
 
   def __init__(self, t):
-    Logger.__init__(self) 
+    Logger.__init__(self)
     import collections
     self._containers = collections.OrderedDict()
     self._tree=t
@@ -36,7 +36,7 @@ class EventContext(Logger):
 
   def execute(self):
     self._tree.GetEntry( self.getEntry() )
-    for key, edm in self._containers.iteritems():
+    for key, edm in self._containers.items():
       if edm.execute().isFailure():
         MSG_WARNING(self,  'Can not execute the edm %s', key )
     return StatusCode.SUCCESS

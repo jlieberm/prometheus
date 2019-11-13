@@ -8,7 +8,7 @@ from .EventSelection import *
 
 from . import Interpreter
 __all__.extend( Interpreter.__all__ )
-from Interpreter import *
+from .Interpreter import *
 
 
 

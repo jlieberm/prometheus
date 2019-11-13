@@ -30,35 +30,35 @@ class EmulationTool( Algorithm ):
   def initialize(self):
 
     ### Electron Selectors
-    for key, tool in self._el_selector.iteritems():
+    for key, tool in self._el_selector.items():
       MSG_INFO( self, 'Initializing %s tool',key)
       if tool.initialize().isFailure():
         MSG_ERROR( self, 'Can not initialize %s',tool.name)
- 
+
     ### Photon Selectors
-    for key, tool in self._ph_selector.iteritems():
+    for key, tool in self._ph_selector.items():
       MSG_INFO( self, 'Initializing %s tool',key)
       if tool.initialize().isFailure():
         MSG_ERROR( self, 'Can not initialize %s',tool.name)
- 
-    ### FastCalo selectors  
-    for key, tool in self._fc_selector.iteritems():
+
+    ### FastCalo selectors
+    for key, tool in self._fc_selector.items():
       MSG_INFO( self, 'Initializing %s tool',key)
       if tool.initialize().isFailure():
         MSG_ERROR( self, 'Can not initialize %s',tool.name)
-    
+
     return StatusCode.SUCCESS
 
 
 
   def execute(self, context):
-    
+
     event = context.getHandler("EventInfoContainer")
     el    = context.getHandler("ElectronContainer")
     MSG_DEBUG( self, "execute e/g emulation tool")
     # Build each selector for electrons and decorate
     # the Offline electron with the Likelihood decision
-    for key, tool in self._el_selector.iteritems():
+    for key, tool in self._el_selector.items():
       passed = tool.accept(el, event.nvtx() )
       el.setDecor( key, passed )
       if type(tool) is LHSelectorTool:
@@ -74,9 +74,9 @@ class EmulationTool( Algorithm ):
       fc    = context.getHandler("HLT__FastCaloContainer")
       # Build each selector for FastCalo (only ringer) and decorate
       # the HLT electron with the Fast Ringer decision
-      for key, tool in self._fc_selector.iteritems():
+      for key, tool in self._fc_selector.items():
         passed = tool.accept(fc, event.avgmu() )
-        hlt_el.setDecor( key, passed )      
+        hlt_el.setDecor( key, passed )
         if hasattr(tool, "getDiscriminant"):
           # set the neural network output as a decoration
           hlt_el.setDecor( key+'_discriminant', tool.getDiscriminant() )
@@ -96,17 +96,17 @@ class EmulationTool( Algorithm ):
       hlt_el.setDecor('HLT__isLHMediumCaloOnly', getDecision(hlt_el, 'trig_EF_calo_lhmedium'))
       hlt_el.setDecor('HLT__isLHLooseCaloOnly' , getDecision(hlt_el, 'trig_EF_calo_lhloose') )
       hlt_el.setDecor('HLT__isLHVLooseCaloOnly', getDecision(hlt_el, 'trig_EF_calo_lhvloose'))
-    
-    
+
+
     elif self.dataframe is Dataframe.SkimmedNtuple_v2:
       fc = context.getHandler("HLT__FastCaloContainer")
-      for key, tool in self._fc_selector.iteritems():
+      for key, tool in self._fc_selector.items():
         passed = tool.accept(fc, event.avgmu() )
-        fc.setDecor( key, passed )      
+        fc.setDecor( key, passed )
         if hasattr(tool, "getDiscriminant"):
           # set the neural network output as a decoration
           fc.setDecor( key+'_discriminant', tool.getDiscriminant() )
- 
+
 
     return StatusCode.SUCCESS
 
@@ -114,23 +114,23 @@ class EmulationTool( Algorithm ):
 
   def finalize(self):
     ### Electron Selectors
-    for key, tool in self._el_selector.iteritems():
+    for key, tool in self._el_selector.items():
       MSG_INFO( self, 'Finalizing %s tool',key)
       if tool.finalize().isFailure():
         MSG_ERROR( self, 'Can not finalizing %s',tool.name)
 
     ### Photon Selectors
-    for key, tool in self._ph_selector.iteritems():
+    for key, tool in self._ph_selector.items():
       MSG_INFO( self, 'Finalizing %s tool',key)
       if tool.finalize().isFailure():
         MSG_ERROR( self, 'Can not finalizing %s',tool.name)
 
-    ### FastCalo selectors  
-    for key, tool in self._fc_selector.iteritems():
+    ### FastCalo selectors
+    for key, tool in self._fc_selector.items():
       MSG_INFO( self, 'Finalizing %s tool',key)
       if tool.finalize().isFailure():
         MSG_ERROR( self, 'Can not finalizing %s',tool.name)
- 
+
 
 
     return StatusCode.SUCCESS
