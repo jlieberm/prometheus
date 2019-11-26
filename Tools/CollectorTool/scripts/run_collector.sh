@@ -27,12 +27,12 @@ command_4="python job_collector.py --Jpsi --egam7"
 
 
 #prun_jobs.py -i $BASEPATH_EGAM2_2018  -c 'python3 job_collector.py --Jpsi' -mt 30
-prun_jobs.py -i /volume/Physval/data18_13TeV/EGAM2/user.*  -c 'python3 job_collector.py --Jpsi' -mt 30
-mkdir EGAM2_18
-mv output* EGAM2_18
-prun_jobs.py -i $BASEPATH_EGAM7_2018  -c 'python3 job_collector.py --Jpsi --egam7' -mt 30
-mkdir EGAM7_18
-mv output* EGAM7_18
+prun_jobs.py -i /volume/Physval/data17_13TeV/EGAM2/user.*  -c 'python3 job_collector.py --Jpsi' -mt 30
+mkdir EGAM2_17
+mv output* EGAM2_17
+prun_jobs.py -i $BASEPATH_EGAM7_2017  -c 'python3 job_collector.py --Jpsi --egam7' -mt 30
+mkdir EGAM7_17
+mv output* EGAM7_17
 
 
 
