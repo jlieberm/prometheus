@@ -1,9 +1,9 @@
 
 __all__ = ['MonteCarlo']
 
+from prometheus import EDM
 from Gaugi  import StatusCode
 from prometheus.enumerations  import Dataframe as DataframeEnum
-from EventCommon import EDM
 
 
 class MonteCarlo(EDM):

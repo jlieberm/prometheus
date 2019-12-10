@@ -13,3 +13,6 @@
 [submodule "Simulator/External/geant4"]
 	path = Simulator/External/geant4
 	url = https://github.com/Geant4/geant4.git
+[submodule "External/geant4"]
+	path = External/geant4
+	url = https://github.com/Geant4/geant4.git

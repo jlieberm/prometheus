@@ -1,7 +1,7 @@
 
 __all__ = ['FastElectron']
 
-from EventCommon import EDM
+from prometheus import EDM
 from Gaugi  import StatusCode
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi import stdvector_to_list

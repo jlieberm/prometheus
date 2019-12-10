@@ -1,9 +1,9 @@
 
 __all__ = ['EventInfo']
 
+from prometheus import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
-from EventCommon import EDM
 
 
 class EventInfo(EDM):

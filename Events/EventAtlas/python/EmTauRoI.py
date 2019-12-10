@@ -1,9 +1,9 @@
 
 __all__ = ['EmTauRoI']
 
+from prometheus import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi import StatusCode
-from EventCommon import EDM
 from Gaugi import stdvector_to_list
 
 class EmTauRoI(EDM):

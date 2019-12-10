@@ -3,7 +3,7 @@ __all__ = ['CaloTowers']
 
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi import StatusCode, EnumStringification
-from EventCommon import EDM
+from prometheus import EDM
 import numpy as np
 
 

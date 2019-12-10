@@ -10,6 +10,11 @@ from . import Service
 __all__.extend(Service.__all__)
 from .Service import *
 
+from . import EDM
+__all__.extend(EDM.__all__)
+from .EDM import *
+
+
 from . import EventSimulator
 __all__.extend(EventSimulator.__all__)
 from .EventSimulator import *
