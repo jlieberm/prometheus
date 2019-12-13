@@ -112,12 +112,15 @@ source setup.sh
 
 
 
-## Or user the Docker container
+## Or set the Docker container (prometheus)
 
-### Set your docker volume locally first:
+The locally volume is provide by a docker plugin. You must create your volume first. After setup your volume,
+just tip the follow command:
 
-The locally volume is provide by a docker plugin. If you don't have this plugin install, first 
-
+```bash
+docker run --network host -v my_volume_name:/volume -it jodafons/prometheus /bin/bash
+```
+You can see the docker specification of this container here: https://github.com/jodafons/docker
 
 
 
