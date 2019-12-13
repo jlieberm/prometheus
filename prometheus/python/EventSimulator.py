@@ -47,8 +47,8 @@ class EventSimulator( Logger ):
     
 
     self._containersSvc = {}
-    self._storegateSvc = NotSet
-    self._id = unique_sequence.next()
+    self._storegateSvc = None
+    self._id = next(unique_sequence)
  
   def name(self):
     return self._name
@@ -137,7 +137,7 @@ class EventSimulator( Logger ):
     MSG_INFO( self, "Creating containers...")
     # Allocating containers
     if self._dataframe is DataframeEnum.Lorenzet:
-      from EventLorenzet import CaloCells, CaloRings, ShowerShapes
+      from EventSimulator import CaloCells, CaloRings, ShowerShapes
     elif self._dataframe is DataframeEnum.Delphes:
       from EventDelphes import CaloTowers
     else:
@@ -159,7 +159,7 @@ class EventSimulator( Logger ):
     self._context = EventContext(self._t)
 
     # configure all EDMs needed
-    for key, edm in self._containersSvc.iteritems():
+    for key, edm in self._containersSvc.items():
       # attach the EDM pointer into the context list
       self.getContext().setHandler(key,edm)
       

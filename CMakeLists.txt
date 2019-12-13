@@ -67,32 +67,41 @@ else()
 
   add_subdirectory(Gaugi)
   add_subdirectory(prometheus)
-  add_subdirectory(Tools/CommonTools)
-  add_subdirectory(Tools/CollectorTool)
-  add_subdirectory(Tools/EfficiencyTools)
-  add_subdirectory(Tools/EmulationTools)
-  add_subdirectory(Tools/EventSelectionTool)
-  add_subdirectory(Tools/PathResolver)
-  add_subdirectory(Tools/PileupCorrectionTools)
-  add_subdirectory(Tools/ProfileTools)
-  add_subdirectory(Tools/QuadrantTools)
+  add_subdirectory(Tools/atlas/CommonTools)
+  add_subdirectory(Tools/atlas/CollectorTool)
+  add_subdirectory(Tools/atlas/EfficiencyTools)
+  add_subdirectory(Tools/atlas/EmulationTools)
+  add_subdirectory(Tools/atlas/EventSelectionTool)
+  add_subdirectory(Tools/atlas/PathResolver)
+  add_subdirectory(Tools/atlas/PileupCorrectionTools)
+  add_subdirectory(Tools/atlas/ProfileTools)
+  add_subdirectory(Tools/atlas/QuadrantTools)
+  add_subdirectory(Tools/atlas/Selectors/RingerSelectorTools)
+  add_subdirectory(Tools/atlas/Selectors/TrigEgammaL2CaloSelectorTool)
+  add_subdirectory(Tools/simulator/SimValidationTools)
+  
   add_subdirectory(Events/EventAtlas)
-  add_subdirectory(Events/EventCommon)
-  add_subdirectory(Events/EventDelphes)
-  add_subdirectory(Events/EventLorenzet)
+  add_subdirectory(Events/EventSimulator)
+
+  
   add_subdirectory(External/monet)
   add_subdirectory(External/pytex)
-  add_subdirectory(Selectors/RingerSelectorTools)
-  add_subdirectory(Selectors/TrigEgammaL2CaloSelectorTool)
+ 
+  # check if GEANT4 is in the path
+  if( $ENV{G4_SETUP} STREQUAL "on")
+    message (STATUS "Geant is found")
+    add_subdirectory(Simulator)
+  endif()
 
 
-  add_subdirectory(Simulator/Tools/LorenzetTools)
+
+  #add_subdirectory(Simulator/Tools/LorenzetTools)
 
   add_library(prometheus SHARED
     $<TARGET_OBJECTS:Gaugi>
     $<TARGET_OBJECTS:EventAtlas>
-    $<TARGET_OBJECTS:EventLorenzet>
-    $<TARGET_OBJECTS:EventDelphes>
+    $<TARGET_OBJECTS:EventSimulator>
+    #$<TARGET_OBJECTS:EventDelphes>
     $<TARGET_OBJECTS:PathResolver>
     $<TARGET_OBJECTS:RingerSelectorTools>
   )

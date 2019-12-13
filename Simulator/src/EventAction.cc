@@ -56,8 +56,7 @@ void EventAction::PrintEventStatistics(
                               G4double gapEdep, G4double gapTrackLength) const
 {
   // print event statistics
-  G4cout
-     << "   Absorber: total energy: " 
+  G4cout << "   Absorber: total energy: " 
      << std::setw(7) << G4BestUnit(absoEdep, "Energy")
      << "       total track length: " 
      << std::setw(7) << G4BestUnit(absoTrackLength, "Length")
@@ -87,25 +86,8 @@ void EventAction::EndOfEventAction(const G4Event* event)
   G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
   G4double ke = primaryParticle->GetKineticEnergy()/1000.; //in GeV.
 
-  RunData* runData 
-    = static_cast<RunData*>(
-        G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  RunData* runData = static_cast<RunData*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   runData->SetTotalEnergy(ke);
   runData->FillPerEvent();
-  
-  //print per event (modulo n)
-  //
-  G4int eventID = event->GetEventID();
-  G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
-  // if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
-  //   G4cout << "---> End of event: " << eventID << G4endl;     
-
-  //   PrintEventStatistics(
-  //     runData->GetEdep(kAbs),
-  //     runData->GetTrackLength(kAbs),
-  //     runData->GetEdep(kGap),
-  //     runData->GetTrackLength(kGap));
-  // }
-}  
-
+}
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

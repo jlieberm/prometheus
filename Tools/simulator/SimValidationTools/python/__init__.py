@@ -1,8 +1,12 @@
 
 __all__ = []
-from . import Collector
-__all__.extend(Collector.__all__)
-from .Collector import *
+from . import CollectorTool
+__all__.extend(CollectorTool.__all__)
+from .CollectorTool import *
+
+from . import ResolutionTool
+__all__.extend(ResolutionTool.__all__)
+from .ResolutionTool import *
 
 from . import CaloView
 __all__.extend(CaloView.__all__)

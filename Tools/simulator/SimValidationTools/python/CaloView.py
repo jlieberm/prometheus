@@ -38,7 +38,7 @@ class CaloView( Algorithm ):
  
   def execute(self, context):
    
-    from EventLorenzet import CaloGAN_Definitions
+    from EventSimulator import CaloGAN_Definitions
     sg = self.getStoreGateSvc()
     cells = self.getContext().getHandler("CaloCellsContainer")
     

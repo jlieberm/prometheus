@@ -105,9 +105,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4double edep = step->GetTotalEnergyDeposit();
 
   G4StepPoint* point1 = step->GetPreStepPoint();
-  //G4StepPoint* point2 = step->GetPostStepPoint();
   G4ThreeVector pos1 = point1->GetPosition();
-  //G4ThreeVector pos2 = point2->GetPosition();
 
   int mybin = WhichXYbin(pos1.x(),pos1.y(),WhichZBin(pos1.z()));
   
@@ -115,6 +113,6 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   runData->AddCell(mybin, edep); 
-  //runData->AddPoint(pos1.x(), pos1.y(), pos1.z(), edep);
+  //runData->AddDeposit(pos1.x(), pos1.y(), pos1.z(), edep);
 }
 

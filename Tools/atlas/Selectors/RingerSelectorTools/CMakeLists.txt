@@ -36,8 +36,8 @@ if($ENV{Athena_SETUP} STREQUAL "on")
 else()
 
   include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../Tools/PathResolver)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../Gaugi)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../PathResolver)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../../Gaugi)
   
   file(GLOB_RECURSE HEADERS RingerSelectorTools/*)
   file(GLOB_RECURSE SOURCES Root/*.cxx Root/tools/*)  

@@ -31,7 +31,7 @@ class ShowerShapes(EDM):
   def execute(self):
 
     from copy import deepcopy
-    from EventLorenzet import CaloGAN_Definitions as Layer
+    from EventSimulator import CaloGAN_Definitions as Layer
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 

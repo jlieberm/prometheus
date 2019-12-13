@@ -43,12 +43,14 @@ enum {
   kNumCells = 504 + 3 // 3 overflow bins for the three calo layers
 };  
 
-struct point{
+
+struct Deposit{
   G4double x;
   G4double y;
   G4double z;
   G4double energy;
 };
+
 
 class RunData : public G4Run
 {
@@ -56,36 +58,40 @@ public:
   RunData();
   virtual ~RunData();
 
-  void AddPoint( G4double x, G4double y, G4double z, G4double de );
+  void AddDeposit( G4double x, G4double y, G4double z, G4double de );
   void AddCell(G4int id, G4double de);
   void FillPerEvent();
   void Reset();
+  void SetTotalEnergy(G4double e){TotalEnergy = e;};
 
   G4double  GetEdep(G4int id) const;
   G4double GetTotalEnergy(){return TotalEnergy;};
-  void SetTotalEnergy(G4double e){TotalEnergy = e;};
+
 
 private:
   
   G4double  m_cell_energy[kNumCells];
   G4double TotalEnergy;
-  std::vector<point> m_points;
-  std::vector<G4double> m_point_x;
-  std::vector<G4double> m_point_y;
-  std::vector<G4double> m_point_z;
-  std::vector<G4double> m_point_energy;
+  
+  std::vector<Deposit>  m_deposit;
+  std::vector<G4double> m_deposit_x;
+  std::vector<G4double> m_deposit_y;
+  std::vector<G4double> m_deposit_z;
+  std::vector<G4double> m_deposit_energy;
+
 };
 
 
-
-inline void RunData::AddPoint( G4double x, G4double y, G4double z, G4double de ){
-  point p = {x,y,z,de};
-  m_points.push_back( p );
+inline void RunData::AddDeposit( G4double x, G4double y, G4double z, G4double de ){
+  Deposit p = {x,y,z,de};
+  m_deposit.push_back( p );
 }
+
 
 inline void RunData::AddCell(G4int id, G4double de) {
   m_cell_energy[id] += de; 
 }
+
 
 inline G4double  RunData::GetEdep(G4int id) const {
   return m_cell_energy[id];

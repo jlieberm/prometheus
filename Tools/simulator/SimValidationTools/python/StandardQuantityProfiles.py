@@ -37,7 +37,7 @@ class StandardQuantityProfiles( Algorithm ):
  
   def execute(self, context):
    
-    from EventLorenzet import CaloGAN_Definitions
+    from EventSimulator import CaloGAN_Definitions
     sg = self.getStoreGateSvc()
     showers = self.getContext().getHandler( "ShowerShapesContainer" )
 

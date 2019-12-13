@@ -51,18 +51,18 @@ RunData::RunData() : G4Run()//, fNumCells(4815)
     analysisManager->CreateNtupleDColumn("cell_" + out.str());
   }
 
-  //m_point_x = new std::vector<G4double>();
-  //m_point_y = new std::vector<G4double>();
-  //m_point_z = new std::vector<G4double>();
-  //m_point_energy = new std::vector<G4double>();
+  //m_deposit_x = new std::vector<G4double>();
+  //m_deposit_y = new std::vector<G4double>();
+  //m_deposit_z = new std::vector<G4double>();
+  //m_deposit_energy = new std::vector<G4double>();
 
 
   // Create the total energy branch
   analysisManager->CreateNtupleDColumn("TotalEnergy");
-  analysisManager->CreateNtupleDColumn("point_x", m_point_x);
-  analysisManager->CreateNtupleDColumn("point_y", m_point_y);
-  analysisManager->CreateNtupleDColumn("point_z", m_point_z);
-  analysisManager->CreateNtupleDColumn("point_energy",m_point_energy);
+  analysisManager->CreateNtupleDColumn("deposit_x"      , m_deposit_x);
+  analysisManager->CreateNtupleDColumn("deposit_y"      , m_deposit_y);
+  analysisManager->CreateNtupleDColumn("deposit_z"      , m_deposit_z);
+  analysisManager->CreateNtupleDColumn("deposit_energy" , m_deposit_energy);
   analysisManager->FinishNtuple();
 
 
@@ -89,25 +89,27 @@ void RunData::FillPerEvent()
 
    
   // Fill all simulated points
-  for(int i = 0; i < m_points.size(); ++i){
-    m_point_x.push_back( m_points.at(i).x );
-    m_point_y.push_back( m_points.at(i).y );
-    m_point_z.push_back( m_points.at(i).z );
-    m_point_energy.push_back( m_points.at(i).energy );
+  for(unsigned int i = 0; i < m_deposit.size(); ++i){
+    m_deposit_x.push_back( m_deposit.at(i).x );
+    m_deposit_y.push_back( m_deposit.at(i).y );
+    m_deposit_z.push_back( m_deposit.at(i).z );
+    m_deposit_energy.push_back( m_deposit.at(i).energy );
   }
   
 
   /*
   for(unsigned int i = 0; i < m_points.size(); ++i){
 
-    analysisManager->FillNtupleDColumn(kNumCells+1, m_points.at(i).x      );
-    analysisManager->FillNtupleDColumn(kNumCells+2, m_points.at(i).y      );
-    analysisManager->FillNtupleDColumn(kNumCells+3, m_points.at(i).z      );
-    analysisManager->FillNtupleDColumn(kNumCells+4, m_points.at(i).energy );
-    //analysisManager->FillNtupleDColumn(kNumCells+1, m_point_x);
-    //analysisManager->FillNtupleDColumn(kNumCells+2, m_point_y);
-    //analysisManager->FillNtupleDColumn(kNumCells+3, m_point_z);
-    //analysisManager->FillNtupleDColumn(kNumCells+4, m_point_energy);
+    analysisManager->FillNtupleDColumn(kNumCells+1, m_deposit.at(i).x      );
+    analysisManager->FillNtupleDColumn(kNumCells+2, m_deposit.at(i).y      );
+    analysisManager->FillNtupleDColumn(kNumCells+3, m_deposit.at(i).z      );
+    analysisManager->FillNtupleDColumn(kNumCells+4, m_deposit.at(i).energy );
+
+    //analysisManager->FillNtupleDColumn(kNumCells+1, m_deposit_x);
+    //analysisManager->FillNtupleDColumn(kNumCells+2, m_deposit_y);
+    //analysisManager->FillNtupleDColumn(kNumCells+3, m_deposit_z);
+    //analysisManager->FillNtupleDColumn(kNumCells+4, m_deposit_energy);
+  
   }*/
 
   analysisManager->AddNtupleRow();  
@@ -120,10 +122,10 @@ void RunData::Reset()
     m_cell_energy[i] = 0.;
   } 
 
-  m_points.clear();
-  m_point_x.clear();
-  m_point_y.clear();
-  m_point_z.clear();
-  m_point_energy.clear();
+  m_deposit.clear();
+  m_deposit_x.clear();
+  m_deposit_y.clear();
+  m_deposit_z.clear();
+  m_deposit_energy.clear();
 }
 

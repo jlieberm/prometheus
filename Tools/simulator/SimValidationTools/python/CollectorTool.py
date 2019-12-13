@@ -1,7 +1,7 @@
 
 
 
-__all__ = ["Collector"]
+__all__ = ["CollectorTool"]
 
 from prometheus import Algorithm
 from Gaugi import StatusCode, NotSet, retrieve_kw
@@ -11,7 +11,7 @@ import numpy as np
 
 
 
-class Collector( Algorithm ):
+class CollectorTool( Algorithm ):
 
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
@@ -69,10 +69,7 @@ class Collector( Algorithm ):
     # Get cells and reshape to square matrix but preserve 
     # the calo layer resolution and dimensions
     from utilities import reshape_to_square_array
-    from EventLorenzet import CaloGAN_Definitions as Layer
-    #c1 = reshape_to_square_array( cells.get_raw_cells( Layer.FIRST_LAYER  ) )
-    #c2 = reshape_to_square_array( cells.get_raw_cells( Layer.SECOND_LAYER ) )
-    #c3 = reshape_to_square_array( cells.get_raw_cells( Layer.THIRD_LAYER  ) )
+    from EventSimulator import CaloGAN_Definitions as Layer
     c1 = cells.get_raw_cells( Layer.FIRST_LAYER  ) 
     c2 = cells.get_raw_cells( Layer.SECOND_LAYER ) 
     c3 = cells.get_raw_cells( Layer.THIRD_LAYER  ) 

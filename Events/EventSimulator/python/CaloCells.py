@@ -12,8 +12,9 @@ import numpy as np
 class CaloGAN_Definitions(EnumStringification):
   # Definition <eta,phi> is <x,y> coordinates
   LAYER_SPECS = [(3, 96), (12, 12), (12, 6)]
-  LAYER_DIV = np.cumsum(map(np.prod, LAYER_SPECS)).tolist()
-  LAYER_DIV = zip([0] + LAYER_DIV, LAYER_DIV)
+  #LAYER_DIV = np.cumsum(map(np.prod, LAYER_SPECS)).tolist()
+  #LAYER_DIV = list( zip([0] + LAYER_DIV, LAYER_DIV) )
+  LAYER_DIV = [(0, 288), (288, 432), (432, 504)]
   FIRST_LAYER = 1
   SECOND_LAYER = 2
   THIRD_LAYER = 3
@@ -105,13 +106,13 @@ class CaloCells(EDM):
         self.setBranchAddress( self._tree, branch, self._event)
         self._branches.append(branch) # hold all branches from the body class
       return StatusCode.SUCCESS
-    except TypeError, e:
+    except TypeError as e:
       self._logger.error("Impossible to create the CaloTowers Container. Reason:\n%s", e)
       return StatusCode.FAILURE
 
 
   def execute(self):
-    from CaloCells import CaloGAN_Definitions as Layer
+    from EventSimulator import CaloGAN_Definitions as Layer
     def convert2obj(c,layer):
       object_list=[]
       for (x,y), value in np.ndenumerate(c):
