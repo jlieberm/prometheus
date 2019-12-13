@@ -122,6 +122,10 @@ docker run --network host -v my_volume_name:/volume -it jodafons/prometheus /bin
 ```
 You can see the docker specification of this container here: https://github.com/jodafons/docker
 
+### Docker volume locally (only for linux)
+
+See this page: https://github.com/surgeforward/docker-local-persist-volume-plugin
+
 
 
 ## Contribution
