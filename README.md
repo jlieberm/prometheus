@@ -1,19 +1,5 @@
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 ## The Prometheus Analysis Framework
-
-
-
-## The Gaugi core:
-
-
-## The Simulator:
-
-
-## Build Status
-| Branch | Build status |
-|--------|--------------|
-| master | [![pipeline status](https://gitlab.cern.ch/jodafons/prometheus/badges/master/pipeline.svg)](https://gitlab.cern.ch/jodafons/prometheus/commits/master) |
 
 
 ## Requirements
@@ -21,8 +7,10 @@
 - root (https://gitlab.cern.ch/jodafons/root.git)
 - boost
 - numpy
-- python (2.7)
+- python 3
 - cmake 3
+- geant 4 (https://github.com/jodafons/geant4_10.5.git)
+
 
 
 ## Install the custom Root CERN package (Required)
@@ -38,32 +26,7 @@ the easy setup of an analysis system that can query and process the data
 interactively or in batch mode, as well as a general parallel processing
 framework, PROOF, that can considerably speed up an analysis.
 
-
-```bash
-# in your root dir
-mkdir .bin
-cd .bin
-# download the root
-git clone https://gitlab.cern.ch/jodafons/root.git
-# checkout the custom branch
-git checkout v6-16-00-custom
-# create the build dir
-mkdir build
-cd build
-# apply the cmake 
-cmake ..
-# and compile
-make -j4
-```
-
-Then use this commands to include the root into your path.
-
-```bash
-echo 'source ~/.bin/root/build/bin/thisroot.sh' >> ~/.bashrc
-source $HOME/root/bin/thisroot.sh
-```
-
-Then use apt-get (or yum) to install other dependencies (steps marked with recommended are not obligatory):
+Use apt-get (or yum) to install other dependencies (steps marked with recommended are not obligatory):
 
 ```bash
 # Install gcc and other developer tools
@@ -78,38 +41,79 @@ sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython
 sudo apt-get install libboost-all-dev
 ```
 
-## Prepare the prometheus workspace
+
 
 ```bash
+# in your root dir
+mkdir .bin
+cd .bin
+# download the root
+git clone https://gitlab.cern.ch/jodafons/root.git
+# checkout the custom branch
+git checkout v6-16-00
+# create the build dir
+mkdir build
+cd build
+# For linux
+cmake --Dpython_version=3   
+# For MacOS
+#cmake -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
+#DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/Headers \
+#-DPYTHON_LIBRARY=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/libpython3.7.dylib 
+# and compile
+make -j4
+```
+
+Then use this commands to include the root into your path.
+
+```bash
+echo 'source ~/.bin/root/build/bin/thisroot.sh' >> ~/.bashrc
+source $HOME/root/bin/thisroot.sh
+```
+
+
+
+
+## Install the Geant 4 on your local machine (Required for simulation purpose)
+
+```bash
+mkdir .bin
+cd .bin
+git clone https://github.com/jodafons/geant4_10.5.git
+cd geant4
+source buildthis.sh
+echo 'source ~/.bin/geant4/build/geant4.sh' >> ~/.bashrc
+```
+
+
+
+## Install prometheus Framework
+
+
+```bash
+# download from git
+git clone https://github.com/jodafons/prometheus.git
 # dowload all submodules
 source setup_module.sh
 # put everything to master
 source setup_module.sh --head
-```
-
-
-
-## Standalone Installation (Recommended)
-
-```bash
-# setup all standalone envs
-source setup_standalone.sh
 # build and compile
 source buildthis.sh
 # setup the libs and modules
-source setup_prometheus
+source setup.sh
 ```
 
-## Athena Installation
-
+If you shutdonw and must reset the prometheus once again, just apply:
 ```bash
-# setup all ATLAS envs
-source setup_athena.sh
-# build and compile
-source buildthis.sh
 # setup the libs and modules
-source build/x86-*/setup.sh
+source setup.sh
 ```
+
+
+
+## Or user the Docker container
+
+
 
 
 ## Contribution
