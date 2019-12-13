@@ -41,6 +41,7 @@ sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython
 sudo apt-get install libboost-all-dev
 ```
 
+And install the root package in your local directory:
 
 
 ```bash
@@ -112,6 +113,10 @@ source setup.sh
 
 
 ## Or user the Docker container
+
+### Set your docker volume locally first:
+
+The locally volume is provide by a docker plugin. If you don't have this plugin install, first 
 
 
 
