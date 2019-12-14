@@ -135,6 +135,24 @@ See this page: https://github.com/surgeforward/docker-local-persist-volume-plugi
 
 
 
+## To run the simulator (Lorenzett)
+
+You must have Geant4 installed in you machine. To run the simulator example:
+
+```bash
+cd Analysis/Simulator/calo_resolution
+generator -m geant4_config.mac
+# OR in parallel (30 threads, 100 jobs)
+python3 run_generator.py
+```
+
+After generate the raw date, just run the reconstruction and analysis step
+
+```bash
+python3 job_resolution.py
+```
+
+
 ## Contribution
 
 - Dr. João Victor da Fonseca Pinto, UFRJ/COPPE, CERN/ATLAS (jodafons@cern.ch) [maintainer, developer]
