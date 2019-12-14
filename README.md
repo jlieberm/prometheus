@@ -120,6 +120,13 @@ just tip the follow command:
 ```bash
 docker run --network host -v my_volume_name:/volume -it jodafons/prometheus /bin/bash
 ```
+
+and inside of the container:
+
+```bash
+source /setup_envs.sh
+```
+
 You can see the docker specification of this container here: https://github.com/jodafons/docker
 
 ### Docker volume locally (only for linux)
