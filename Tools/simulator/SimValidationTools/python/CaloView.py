@@ -19,7 +19,7 @@ class CaloView( Algorithm ):
 
     Algorithm.initialize(self)
     sg = self.getStoreGateSvc()
-    
+
     from ROOT import TH1F, TH2F
     sg.mkdir( self._basepath + '/CaloView' )
     sg.addHistogram( TH2F( "lateral_view", ";;;", 4000, -240, 240, 4000, -240, 240) )
@@ -31,27 +31,27 @@ class CaloView( Algorithm ):
     for layer, hists in enumerate(hists_per_layer):
       for x in range( hists[0] ):
         for y in range( hists[1] ):
-          sg.addHistogram( TH1F( ("layer_%d_x%d_y%d")%(layer,x,y), ";Energy;Count", 140, -5, 65 ) ) 
+          sg.addHistogram( TH1F( ("layer_%d_x%d_y%d")%(layer,x,y), ";Energy;Count", 140, -5, 65 ) )
 
     self.init_lock()
-    return StatusCode.SUCCESS 
- 
+    return StatusCode.SUCCESS
+
   def execute(self, context):
-   
+
     from EventSimulator import CaloGAN_Definitions
     sg = self.getStoreGateSvc()
     cells = self.getContext().getHandler("CaloCellsContainer")
-    
+
     for layer, layer_enum in enumerate( [CaloGAN_Definitions.FIRST_LAYER, CaloGAN_Definitions.SECOND_LAYER, CaloGAN_Definitions.THIRD_LAYER]):
       collections = cells.getCollection( layer_enum )
       for c in collections:
         key = ('%s/CaloView/layer_%d_x%d_y%d') % ( self._basepath, layer, c.x(), c.y() )
         sg.histogram( key ).Fill( c.energy() )
-  
-    for point in cells.getPoints():
-      sg.histogram( self._basepath+"/CaloView/lateral_view" ).Fill( point.z(), point.x(), point.energy() )
 
-    return StatusCode.SUCCESS 
+    for deposit in cells.getDeposits():
+      sg.histogram( self._basepath+"/CaloView/lateral_view" ).Fill( deposit.z(), deposit.x(), deposit.energy() )
+
+    return StatusCode.SUCCESS
 
 
 
@@ -59,7 +59,7 @@ class CaloView( Algorithm ):
   def finalize(self):
 
     sg = self.getStoreGateSvc()
-    # Fill all 2D histograms 
+    # Fill all 2D histograms
     hists_per_layer = [(3, 96), (12, 12), (12, 6)]
     for layer, hists in enumerate(hists_per_layer):
       E_energy = np.zeros( hists )
@@ -67,9 +67,9 @@ class CaloView( Algorithm ):
         for y in range( hists[1] ):
           E_energy[x][y] = sg.histogram( self._basepath+"/CaloView/layer_%d_x%d_y%d" % (layer,x,y) ).GetMean()
       for (x,y), energy in np.ndenumerate(E_energy):
-        sg.histogram( self._basepath+"/CaloView/layer_%d"%layer ).SetBinContent( x+1, y+1, energy )  
+        sg.histogram( self._basepath+"/CaloView/layer_%d"%layer ).SetBinContent( x+1, y+1, energy )
     self.fina_lock()
-    return StatusCode.SUCCESS 
+    return StatusCode.SUCCESS
 
 
 

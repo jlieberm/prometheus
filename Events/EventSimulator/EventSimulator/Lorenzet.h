@@ -13,10 +13,10 @@ struct Lorenzet {
   int    EventNumber; 
   int    RunNumber; 
   
-  std::vector<Double_t> *point_x;
-  std::vector<Double_t> *point_y;
-  std::vector<Double_t> *point_z;
-  std::vector<Double_t> *point_energy;
+  std::vector<Double_t> *deposit_x;
+  std::vector<Double_t> *deposit_y;
+  std::vector<Double_t> *deposit_z;
+  std::vector<Double_t> *deposit_energy;
   
   Double_t  TotalEnergy;
   Double_t  cell_0;
