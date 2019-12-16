@@ -26,22 +26,22 @@ class CaloCell(object):
     self._x= 0.0 # In MeV
     self._y= 0.0 # In MeV
     self._energy = 0.0 # In MeV
-  
+
   def energy(self):
     return self._energy
-  
+
   def x(self):
     return self._x
-  
+
   def y(self):
     return self._y
- 
+
   def setEnergy(self,v):
     self._energy=v
- 
+
   def setX(self,v):
     self._x=v
- 
+
   def setY(self,v):
     self._y=v
 
@@ -58,7 +58,7 @@ class CaloCell(object):
     self._layer=v
 
 
-class CaloPoint(object):
+class Deposit(object):
   def __init__(self, x, y, z, energy):
     self._x = x; self._y = y; self._z = z
     self._energy = energy
@@ -78,18 +78,18 @@ class CaloPoint(object):
 
 class CaloCells(EDM):
 
-  __eventBranches = [ 
+  __eventBranches = [
                       #'EventNumber',
                       #'RunNumber',
                       'TotalEnergy',
-                      'point_x',
-                      'point_y',
-                      'point_z',
-                      'point_energy',
+                      'deposit_x',
+                      'deposit_y',
+                      'deposit_z',
+                      'deposit_energy',
                     ]
   __eventBranches.extend(['cell_%d'%(i) for i in range(507)])
-                      
-                  
+
+
 
   def __init__(self):
     EDM.__init__(self)
@@ -101,7 +101,7 @@ class CaloCells(EDM):
 
   def initialize(self):
     try:
-      # Link all branches 
+      # Link all branches
       for branch in self.__eventBranches:
         self.setBranchAddress( self._tree, branch, self._event)
         self._branches.append(branch) # hold all branches from the body class
@@ -125,7 +125,7 @@ class CaloCells(EDM):
     return StatusCode.SUCCESS
 
 
-  # private method 
+  # private method
   def get_raw_cells(self, layer):
     # See: https://github.com/hep-lbdl/CaloGAN/tree/master/generation
     # Get the calo GAN cells schemma
@@ -139,20 +139,20 @@ class CaloCells(EDM):
       cells = np.array([ getattr(self._event, 'cell_%d'%c) for c in range(CaloGAN_Definitions.LAYER_DIV[1][0],
         CaloGAN_Definitions.LAYER_DIV[1][1] )])
       return cells.reshape((12,12))
-    # Third Layer definitions: 12 x 6 
+    # Third Layer definitions: 12 x 6
     elif layer is CaloGAN_Definitions.THIRD_LAYER:
       cells = np.array([ getattr(self._event, 'cell_%d'%c) for c in range(CaloGAN_Definitions.LAYER_DIV[2][0],
         CaloGAN_Definitions.LAYER_DIV[2][1] )])
       return cells.reshape((12,6))
     else:
-      self._logger.warning('Invalid layer definition for CaloGAN')      
- 
-    
-        
+      self._logger.warning('Invalid layer definition for CaloGAN')
+
+
+
   def totalEnergy(self):
     return self._event.TotalEnergy
 
- 
+
   def getCollection( self, layer ):
     if layer is CaloGAN_Definitions.FIRST_LAYER:
       return self._first_sampling
@@ -161,16 +161,16 @@ class CaloCells(EDM):
     elif layer is CaloGAN_Definitions.THIRD_LAYER:
       return self._third_sampling
     else:
-      self._logger.warning('Invalid layer definition for CaloGAN')      
+      self._logger.warning('Invalid layer definition for CaloGAN')
 
 
-  def getPoints(self):
-    points = list()
-    for idx in range(self._event.point_x.size()):
-      p = CaloPoint( self._event.point_x.at(idx), 
-                         self._event.point_y.at(idx),
-                         self._event.point_z.at(idx),
-                         self._event.point_energy.at(idx))
-      points.append(p)
-    return points
+  def getDeposits(self):
+    deposits = list()
+    for idx in range(self._event.deposit_x.size()):
+      p = CaloPoint( self._event.deposit_x.at(idx),
+                         self._event.deposit_y.at(idx),
+                         self._event.deposit_z.at(idx),
+                         self._event.deposit_energy.at(idx))
+      deposits.append(p)
+    return deposits
 
