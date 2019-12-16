@@ -15,7 +15,7 @@
 /gps/direction 0 0 1
 
 
-/gps/energy 100 GeV
+/gps/energy 5 GeV
 #/gps/ene/type Lin
 #/gps/ene/min 150 GeV	
 #/gps/ene/max 155 GeV	

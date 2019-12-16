@@ -92,10 +92,11 @@ class ResolutionTool( Algorithm ):
     x = []
     y = [] 
     for energy in self._energy_bins:
+      print(energy)
       x.append(float(energy))
       #y.append(sg.histogram(self._basepath+"/Resolution/total_energy_"+str(energy)+"GeV" ).GetStdDev()/ np.sqrt( float(energy)) )
       y.append(sg.histogram(self._basepath+"/Resolution/total_energy_"+str(energy)+"GeV" ).GetStdDev()/ float(energy) )
-
+    print(y)
     
     #for i in range(100):
     #  x_.append(i+1); y.append( 1/np.sqrt(i+1)

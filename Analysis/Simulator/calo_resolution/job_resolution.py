@@ -22,7 +22,7 @@ ToolMgr += EventSimulatorLoop(  "EventLorenzetLoop",
 
 
 from SimValidationTools import *
-ToolSvc += ResolutionTool( "ResolutionTool", energy_bins =[ 2,10,15,20,50,100] )
+ToolSvc += ResolutionTool( "ResolutionTool", energy_bins =[ 5,10,15,20,50,100] )
 
 
 from prometheus import job
