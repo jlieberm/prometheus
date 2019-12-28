@@ -1,13 +1,4 @@
 ################################################################################
 # Package: prometheus
 ################################################################################
-
-if($ENV{Athena_SETUP} STREQUAL "on")
-  # Declare the package name:
-  atlas_subdir( EfficiencyTools )
-  # Install files from the package:
-  atlas_install_python_modules( python/*.py python/drawers )
-  atlas_install_scripts( scripts/*.py )
-else()
-  gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EfficiencyTools)
-endif()
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EfficiencyTools)
