@@ -1,12 +1,9 @@
-export Athena_SETUP=off
-export G4_SETUP=on
 
 #export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/include/python2.7/"
 export LC_ALL=''
 export RCM_NO_COLOR=0
 export RCM_GRID_ENV=0
 export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
-
 export PATH=$PATH:$PWD/Gaugi/scripts
 
 
@@ -44,8 +41,6 @@ export PYTHONPATH=`pwd`/python:$PYTHONPATH
 cd ..
 
 
-#export PATH=$PATH:`pwd`/Tools/EfficiencyTools/scripts
-export PATH=$PATH:`pwd`/build/Simulator
 
 
 

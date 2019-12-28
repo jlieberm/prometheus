@@ -16,7 +16,7 @@ include(Gaugi/cmake/InstallGaugiFunctions.cmake)
 
 gaugi_initialize()
 
-set( Python_ADDITIONAL_VERSIONS 2.7.13 2.7.5)
+#set( Python_ADDITIONAL_VERSIONS 3.0)
 find_package( PythonInterp REQUIRED)
 find_package( PythonLibs REQUIRED)
 find_package( Boost COMPONENTS python system filesystem)
