@@ -9,9 +9,7 @@
 - numpy
 - python 3
 - cmake 3
-- geant 4 (https://github.com/jodafons/geant4_10.5.git)
-
-
+- Gaugi (2.0)
 
 ## Install the custom Root CERN package (Required)
 
