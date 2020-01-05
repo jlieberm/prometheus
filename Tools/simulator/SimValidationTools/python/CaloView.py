@@ -2,7 +2,7 @@
 __all__ = ['CaloView']
 
 
-from prometheus import Algorithm
+from Gaugi import Algorithm
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode, retrieve_kw
 import numpy as np

@@ -2,7 +2,7 @@
 
 
 import argparse
-from prometheus import EventATLASLoop
+from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
 from prometheus import ToolSvc, ToolMgr

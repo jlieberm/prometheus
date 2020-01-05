@@ -1,7 +1,7 @@
 
 __all__ = ["Collector"]
 
-from prometheus import Algorithm
+
 from prometheus import Dataframe as DataframeEnum
 from Gaugi import StatusCode, NotSet, retrieve_kw, progressbar
 from Gaugi import csvStr2List, expandFolders, save, load
@@ -10,6 +10,7 @@ from Gaugi.messenger  import Logger
 from Gaugi.constants import GeV
 from Gaugi.enumerations import StatusWatchDog
 from Gaugi import EnumStringification
+from Gaugi import Algorithm
 import numpy as np
 
 

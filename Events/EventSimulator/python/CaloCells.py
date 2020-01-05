@@ -1,10 +1,10 @@
 
 __all__ = ['CaloCells', 'CaloCell','CaloGAN_Definitions']
 
+from Gaugi import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from Gaugi.gtypes import NotSet
-from prometheus import EDM
 import numpy as np
 
 # Do not change this definitions.

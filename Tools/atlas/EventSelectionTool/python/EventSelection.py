@@ -2,12 +2,13 @@
 __all__ = ['EventSelection', 'EtCutType', 'SelectionType']
 
 
-from prometheus import Algorithm
+from Gaugi import Algorithm
+from Gaugi import StatusCode, NotSet
 from Gaugi import StatusCode, NotSet
 from prometheus import Dataframe as DataframeEnum
 from Gaugi.messenger.macros import *
 from Gaugi.constants import GeV
-from Gaugi.enumerations import StatusWatchDog
+from Gaugi.enumerations import StatusWTD
 from Gaugi import EnumStringification
 import numpy as np
 
@@ -77,22 +78,22 @@ class EventSelection( Algorithm ):
       self._logger.debug('Apply Selection cut for %s',SelectionType.tostring(key))
       el=elCont
       if key is EtCutType.OfflineAbove and el.et()/GeV < value:
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Reproved by Et cut value. Et = %1.3f < EtCut = %1.3f',el.et()/GeV,value)
         return StatusCode.SUCCESS
 
       if key is EtCutType.OfflineBelow and el.et()/GeV >= value:
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Reproved by Et cut value. Et = %1.3f >= EtCut = %1.3f',el.et()/GeV,value)
         return StatusCode.SUCCESS
 
       elif key is EtCutType.L2CaloAbove and fc.et()/GeV < value:
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Reproved by Et cut value. Et = %1.3f < EtCut = %1.3f',el.et()/GeV,value)
         return StatusCode.SUCCESS
 
       elif key is EtCutType.L2CaloBelow and fc.et()/GeV >= value:
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Reproved by Et cut > value. Et = %1.3f >= EtCut = %1.3f',el.et()/GeV,value)
         return StatusCode.SUCCESS
 
@@ -106,37 +107,37 @@ class EventSelection( Algorithm ):
 
         # Loop over electrons from HLT
         if not passed:
-          self.wtd = StatusWatchDog.ENABLE
+          self.wtd = StatusWTD.ENABLE
           self._logger.debug('Reproved by Et cut value. Et = %1.3f and EtCut = %1.3f',el.et()/GeV,value)
           return StatusCode.SUCCESS
 
 
       # Is good ringer
       elif key is SelectionType.SelectionOnlineWithRings and not fc.isGoodRinger():
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Event dont contain the online ringer rings values. skip...')
         return StatusCode.SUCCESS
 
       # Is good ringer
       elif key is SelectionType.SelectionOfflineWithRings and not el.isGoodRinger():
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Event dont contain the offline ringer rings values. skip...')
         return StatusCode.SUCCESS
 
       # Monte Carlo event selection truth cuts
       elif key is SelectionType.SelectionFakes and mc.isMC() and mc.isEfromZ():
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Fakes: is Z! reject')
         return StatusCode.SUCCESS
 
       # Monte Carlo event selection truth cuts
       elif key is SelectionType.SelectionZ and mc.isMC() and not mc.isEfromZ():
-        self.wtd = StatusWatchDog.ENABLE
+        self.wtd = StatusWTD.ENABLE
         self._logger.debug('Z: is not Z! reject')
         return StatusCode.SUCCESS
 
       #elif key is SelectionType.SelectionRunNumber and (eventInfo.RunNumber != value):
-      #  self.wtd = StatusWatchDog.ENABLE
+      #  self.wtd = StatusWTD.ENABLE
       #  self._logger.debug('Reject event by RunNumber. skip...')
       #  return StatusCode.SUCCESS
 
@@ -158,16 +159,16 @@ class EventSelection( Algorithm ):
         # Apply veto event selection
         self._logger.debug('PID (%s) is %d',pidname,passed)
         if isVeto and passed:
-          self.wtd = StatusWatchDog.ENABLE
+          self.wtd = StatusWTD.ENABLE
           return StatusCode.SUCCESS
         if not isVeto and not passed:
-          self.wtd = StatusWatchDog.ENABLE
+          self.wtd = StatusWTD.ENABLE
           return StatusCode.SUCCESS
       else:
         self._logger.debug('Selection cut (%s) approved.',key)
 
 
-    self.wtd = StatusWatchDog.DISABLE
+    self.wtd = StatusWTD.DISABLE
     return StatusCode.SUCCESS
 
 

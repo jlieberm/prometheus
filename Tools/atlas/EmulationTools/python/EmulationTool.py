@@ -2,7 +2,7 @@
 __all__ = ['EmulationTool']
 
 
-from prometheus import Algorithm
+from Gaugi import Algorithm
 from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
 from prometheus import Dataframe as DataframeEnum

@@ -1,116 +1,37 @@
 
 __all__ = ['EventATLAS']
 
+
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi import StatusCode
 from Gaugi.gtypes import NotSet
+from Gaugi import TEventLoop
+
 
 # Import all root classes
 import ROOT
 
-# get the unique identification
-def uniqueid():
-  import random
-  seed = 0
-  while True:
-    yield seed
-    seed += 1
-unique_sequence = uniqueid()
 
-
-# The main framework base class for ATLAS analysis.
-# This class is responsible to build all containers object and
-# manager the storegate and histogram services for all classes.
-class EventATLAS( Logger ):
+class EventATLAS( TEventLoop ):
 
   def __init__(self, name , **kw):
     # Retrieve all information needed
-    Logger.__init__(self, **kw)
-    from Gaugi import retrieve_kw
-    self._fList      = retrieve_kw( kw, 'inputFiles', NotSet                      )
-    self._ofile      = retrieve_kw( kw, 'outputFile', "histos.root"               )
-    self._treePath   = retrieve_kw( kw, 'treePath'  , NotSet                      )
-    self._dataframe  = retrieve_kw( kw, 'dataframe' , DataframeEnum.SkimmedNtuple )
-    self._nov        = retrieve_kw( kw, 'nov'       , -1                          )
-    self._name       = name
-    self._level = LoggingLevel.retrieve( retrieve_kw(kw, 'level', LoggingLevel.INFO ) )
-    #kw['logger'] = retrieve_kw(kw, 'logger', Logger.getModuleLogger(self.name, LoggingLevel.retrieve( self._level ) ) )
-    if self._fList:
-      from Gaugi import csvStr2List, expandFolders
-      self._fList = csvStr2List ( self._fList )
-      self._fList = expandFolders( self._fList )
+    TEventLoop.__init__(self, **kw)
+    ROOT.gSystem.Load('libprometheus')
 
-    # Loading libraries
-    try:
-      ROOT.gSystem.Load('libprometheus')
-    except:
-      ROOT.gSystem.Load('libEventAtlasLib')
 
-    self._containersSvc = {}
-    self._storegateSvc = NotSet
-    self._id = next(unique_sequence)
-
-  def name(self):
-    return self._name
-
-  def __getRunNumber(self,d):
-    from ROOT import TFile
-    f=TFile(d,'r')
-    name = f.GetListOfKeys()[0].GetName()
-    try:
-      f.Close(); del f
-      return name
-    except:
-      MSG_WARNING( self, 'Can not retrieve the run number')
 
 
   # Initialize all services
   def initialize( self ):
 
-    MSG_INFO( self, 'Initializing EventReader...')
+    MSG_INFO( self, 'Initializing EventATLAS...')
 
-    # Use this to hold the fist good
-    metadataInputFile = None
+    if super(EventATLAS,self).initialize().isFailure():
+      MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
 
-    ### Prepare to loop:
-    self._t = ROOT.TChain()
-    from Gaugi import progressbar
-    for inputFile in progressbar(self._fList, len(self._fList), prefix="Creating collection tree...", logger=self._logger):
-      # Check if file exists
-      self._f  = ROOT.TFile.Open(inputFile, 'read')
-      if not self._f or self._f.IsZombie():
-        self._warning('Couldn''t open file: %s', inputFile)
-        continue
-      # Inform user whether TTree exists, and which options are available:
-      MSG_DEBUG( self, "Adding file: %s", inputFile)
-      try:
-        # Custon directory token
-        if '*' in self._treePath:
-          dirname = self._f.GetListOfKeys()[0].GetName()
-          treePath = self._treePath.replace('*',dirname)
-        else:
-          treePath=self._treePath
-      except:
-        self._warning("Couldn't retrieve TTree (%s) from GetListOfKeys!", treePath)
-        continue
-
-      obj = self._f.Get(treePath)
-      if not obj:
-        self._warning("Couldn't retrieve TTree (%s)!", treePath)
-        self._info("File available info:")
-        self._f.ReadAll()
-        self._f.ReadKeys()
-        self._f.ls()
-        continue
-      elif not isinstance(obj, ROOT.TTree):
-        self._fatal("%s is not an instance of TTree!", treePath, ValueError)
-      if not metadataInputFile:
-        metadataInputFile=(inputFile,treePath)
-      self._t.Add( inputFile+'/'+treePath )
-    # Turn all branches off.
-    self._t.SetBranchStatus("*", False)
 
     from ROOT import edm
     # RingerPhysVal hold the address of required branches
@@ -123,11 +44,6 @@ class EventATLAS( Logger ):
       self._event = edm.RingerPhysVal_v2()
     else:
       return StatusCode.FATAL
-
-    # Ready to retrieve the total number of events
-    self._t.GetEntry(0)
-    ## Allocating memory for the number of entries
-    self._entries = self._t.GetEntries()
 
     MSG_INFO( self, "Creating containers...")
     # Allocating containers
@@ -169,12 +85,10 @@ class EventATLAS( Logger ):
 
 
     # force the event id number for this event looper
-    self._containersSvc['EventInfoContainer'].setId( self.id() )
+    #self._containersSvc['EventInfoContainer'].setId( self.id() )
     # Add decoration for ATLAS event information
     self._containersSvc['EventInfoContainer'].setDecor( "is_fakes", True if 'fakes' in self._treePath else False)
 
-    from prometheus import EventContext
-    self._context = EventContext(self._t)
 
 
     # configure all EDMs needed
@@ -201,64 +115,8 @@ class EventATLAS( Logger ):
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
 
-    # Create the StoreGate service
-    if not self._storegateSvc:
-      MSG_INFO( self, "Creating StoreGate...")
-      from Gaugi.storage import StoreGate
-      self._storegateSvc = StoreGate( self._ofile , level = self._level)
-    else:
-      MSG_INFO( self, 'The StoraGate was created for ohter service. Using the service setted by client.')
-
     self.getContext().initialize()
-
     return StatusCode.SUCCESS
 
-
-
-  def execute(self):
-    for key, edm in self._containersSvc.items():
-      if edm.execute().isFailure():
-        MSG_WARNING( self,  'Can not execute the edm %s', key )
-    return StatusCode.SUCCESS
-
-  def finalize(self):
-    MSG_INFO( self, 'Finalizing StoreGate service...')
-    self._storegateSvc.write()
-    del self._storegateSvc
-    self._f.Close()
-    del self._f
-    del self._event
-    del self._t
-    return StatusCode.SUCCESS
-
-
-  def getEntries(self):
-    return self._entries
-
-  def getEntry( self, entry ):
-    self._t.GetEntry( entry )
-
-  def getContext(self):
-    return self._context
-
-  # get the storegate pointer
-  def getStoreGateSvc(self):
-    return self._storegateSvc
-
-  # set the storegate from another external source
-  def setStoreGateSvc(self, store):
-    self._storegateSvc = store
-
-  # number of event
-  @property
-  def nov(self):
-    if self._nov < 0:
-      return self.getEntries()
-    else:
-      return self._nov
-
-  # return the framework identification
-  def id(self):
-    return self._id
 
 

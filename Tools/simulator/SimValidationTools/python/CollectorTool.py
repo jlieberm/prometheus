@@ -3,7 +3,7 @@
 
 __all__ = ["CollectorTool"]
 
-from prometheus import Algorithm
+from Gaugi import Algorithm
 from Gaugi import StatusCode, NotSet, retrieve_kw
 from Gaugi.messenger.macros import *
 import numpy as np

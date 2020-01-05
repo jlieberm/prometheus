@@ -8,7 +8,7 @@ from Gaugi import csvStr2List, expandFolders, save, load
 from Gaugi.messenger.macros import *
 from Gaugi.messenger  import Logger
 from Gaugi.constants import GeV
-from Gaugi.enumerations import StatusWatchDog
+from Gaugi.enumerations import StatusWTD
 from Gaugi import EnumStringification
 import numpy as np
 

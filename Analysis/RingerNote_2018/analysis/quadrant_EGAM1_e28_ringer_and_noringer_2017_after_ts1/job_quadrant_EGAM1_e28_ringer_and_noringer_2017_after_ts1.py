@@ -1,6 +1,6 @@
 
 import argparse
-from Gaugi import EventATLASLoop
+from prometheus import EventATLAS
 from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi import ToolSvc, ToolMgr
@@ -39,12 +39,12 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
-ToolMgr += EventATLASLoop( inputFiles = args.inputFiles, 
-                              treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                              dataframe = Dataframe.PhysVal_v2, 
-                              outputFile=args.outputFile,
-                              nov = args.nov,
-                              level = LoggingLevel.INFO)
+acc = EventATLAS( inputFiles = args.inputFiles, 
+                  treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
+                  dataframe = Dataframe.PhysVal_v2, 
+                  outputFile=args.outputFile,
+                  nov = args.nov,
+                  level = LoggingLevel.INFO)
 
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
@@ -82,10 +82,6 @@ alg.setEtaBinningValues(etalist)
 ToolSvc += alg
 
 
-
-from Gaugi import job
-job.initialize()
-job.execute()
-job.finalize()
+acc.run()
 
 

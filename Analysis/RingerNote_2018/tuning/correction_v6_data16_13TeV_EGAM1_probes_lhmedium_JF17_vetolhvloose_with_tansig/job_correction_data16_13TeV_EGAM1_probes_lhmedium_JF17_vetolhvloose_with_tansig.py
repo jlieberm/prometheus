@@ -3,7 +3,7 @@
 
 
 
-from prometheus import EventATLASLoop
+from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
 from prometheus import ToolSvc, ToolMgr
@@ -42,15 +42,15 @@ args = parser.parse_args()
 
 
 
-ToolMgr += EventATLASLoop(  "EventATLASLoop",
-                            inputFiles = args.inputFiles, 
-                            #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                            treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                            nov = args.nov,
-                            dataframe = DataframeEnum.PhysVal_v2, 
-                            outputFile = args.outputFile,
-                            level = LoggingLevel.INFO
-                          )
+acc = EventATLAS(  "EventATLASLoop",
+                   inputFiles = args.inputFiles, 
+                   #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
+                   treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                   nov = args.nov,
+                   dataframe = DataframeEnum.PhysVal_v2, 
+                   outputFile = args.outputFile,
+                   level = LoggingLevel.INFO
+                  )
 
 
 
@@ -112,11 +112,7 @@ if args.doEgam7:
 ToolSvc += alg
 
 
-
-from prometheus import job
-job.initialize()
-job.execute()
-job.finalize()
+acc.run()
 
 
 

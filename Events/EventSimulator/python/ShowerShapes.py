@@ -3,7 +3,7 @@ __all__ = ['ShowerShapes']
 
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
-from prometheus import EDM
+from Gaugi import EDM
 import numpy as np
 import sys
 from copy import copy

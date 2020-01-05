@@ -1,5 +1,5 @@
 
-from prometheus import EventATLASLoop
+from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel
 from prometheus import ToolSvc, ToolMgr
@@ -28,7 +28,7 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
-ToolMgr += EventATLASLoop(  "EventATLASLoop",
+acc = EventATLAS(  "EventATLASLoop",
                             inputFiles = args.inputFiles, 
                             treePath = '*/HLT/Physval/Egamma/probes', 
                             nov = args.nov,
@@ -41,10 +41,8 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
 from prometheus import Algorithm
 ToolSvc += Algorithm( "AlgTest" )
 
-from prometheus import job
-job.initialize()
-job.execute()
-job.finalize()
+acc.run()
+
 
 sys.exit(0)
 

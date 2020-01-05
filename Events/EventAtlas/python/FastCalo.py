@@ -1,7 +1,7 @@
 
 __all__ = ['FastCalo', 'CaloSampling']
 
-from prometheus import EDM
+from Gaugi import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode
 from Gaugi import stdvector_to_list
