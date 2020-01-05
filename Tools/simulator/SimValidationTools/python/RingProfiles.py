@@ -22,10 +22,10 @@ class RingProfiles( Algorithm ):
     
     from ROOT import TH1F, TH2F
     sg.mkdir(self._basepath+'/Rings')
-    for ring in range(56):
+    for ring in range(66):
       sg.addHistogram( TH1F( ("ring_%d")%(ring), ";Energy;Count", 500, 0, 1000 ) ) 
-    sg.addHistogram( TH2F( ("rings"), ";Energy;Count", 56,0,56,500, 0, 1000 ) ) 
-    sg.addHistogram( TH1F( "ring_profile", ";Energy;Count", 56, 0, 56 ) ) 
+    sg.addHistogram( TH2F( ("rings"), ";Energy;Count", 66,0,66,500, 0, 1000 ) ) 
+    sg.addHistogram( TH1F( "ring_profile", ";Energy;Count", 66, 0, 66 ) ) 
     self.init_lock()
     
     return StatusCode.SUCCESS 
@@ -46,7 +46,7 @@ class RingProfiles( Algorithm ):
   def finalize(self):
 
     sg = self.getStoreGateSvc()
-    for r in range(56):
+    for r in range(66):
       mean_energy = sg.histogram(self._basepath+'/Rings/ring_%d' % r).GetMean()
       sg.histogram(self._basepath+'/Rings/ring_profile').SetBinContent( r+1, mean_energy )
     self.fina_lock()

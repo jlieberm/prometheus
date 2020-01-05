@@ -34,9 +34,7 @@ class CaloRings(EDM):
                       
   def __init__(self):
     EDM.__init__(self)
-    #from prometheus.tools.simulator.generic.reco import CaloRingsBuilder
-    #self._reco_tool = CaloRingsBuilder()
-    self._nrings = [46, 5, 5]
+    self._nrings = [46, 5, 5, 4, 4, 2] # 86 rings
     self._ringsE = [0.0 for _ in range(sum(self._nrings))]
 
   def initialize(self):
@@ -53,15 +51,23 @@ class CaloRings(EDM):
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 
-                roi.getCollection( Layer.FIRST_LAYER  ),
-                roi.getCollection( Layer.SECOND_LAYER ),
-                roi.getCollection( Layer.THIRD_LAYER  ),
+                roi.getCollection( Layer.FIRST_EM_LAYER  ),
+                roi.getCollection( Layer.SECOND_EM_LAYER ),
+                roi.getCollection( Layer.THIRD_EM_LAYER  ),
+                roi.getCollection( Layer.FIRST_HAD_LAYER  ),
+                roi.getCollection( Layer.SECOND_HAD_LAYER ),
+                roi.getCollection( Layer.THIRD_HAD_LAYER  ),
              ] 
 
     ringsets = [ 
+                # Eletromagnetic rings
                 RingSet( self._nrings[0] ),
                 RingSet( self._nrings[1] ),
                 RingSet( self._nrings[2] ),
+                # Hadronic rings
+                RingSet( self._nrings[3] ),
+                RingSet( self._nrings[4] ),
+                RingSet( self._nrings[5] ),
                ]
 
     self._ringsE=[]

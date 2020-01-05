@@ -31,6 +31,7 @@ class StandardQuantityProfiles( Algorithm ):
     sg.addHistogram( TH1F("f1", ";;;", 100, 0, 1) )
     sg.addHistogram( TH1F("f2", ";;;", 100, 0, 1) )
     sg.addHistogram( TH1F("f3", ";;;", 100, 0, 1) )
+    sg.addHistogram( TH1F("rhad", ";;;", 100, 0, 2) )
 
     self.init_lock()
     return StatusCode.SUCCESS 
@@ -49,6 +50,7 @@ class StandardQuantityProfiles( Algorithm ):
     if showers.f1()      > 0.0: sg.histogram( self._basepath+"/ShowerShapes/f1" ).Fill( showers.f1() )
     if showers.f2()      > 0.0: sg.histogram( self._basepath+"/ShowerShapes/f2" ).Fill( showers.f2() )
     if showers.f3()      > 0.0: sg.histogram( self._basepath+"/ShowerShapes/f3" ).Fill( showers.f3() )
+    if showers.rhad()    > 0.0: sg.histogram( self._basepath+"/ShowerShapes/rhad" ).Fill( showers.rhad() )
   
 
     return StatusCode.SUCCESS 
@@ -57,7 +59,6 @@ class StandardQuantityProfiles( Algorithm ):
 
 
   def finalize(self):
-
 
     self.fina_lock()
     return StatusCode.SUCCESS 

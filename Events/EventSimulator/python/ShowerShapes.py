@@ -15,15 +15,9 @@ class ShowerShapes(EDM):
                       
   def __init__(self):
     EDM.__init__(self)
-    self._eratio = 0.0
-    self._rphi = 0.0
-    self._reta = 0.0
-    self._f1 = 0.0
-    self._f3 = 0.0
 
 
   def initialize(self):
-    
     return StatusCode.SUCCESS
 
 
@@ -35,9 +29,15 @@ class ShowerShapes(EDM):
     # reconstruction step, get the cell container
     roi = self.getContext().getHandler("CaloCellsContainer")
     layers = [ 
-                roi.getCollection( Layer.FIRST_LAYER  ),
-                roi.getCollection( Layer.SECOND_LAYER ),
-                roi.getCollection( Layer.THIRD_LAYER  ),
+                # Eletromagnetic cells
+                roi.getCollection( Layer.FIRST_EM_LAYER  ),
+                roi.getCollection( Layer.SECOND_EM_LAYER ),
+                roi.getCollection( Layer.THIRD_EM_LAYER  ),
+                # Hadronic cells
+                roi.getCollection( Layer.THIRD_HAD_LAYER  ),
+                roi.getCollection( Layer.THIRD_HAD_LAYER  ),
+                roi.getCollection( Layer.THIRD_HAD_LAYER  ),
+
              ] 
 
     # Shower shape: Eratio
@@ -83,9 +83,17 @@ class ShowerShapes(EDM):
     self._f3 = E3/float(self._etot)
 
 
+    # Hadronic energy layers
+    self._ehad1 = self._sumCells( layers[3] )
+    self._ehad2 = self._sumCells( layers[4] )
+    self._ehad3 = self._sumCells( layers[5] )
+    self._ehadtot = self._ehad1 + self._ehad2 + self._ehad3
+    self._rhad = self._etot/float(self._ehadtot)
+
 
     return StatusCode.SUCCESS
 
+  # Eletromagnetic information
 
   def eratio1(self):
     return self._eratio1
@@ -122,6 +130,20 @@ class ShowerShapes(EDM):
 
   def rphi(self):
     return self._rphi
+
+  # Hadronic information
+
+  def rhad(self):
+    return self._rhad
+
+  def e1had(self):
+    return self._e1had
+
+  def e2had(self):
+    return self._e2had
+
+  def e3had(self):
+    return self._e3had
 
 
 

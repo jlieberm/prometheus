@@ -22,16 +22,22 @@ class CaloView( Algorithm ):
 
     from ROOT import TH1F, TH2F
     sg.mkdir( self._basepath + '/CaloView' )
-    sg.addHistogram( TH2F( "lateral_view", ";;;", 4000, -240, 240, 4000, -240, 240) )
+    offset = 240
+    # x axis represents [-240 , 240+1000] the depth (z) calorimeter. Y axis represent one of the faces (x or y)
+    sg.addHistogram( TH2F( "lateral_view", ";;;", 10000, -240+offset, 240 + 1000 + offset, 4000, -240+offset, 240+offset) )
     sg.addHistogram( TH2F( "layer_0", "First EM Layer; Energy (eta); Energy (phi)" , 3,0,3,96,0,96)   )
     sg.addHistogram( TH2F( "layer_1", "Second EM Layer; Energy (eta); Energy (phi)", 12,0,12,12,0,12) )
     sg.addHistogram( TH2F( "layer_2", "Third EM Layer; Energy (eta); Energy (phi)" , 12,0,12,6,0,6)   )
+    sg.addHistogram( TH2F( "layer_3", "First HAD Layer; Energy (eta); Energy (phi)"  , 8,0,8,8,0,8)   )
+    sg.addHistogram( TH2F( "layer_4", "Second HAD Layer; Energy (eta); Energy (phi)" , 8,0,8,8,0,8)   )
+    sg.addHistogram( TH2F( "layer_5", "Third HAD Layer; Energy (eta); Energy (phi)"  , 4,0,4,4,0,4)   )
 
-    hists_per_layer = [(3, 96), (12, 12), (12, 6)]
+
+    hists_per_layer = [(3, 96), (12, 12), (12, 6), (8, 8), (8, 8), (4, 4)]
     for layer, hists in enumerate(hists_per_layer):
       for x in range( hists[0] ):
         for y in range( hists[1] ):
-          sg.addHistogram( TH1F( ("layer_%d_x%d_y%d")%(layer,x,y), ";Energy;Count", 140, -5, 65 ) )
+          sg.addHistogram( TH1F( ("layer_%d_x%d_y%d")%(layer,x,y), ";Energy;Count", 150, -5, 100 ) )
 
     self.init_lock()
     return StatusCode.SUCCESS
@@ -42,14 +48,17 @@ class CaloView( Algorithm ):
     sg = self.getStoreGateSvc()
     cells = self.getContext().getHandler("CaloCellsContainer")
 
-    for layer, layer_enum in enumerate( [CaloGAN_Definitions.FIRST_LAYER, CaloGAN_Definitions.SECOND_LAYER, CaloGAN_Definitions.THIRD_LAYER]):
+    for layer, layer_enum in enumerate( [CaloGAN_Definitions.FIRST_EM_LAYER, CaloGAN_Definitions.SECOND_EM_LAYER, CaloGAN_Definitions.THIRD_EM_LAYER,
+                                         CaloGAN_Definitions.FIRST_HAD_LAYER,CaloGAN_Definitions.SECOND_HAD_LAYER,CaloGAN_Definitions.THIRD_HAD_LAYER]):
+
       collections = cells.getCollection( layer_enum )
       for c in collections:
         key = ('%s/CaloView/layer_%d_x%d_y%d') % ( self._basepath, layer, c.x(), c.y() )
         sg.histogram( key ).Fill( c.energy() )
 
+    offset = 240 #mm
     for deposit in cells.getDeposits():
-      sg.histogram( self._basepath+"/CaloView/lateral_view" ).Fill( deposit.z(), deposit.x(), deposit.energy() )
+      sg.histogram( self._basepath+"/CaloView/lateral_view" ).Fill( deposit.z()+offset, deposit.x()+offset, deposit.energy() )
 
     return StatusCode.SUCCESS
 
@@ -60,7 +69,7 @@ class CaloView( Algorithm ):
 
     sg = self.getStoreGateSvc()
     # Fill all 2D histograms
-    hists_per_layer = [(3, 96), (12, 12), (12, 6)]
+    hists_per_layer = [(3, 96), (12, 12), (12, 6), (8, 8), (8, 8), (4, 4)]
     for layer, hists in enumerate(hists_per_layer):
       E_energy = np.zeros( hists )
       for x in range( hists[0] ):

@@ -36,33 +36,47 @@ def PlotShowers(  hist_1, hist_2, name_1, name_2, varname, outname ,drawopt='his
 
 
 
-def PlotPoints( hist, outname ):
+def PlotDeposit( hist, outname ):
 
   from ROOT import TCanvas, gStyle, kBird,TLine
   gStyle.SetPalette(kBird)
 
-  canvas = TCanvas('canvas','canvas',500, 500)
+  canvas = TCanvas('canvas','canvas',800, 500)
   canvas.SetRightMargin(0.15)
   hist.GetXaxis().SetTitle("Depth from Calorimeter Center [mm]")
   hist.GetYaxis().SetTitle("#eta direction [mm]")
   hist.GetZaxis().SetTitle("Local Energy Deposit [MeV]")
   hist.Draw( 'colz' )
 
-  vertical_lines = [ (-150,-240, -150,240) ,  ( 197,-240, 197,240 ) ]
-  first_layer = []; second_layer = []; third_layer = []
+  # taken from: https://github.com/jodafons/lorenzet/blob/master/src/SteppingAction.cc
+  vertical_lines = [ (150,0, 150,480) ,  ( 450,0, 450,480 ), (480,0, 480,480), (880,0,880,480), (1280,0,1280,480) ]
+  first_em_layer = []; second_em_layer = []; third_em_layer = []
+  first_had_layer = []; second_had_layer = []; third_had_layer = []
   
-  for y in range( -240, 240, 480/96 ):
+  # horizontal lines
+  for y in range( 0, 480, int(480/96) ):
     # (x1,y,x2,y)
-    first_layer.append( (-240, y, -150, y) )
-  for y in range( -240, 240, 480/12 ):
+    first_em_layer.append( (0, y, 150, y) )
+  for y in range( 0, 480, int(480/12) ):
     # (x1,y,x2,y)
-    second_layer.append( (-150, y, 197, y) )
-  for y in range( -240, 240, 480/6 ):
+    second_em_layer.append( (150, y, 450, y) )
+  for y in range( 0, 480, int(480/6) ):
     # (x1,y,x2,y)
-    third_layer.append( (197, y, 240, y) )
+    third_em_layer.append( (450, y, 480, y) )
+
+  # horizontal lines
+  for y in range( 0, 480, int(480/8) ):
+    # (x1,y,x2,y)
+    first_had_layer.append( (480, y, 880, y) )
+  for y in range( 0, 480, int(480/8) ):
+    # (x1,y,x2,y)
+    second_had_layer.append( (880, y, 1280, y) )
+  for y in range( 0, 480, int(480/4) ):
+    # (x1,y,x2,y)
+    third_had_layer.append( (1280, y, 1480, y) )
 
   objects = []
-  for l in vertical_lines+first_layer+second_layer+third_layer:
+  for l in vertical_lines+first_em_layer+second_em_layer+third_em_layer+first_had_layer+second_had_layer+third_had_layer:
     obj = TLine(l[0],l[1],l[2],l[3])
     obj.Draw('sames')
     objects.append(obj)
@@ -70,6 +84,7 @@ def PlotPoints( hist, outname ):
   #hist.GetXaxis().SetLimits(0,480)
   #hist.GetYaxis().SetLimits(0,480)
   canvas.SaveAs(outname)
+
 
 
 
