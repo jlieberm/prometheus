@@ -1,5 +1,7 @@
 
-## The Prometheus Analysis Framework
+## The Prometheus 
+
+The prometheus analysis framework
 
 
 ## Requirements
@@ -11,7 +13,34 @@
 - cmake 3
 - Gaugi (2.0)
 
-## Install the custom Root CERN package (Required)
+
+## Installation:
+
+```bash
+# download from git
+git clone https://github.com/jodafons/prometheus.git
+# dowload all submodules
+source setup_module.sh
+# put everything to master
+source setup_module.sh --head
+# build and compile
+mkdir build && cd build
+cmake ..
+# compile
+make
+# setup the libs and modules
+source setup.sh
+```
+
+
+If you shutdonw and must reset the prometheus once again, just apply:
+```bash
+# setup the libs and modules
+source setup.sh
+```
+
+
+## Install Root CERN package (Required)
 
 The ROOT system provides a set of OO frameworks with all the functionality
 needed to handle and analyze large amounts of data in a very efficient way.
@@ -71,87 +100,7 @@ source $HOME/root/bin/thisroot.sh
 ```
 
 
-
-
-## Install the Geant 4 on your local machine (Required for simulation purpose)
-
-```bash
-mkdir .bin
-cd .bin
-git clone https://github.com/jodafons/geant4_10.5.git
-cd geant4
-source buildthis.sh
-echo 'source ~/.bin/geant4/build/geant4.sh' >> ~/.bashrc
-```
-
-
-
-## Install prometheus Framework
-
-
-```bash
-# download from git
-git clone https://github.com/jodafons/prometheus.git
-# dowload all submodules
-source setup_module.sh
-# put everything to master
-source setup_module.sh --head
-# build and compile
-source buildthis.sh
-# setup the libs and modules
-source setup.sh
-```
-
-If you shutdonw and must reset the prometheus once again, just apply:
-```bash
-# setup the libs and modules
-source setup.sh
-```
-
-
-
-## Or set the Docker container (prometheus)
-
-The locally volume is provide by a docker plugin. You must create your volume first. After setup your volume,
-just tip the follow command:
-
-```bash
-docker run --network host -v my_volume_name:/volume -it jodafons/prometheus /bin/bash
-```
-
-and inside of the container:
-
-```bash
-source /setup_envs.sh
-```
-
-You can see the docker specification of this container here: https://github.com/jodafons/docker
-
-### Docker volume locally (only for linux)
-
-See this page: https://github.com/surgeforward/docker-local-persist-volume-plugin
-
-
-
-## To run the simulator (Lorenzett)
-
-You must have Geant4 installed in you machine. To run the simulator example:
-
-```bash
-cd Analysis/Simulator/calo_resolution
-generator -m geant4_config.mac
-# OR in parallel (30 threads, 100 jobs)
-python3 run_generator.py
-```
-
-After generate the raw date, just run the reconstruction and analysis step
-
-```bash
-python3 job_resolution.py
-```
-
-
-## Contribution
+## Contribution:
 
 - Dr. João Victor da Fonseca Pinto, UFRJ/COPPE, CERN/ATLAS (jodafons@cern.ch) [maintainer, developer]
 - Dr. Werner Freund, UFRJ/COPPE, CERN/ATLAS (wsfreund@cern.ch) [developer]
