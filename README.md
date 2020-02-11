@@ -1,5 +1,5 @@
 
-## The Prometheus 
+## Prometheus 
 
 The prometheus analysis framework
 
@@ -24,7 +24,9 @@ source setup_module.sh
 # put everything to master
 source setup_module.sh --head
 # build and compile
-mkdir build && cd build
+mkdir build
+cd build
+# setup cmake configuration
 cmake ..
 # compile
 make
