@@ -84,13 +84,28 @@ git checkout v6-16-00
 # create the build dir
 mkdir build
 cd build
+```
+
+Setup the python binary paths for Linux OS:
+
+```bash
 # For linux
 cmake --Dpython_version=3   
+```
+
+
+Setup the python binary paths for MaxOS:
+
+```bash
 # For MacOS
-#cmake -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
-#DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/Headers \
-#-DPYTHON_LIBRARY=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/libpython3.7.dylib 
-# and compile
+cmake -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
+      -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/Headers \
+      -DPYTHON_LIBRARY=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/libpython3.7.dylib 
+```
+
+And finally compile the root.
+
+```bash
 make -j4
 ```
 
