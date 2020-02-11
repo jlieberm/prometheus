@@ -8,12 +8,22 @@
 #include "RingerSelectorTools/tools/RingerSelectorTool.h"
 #include "RingerSelectorTools/tools/procedures/Norm1.h"
 #include "RingerSelectorTools/tools/procedures/MultiLayerPerceptron.h"
+#include <iostream>
+
+#define MSG_INFO(msg) \
+std::cout << msg << std::endl;\
+
+#define MSG_ERROR(msg) \
+std::cout << msg << std::endl;\
+
+#define MSG_DEBUG(msg) \
+std::cout << msg << std::endl;\
+
+
 
 using namespace Ringer;
 
 RingerSelectorTool::RingerSelectorTool():
-  IMsgService("RingerSelectorTool"),
-  MsgService(MSG::INFO),
   m_reader("RingerReader"),
   m_useTrack(false),
   m_useCaloRings(true),

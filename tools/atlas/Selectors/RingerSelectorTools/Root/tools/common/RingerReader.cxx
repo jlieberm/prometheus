@@ -17,11 +17,25 @@
 #include "RingerSelectorTools/tools/procedures/MultiLayerPerceptron.h"
 #include "RingerSelectorTools/tools/procedures/Thresholds.h"
 
+#include <iostream>
+
+#define MSG_INFO(msg) \
+std::cout << msg << std::endl;\
+
+#define MSG_ERROR(msg) \
+std::cout << msg << std::endl;\
+
+#define MSG_DEBUG(msg) \
+std::cout << msg << std::endl;\
+
+#define MSG_WARNING(msg) \
+std::cout << msg << std::endl;\
+
+
+
 using namespace Ringer;
 
 RingerReader::RingerReader(std::string  name):
-  IMsgService(name),
-  MsgService(MSG::INFO),
   m_name(name)
 {
   m_etaBins=nullptr;

@@ -12,7 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # mare ROOT dependenc
 find_package(ROOT COMPONENTS EG Eve Geom Gui GuiHtml GenVector Hist Physics Matrix Graf RIO Tree Gpad RGL MathCore)
 include(${ROOT_USE_FILE})
-include(Gaugi/cmake/InstallGaugiFunctions.cmake)
+include(gaugi/cmake/InstallGaugiFunctions.cmake)
 
 gaugi_initialize()
 
@@ -62,24 +62,24 @@ endif()
 
 
 
-add_subdirectory(Gaugi)
+add_subdirectory(gaugi)
 add_subdirectory(prometheus)
-add_subdirectory(Tools/atlas/CommonTools)
-add_subdirectory(Tools/atlas/CollectorTool)
-add_subdirectory(Tools/atlas/EfficiencyTools)
-add_subdirectory(Tools/atlas/EmulationTools)
-add_subdirectory(Tools/atlas/EventSelectionTool)
-add_subdirectory(Tools/atlas/PathResolver)
-add_subdirectory(Tools/atlas/PileupCorrectionTools)
-add_subdirectory(Tools/atlas/ProfileTools)
-add_subdirectory(Tools/atlas/QuadrantTools)
-add_subdirectory(Tools/atlas/Selectors/RingerSelectorTools)
-add_subdirectory(Tools/atlas/Selectors/TrigEgammaL2CaloSelectorTool)
-add_subdirectory(Tools/simulator/SimValidationTools)
-add_subdirectory(Events/EventAtlas)
-add_subdirectory(Events/EventSimulator)
-add_subdirectory(External/monet)
-add_subdirectory(External/pytex)
+add_subdirectory(tools/atlas/CommonTools)
+add_subdirectory(tools/atlas/CollectorTool)
+add_subdirectory(tools/atlas/EfficiencyTools)
+add_subdirectory(tools/atlas/EmulationTools)
+add_subdirectory(tools/atlas/EventSelectionTool)
+add_subdirectory(tools/atlas/PathResolver)
+add_subdirectory(tools/atlas/PileupCorrectionTools)
+add_subdirectory(tools/atlas/ProfileTools)
+add_subdirectory(tools/atlas/QuadrantTools)
+add_subdirectory(tools/atlas/Selectors/RingerSelectorTools)
+add_subdirectory(tools/atlas/Selectors/TrigEgammaL2CaloSelectorTool)
+add_subdirectory(tools/simulator/SimValidationTools)
+add_subdirectory(events/EventAtlas)
+add_subdirectory(events/EventSimulator)
+add_subdirectory(external/monet)
+add_subdirectory(external/pytex)
 
 # check if GEANT4 is in the path
 #if( $ENV{G4_SETUP} STREQUAL "on")
@@ -90,7 +90,6 @@ add_subdirectory(External/pytex)
 
 
 add_library(prometheus SHARED
-  $<TARGET_OBJECTS:Gaugi>
   $<TARGET_OBJECTS:EventAtlas>
   $<TARGET_OBJECTS:EventSimulator>
   $<TARGET_OBJECTS:PathResolver>

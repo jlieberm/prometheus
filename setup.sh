@@ -4,7 +4,7 @@ export LC_ALL=''
 export RCM_NO_COLOR=0
 export RCM_GRID_ENV=0
 export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
-export PATH=$PATH:$PWD/Gaugi/scripts
+export PATH=$PATH:$PWD/gaugi/scripts
 
 
 

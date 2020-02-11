@@ -2,13 +2,16 @@
 
 
 #include "RingerSelectorTools/ElectronRingerSelector.h"
+#include <iostream>
+
+
+#define MSG_INFO( msg )        \
+std::cout << msg << std::endl; \
 
 
 using namespace prometheus;
 
-ElectronRingerSelector::ElectronRingerSelector(std::string name):
-  IMsgService(name),
-  MsgService(MSG::INFO),
+ElectronRingerSelector::ElectronRingerSelector(std::string /*name*/):
   m_selectorTool()
 {;}
 

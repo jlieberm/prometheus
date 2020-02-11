@@ -18,15 +18,13 @@
 #include "RingerSelectorTools/tools/procedures/MultiLayerPerceptron.h"
 #include "RingerSelectorTools/tools/procedures/Norm1.h"
 
-#include "Gaugi/MsgStream.h"
-#include "Gaugi/defines.h"
 #include <memory>
 #include <string>
 
 
 namespace Ringer{
 
-  class RingerSelectorTool: public MsgService
+  class RingerSelectorTool
   {
   
     public:

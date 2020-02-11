@@ -11,9 +11,6 @@
 #include "RingerSelectorTools/tools/procedures/Thresholds.h"
 #include "RingerSelectorTools/tools/procedures/MultiLayerPerceptron.h"
 
-#include "Gaugi/defines.h"
-#include "Gaugi/MsgStream.h"
-//#include "PathResolver/PathResolver.h"
 #include <vector>
 #include <string>
 #include "TTree.h"
@@ -26,7 +23,7 @@
 namespace Ringer{
 
   
-  class RingerReader: public MsgService{
+  class RingerReader{
   
     public:
       /* constructor */

@@ -8,14 +8,12 @@
 #include <vector>
 //#include "RingerSelectorTools/IAsgElectronRingerSelector.h"
 #include "RingerSelectorTools/tools/RingerSelectorTool.h"
-#include "Gaugi/MsgStream.h"
-#include "Gaugi/defines.h"
 
 namespace prometheus{
 
 
 
-class ElectronRingerSelector : public MsgService
+class ElectronRingerSelector
 {
 
 
