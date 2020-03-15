@@ -1,9 +1,12 @@
-[submodule "Gaugi"]
-	path = gaugi
-  	url = https://github.com/jodafons/Gaugi.git
 [submodule "External/monet"]
 	path = external/monet
 	url = https://github.com/jodafons/monet.git
 [submodule "External/pytex"]
 	path = external/pytex
 	url = https://github.com/jodafons/pytex.git
+[submodule "external/kolmov"]
+	path = external/kolmov
+	url = https://github.com/micaelverissimo/kolmov.git
+[submodule "external/gaugi"]
+	path = external/gaugi
+	url = https://github.com/jodafons/gaugi
