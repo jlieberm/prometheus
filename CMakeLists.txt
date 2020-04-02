@@ -91,7 +91,7 @@ add_subdirectory(external/pytex)
 
 add_library(prometheus SHARED
   $<TARGET_OBJECTS:EventAtlas>
-  $<TARGET_OBJECTS:EventSimulator>
+  #$<TARGET_OBJECTS:EventSimulator>
   $<TARGET_OBJECTS:PathResolver>
   $<TARGET_OBJECTS:RingerSelectorTools>
 )
