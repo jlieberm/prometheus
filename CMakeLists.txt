@@ -12,7 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # mare ROOT dependenc
 find_package(ROOT COMPONENTS EG Eve Geom Gui GuiHtml GenVector Hist Physics Matrix Graf RIO Tree Gpad RGL MathCore)
 include(${ROOT_USE_FILE})
-include(gaugi/cmake/InstallGaugiFunctions.cmake)
+include(external/gaugi/cmake/InstallGaugiFunctions.cmake)
 
 gaugi_initialize()
 
@@ -62,7 +62,7 @@ endif()
 
 
 
-add_subdirectory(gaugi)
+add_subdirectory(external/gaugi)
 add_subdirectory(prometheus)
 add_subdirectory(tools/atlas/CommonTools)
 add_subdirectory(tools/atlas/CollectorTool)
