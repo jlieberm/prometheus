@@ -77,7 +77,7 @@ add_subdirectory(tools/atlas/Selectors/RingerSelectorTools)
 add_subdirectory(tools/atlas/Selectors/TrigEgammaL2CaloSelectorTool)
 add_subdirectory(tools/simulator/SimValidationTools)
 add_subdirectory(events/EventAtlas)
-#add_subdirectory(events/EventSimulator)
+add_subdirectory(events/EventSimulator)
 add_subdirectory(external/monet)
 add_subdirectory(external/pytex)
 
@@ -91,7 +91,7 @@ add_subdirectory(external/pytex)
 
 add_library(prometheus SHARED
   $<TARGET_OBJECTS:EventAtlas>
-  #$<TARGET_OBJECTS:EventSimulator>
+  $<TARGET_OBJECTS:EventSimulator>
   $<TARGET_OBJECTS:PathResolver>
   $<TARGET_OBJECTS:RingerSelectorTools>
 )
