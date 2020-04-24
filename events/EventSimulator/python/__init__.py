@@ -1,17 +1,20 @@
 
 __all__ = []
 
-
-from . import CaloCells
-__all__.extend(CaloCells.__all__)
-from .CaloCells import *
+from . import CaloCellCollection
+__all__.extend(CaloCellCollection.__all__)
+from .CaloCellCollection import *
 
 from . import CaloRings
 __all__.extend(CaloRings.__all__)
 from .CaloRings import *
 
-from . import ShowerShapes
-__all__.extend(ShowerShapes.__all__)
-from .ShowerShapes import *
+from . import CaloCluster
+__all__.extend(CaloCluster.__all__)
+from .CaloCluster import *
+
+from . import EventInfo
+__all__.extend(EventInfo.__all__)
+from .EventInfo import *
 
 

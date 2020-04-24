@@ -33,49 +33,41 @@ class EventSimulator( TEventLoop ):
 
    
     # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.Lorenzet:
+    if self._dataframe is DataframeEnum.Lorenzett_v1:
       #self._t.SetBranchStatus("*", False)
       from ROOT import edm
-      self._event = edm.Lorenzet()
+      from EventSimulator import CaloCellCollection, CaloRings, CaloCluster, EventInfo
+      self._event = edm.Lorenzett_v1()
       self._t.GetEntry(0)
-    elif self._dataframe is DataframeEnum.Delphes:
-      try:
-        ROOT.gSystem.Load("libDelphes")
-      except:
-        MSG_FATAL( self, "Can not import Delphes library. You should install delphes before! Bye...")
-      try:
-        ROOT.gInterpreter.Declare('#include "classes/DelphesClasses.h"')
-        ROOT.gInterpreter.Declare('#include "external/ExRootAnalysis/ExRootTreeReader.h"')
-      except:
-        MSG_WARNING( self, "Can not include DelphesClasses/ExRootTreeReader.")
-      self._event = NotSet
-      self._t = ROOT.ExRootTreeReader(self._t)
-      self._t.ReadEntry(0)
     else:
       return StatusCode.FATAL
 
-
     MSG_INFO( self, "Creating containers...")
-    # Allocating containers
-    if self._dataframe is DataframeEnum.Lorenzet:
-      from EventSimulator import CaloCells, CaloRings, ShowerShapes
-    elif self._dataframe is DataframeEnum.Delphes:
-      from EventDelphes import CaloTowers
-    else:
-      pass
     
     # Initialize the base of this container. 
     # Do not change this key names!
     # NOTE: Do not change this order.
     # we must retrieve the cells first and the reco other features
     # event dataframe containers
-    self._containersSvc['CaloCellsContainer']    = CaloCells() 
-    self._containersSvc['CaloRingsContainer']    = CaloRings()
-    self._containersSvc['ShowerShapesContainer'] = ShowerShapes()
+    self._containersSvc['EventInfoContainer']           = EventInfo()
+    self._containersSvc['Truth__CaloCellsContainer']    = CaloCellCollection() 
+    self._containersSvc['Truth__CaloRingsContainer']    = CaloRings()
+    self._containersSvc['Truth__CaloClusterContainer']  = CaloCluster()
+    self._containersSvc['CaloCellsContainer']           = CaloCellCollection() 
+    self._containersSvc['CaloRingsContainer']           = CaloRings()
+    self._containersSvc['CaloClusterContainer']         = CaloCluster()
+
+
                            
 
     # configure all EDMs needed
     for key, edm in self._containersSvc.items():
+
+      # enable truth property by the container key name. 
+      # Using hlt flag to avoid reimplementation
+      edm.is_hlt = False if 'Truth__' in key else True
+
+
       # attach the EDM pointer into the context list
       self.getContext().setHandler(key,edm)
       # add properties
@@ -95,12 +87,7 @@ class EventSimulator( TEventLoop ):
 
 
   def getEntry( self, entry ):
-    if self._dataframe is DataframeEnum.Lorenzet:
-      self._t.GetEntry( entry )
-    elif self._dataframe is DataframeEnum.Delphes:
-      self._t.ReadEntry( entry )
-    else:
-      self._t.GetEntry( entry )
+    self._t.GetEntry( entry )
 
 
 

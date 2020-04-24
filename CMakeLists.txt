@@ -75,11 +75,13 @@ add_subdirectory(tools/atlas/ProfileTools)
 add_subdirectory(tools/atlas/QuadrantTools)
 add_subdirectory(tools/atlas/Selectors/RingerSelectorTools)
 add_subdirectory(tools/atlas/Selectors/TrigEgammaL2CaloSelectorTool)
-add_subdirectory(tools/simulator/SimValidationTools)
 add_subdirectory(events/EventAtlas)
 add_subdirectory(events/EventSimulator)
 add_subdirectory(external/monet)
 add_subdirectory(external/pytex)
+
+
+add_subdirectory(tools/simulator/ValidationTool)
 
 # check if GEANT4 is in the path
 #if( $ENV{G4_SETUP} STREQUAL "on")

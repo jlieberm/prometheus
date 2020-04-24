@@ -7,8 +7,7 @@ from Gaugi import EnumStringification
 class Dataframe(EnumStringification):
   
   # from the simulator.
-  Delphes = -2
-  Lorenzet = -1        # special dataframe used for the lab. first simulator (for future).
+  Lorenzett_v1 = -1        # special dataframe used for the lab. first simulator (for future).
   # from athena ATLAS detector
   PhysVal = 0         # decrepted
   SkimmedNtuple  = 1  # decrepted
