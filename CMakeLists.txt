@@ -81,7 +81,8 @@ add_subdirectory(external/monet)
 add_subdirectory(external/pytex)
 
 
-add_subdirectory(tools/simulator/ValidationTool)
+add_subdirectory(tools/simulator/SimValidationTool)
+add_subdirectory(tools/simulator/SimCollectorTool)
 
 # check if GEANT4 is in the path
 #if( $ENV{G4_SETUP} STREQUAL "on")

@@ -27,28 +27,28 @@ class CaloCell(EDM):
   
   def __init__(self, **kw ):
     EDM.__init__(self)
-    self.__dict__.update((k, v) for k, v in kw.items() if k in self.__allow_keys)
+    self.__dict__.update(('_'+k, v) for k, v in kw.items() if k in self.__allow_keys)
   
   def et(self):
-  	return self.et
+  	return self._et
   
   def eta(self):
-  	return self.eta
+  	return self._eta
   
   def phi(self):
-  	return self.phi
+  	return self._phi
   
   def sampling(self):
-  	return self.sampling
+  	return self._sampling
   
   def deltaEta(self):
-  	return self.deta
+  	return self._deta
   
   def deltaPhi(self):
-  	return self.dphi
+  	return self._dphi
   
   def energy(self):
-    return self.energy
+    return self._energy
 
 
 
@@ -112,33 +112,33 @@ class CaloCellCollection(EDM):
 
     if self._dataframe is DataframeEnum.Lorenzett_v1:
       if not self._is_hlt:				
-        size = self._event.mc_cells_energy.size()
+        size = self._event.mc_cell_energy.size()
         for idx in range(size): # Loop over all cells
-          if sampling is self._event_mc_cells_sampling.at(idx):
-            cell = CaloCell( et 			= self._event.mc_cells_et.at(idx),
-            								 eta			= self._event.mc_cells_eta.at(idx),
-            								 phi			= self._event.mc_cells_phi.at(idx),
-            								 deta			= self._event.mc_cells_deta.at(idx),
-            								 dphi			= self._event.mc_cells_dphi.at(idx),
-            								 sampling	= self._event.mc_cells_sampling.at(idx),
-            								 energy		= self._event.mc_cells_energy.at(idx))
+          if sampling is self._event.mc_cell_sampling.at(idx):
+            cell = CaloCell( et 			= self._event.mc_cell_et.at(idx),
+            								 eta			= self._event.mc_cell_eta.at(idx),
+            								 phi			= self._event.mc_cell_phi.at(idx),
+            								 deta			= self._event.mc_cell_deta.at(idx),
+            								 dphi			= self._event.mc_cell_dphi.at(idx),
+            								 sampling	= self._event.mc_cell_sampling.at(idx),
+            								 energy		= self._event.mc_cell_energy.at(idx))
             collection.append(cell)
       else:
-        size = self._event.mc_cells_energy.size()
+        size = self._event.mc_cell_energy.size()
         for idx in range(size): # Loop over all cells
-          if sampling is self._event.cells_sampling.at(idx):
-            cell = CaloCell( et 			= self._event.cells_et.at(idx),
-            								 eta			= self._event.cells_eta.at(idx),
-            								 phi			= self._event.cells_phi.at(idx),
-            								 deta			= self._event.cells_deta.at(idx),
-            								 dphi			= self._event.cells_dphi.at(idx),
-            								 sampling	= self._event.cells_sampling.at(idx),
-            								 energy		= self._event.cells_energy.at(idx))
+          if sampling is self._event.cell_sampling.at(idx):
+            cell = CaloCell( et 			= self._event.cell_et.at(idx),
+            								 eta			= self._event.cell_eta.at(idx),
+            								 phi			= self._event.cell_phi.at(idx),
+            								 deta			= self._event.cell_deta.at(idx),
+            								 dphi			= self._event.cell_dphi.at(idx),
+            								 sampling	= self._event.cell_sampling.at(idx),
+            								 energy		= self._event.cell_energy.at(idx))
             collection.append(cell)
           
     else:
       self._logger.warning("Impossible to retrieve all CaloCells.")
-      return collection
+    return collection
 
 
 

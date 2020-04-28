@@ -2,9 +2,6 @@
 __all__ = []
 
 
-#from . import CollectorTool
-#__all__.extend(CollectorTool.__all__)
-#from .CollectorTool import *
 
 #from . import ResolutionTool
 #__all__.extend(ResolutionTool.__all__)

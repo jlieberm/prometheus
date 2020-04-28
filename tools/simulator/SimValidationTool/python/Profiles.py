@@ -1,7 +1,7 @@
 
 __all__ = ['Profiles']
 
-
+from EventSimulator import *
 from Gaugi import Algorithm
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode, retrieve_kw
@@ -57,30 +57,26 @@ class Profiles( Algorithm ):
     cluster = self.getContext().getHandler( "Truth__CaloClusterContainer" )
     
     if cluster.isValid():
-    	sg.histogram(self._basepath+"/Profiles/et").Fill( cluster.et()/1.e3 )
-    	sg.histogram(self._basepath+"/Profiles/eta").Fill( cluster.eta() )
-    	sg.histogram(self._basepath+"/Profiles/phi").Fill( cluster.phi() )
-    	sg.histogram(self._basepath+"/Profiles/f1").Fill( cluster.f1() )
-    	sg.histogram(self._basepath+"/Profiles/f3").Fill( cluster.f3() )
-    	sg.histogram(self._basepath+"/Profiles/reta").Fill( cluster.reta() )
-    	sg.histogram(self._basepath+"/Profiles/rphi").Fill( cluster.rphi() )
-    	sg.histogram(self._basepath+"/Profiles/rhad").Fill( cluster.rhad() )
-    	sg.histogram(self._basepath+"/Profiles/weta2").Fill( cluster.weta2() )
-    	sg.histogram(self._basepath+"/Profiles/eratio").Fill( cluster.eratio() )
-    
+      sg.histogram(self._basepath+"/Profiles/et").Fill( cluster.et()/1.e3 )
+      sg.histogram(self._basepath+"/Profiles/eta").Fill( cluster.eta() )
+      sg.histogram(self._basepath+"/Profiles/phi").Fill( cluster.phi() )
+      sg.histogram(self._basepath+"/Profiles/f1").Fill( cluster.f1() )
+      sg.histogram(self._basepath+"/Profiles/f3").Fill( cluster.f3() )
+      sg.histogram(self._basepath+"/Profiles/reta").Fill( cluster.reta() )
+      sg.histogram(self._basepath+"/Profiles/rphi").Fill( cluster.rphi() )
+      sg.histogram(self._basepath+"/Profiles/rhad").Fill( cluster.rhad() )
+      sg.histogram(self._basepath+"/Profiles/weta2").Fill( cluster.weta2() )
+      sg.histogram(self._basepath+"/Profiles/eratio").Fill( cluster.eratio() )
 
     ringer = self.getContext().getHandler( "Truth__CaloRingsContainer" )
     
     if ringer.isValid():
     	for idx in range(92):
     		sg.histogram(self._basepath+"/Profiles/rings/ring_"+str(idx)).Fill( ringer.ringsE().at(idx)/1.e3 )
-    
-    
+
     return StatusCode.SUCCESS 
 
-
-
-
+ 
   def finalize(self):
     
     sg = self.getStoreGateSvc()

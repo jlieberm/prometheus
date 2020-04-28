@@ -8,17 +8,17 @@ from Gaugi.messenger import LoggingLevel
 from Gaugi import ToolSvc, ToolMgr
 
 
-#datapath = 'zee.reco.root'
-#outputfile = 'zee_hists.root'
+datapath = 'zee.reco.root'
+outputfile = 'zee_hists.root'
 
-datapath = 'jf17.reco.root'
-outputfile = 'jf17_hists.root'
+#datapath = 'jf17.reco.root'
+#outputfile = 'jf17_hists.root'
 
 
 acc = EventSimulator(  "EventLorenzettLoop",
                                 inputFiles = datapath, 
                                 treePath = 'events', 
-                                nov = -1,
+                                nov = 5,
                                 dataframe = DataframeEnum.Lorenzett_v1, 
                                 outputFile = outputfile,
                                 level = LoggingLevel.INFO
@@ -27,8 +27,13 @@ acc = EventSimulator(  "EventLorenzettLoop",
 
 from ValidationTool import Profiles
 
-#ToolSvc += Profiles( "Profiles", basepath = "Zee" )
-ToolSvc += Profiles( "Profiles", basepath = "JF17" )
+ToolSvc += Profiles( "Profiles", basepath = "Zee" )
+
+from ValidationTool import CollectorTool
+
+
+ToolSvc += CollectorTool( "CollectorTool" )
+#ToolSvc += Profiles( "Profiles", basepath = "JF17" )
 
 
 
