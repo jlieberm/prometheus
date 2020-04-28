@@ -21,21 +21,12 @@ The prometheus analysis framework for ringer and Lorenzett simulator team.
 ## Installation:
 
 ```bash
-# download from git
-git clone https://github.com/jodafons/prometheus.git
 # dowload all submodules
 source setup_module.sh
 # put everything to master
 source setup_module.sh --head
 # build and compile
-mkdir build
-cd build
-# setup cmake configuration
-cmake ..
-# compile
-make
-# setup the libs and modules
-source setup.sh
+mkdir build && cd build && cmake .. && make -j4
 ```
 
 After the installation, just setup it with:
