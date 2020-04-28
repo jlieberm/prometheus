@@ -25,11 +25,9 @@ The prometheus analysis framework for ringer and Lorenzett simulator team.
 source setup_module.sh
 # put everything to master
 source setup_module.sh --head
-# build and compile
-mkdir build && cd build && cmake .. && make -j4
 ```
 
-After the installation, just setup it with:
+After the compilation with `cmake` you needed to setup all envirmoments with:
 ```bash
 # setup the libs and modules
 source setup.sh
