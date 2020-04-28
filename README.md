@@ -1,17 +1,21 @@
 
 ## Prometheus 
 
-The prometheus analysis framework
+The prometheus analysis framework for ringer and Lorenzett simulator team.
+
+## Dataframe support:
+
+- PhysVal ntuple schemma from athena Online trigger e/g framework;
+- SkimmedNtuple schemma from e/g Tag and probe Offline frameworl; 
+- Lorenzett from generic simulator;
 
 
 ## Requirements
 
-- root (https://gitlab.cern.ch/jodafons/root.git)
-- boost
-- numpy
-- python 3
-- cmake 3
-- Gaugi (2.0)
+- root;
+- python 3;
+- cmake 3;
+- Gaugi (pip3 install gaugi).
 
 
 ## Installation:
@@ -34,86 +38,10 @@ make
 source setup.sh
 ```
 
-
-If you shutdonw and must reset the prometheus once again, just apply:
+After the installation, just setup it with:
 ```bash
 # setup the libs and modules
 source setup.sh
-```
-
-
-## Install Root CERN package (Required)
-
-The ROOT system provides a set of OO frameworks with all the functionality
-needed to handle and analyze large amounts of data in a very efficient way.
-Having the data defined as a set of objects, specialized storage methods are
-used to get direct access to the separate attributes of the selected objects,
-without having to touch the bulk of the data. Included are histograming
-methods in an arbitrary number of dimensions, curve fitting, function
-evaluation, minimization, graphics and visualization classes to allow
-the easy setup of an analysis system that can query and process the data
-interactively or in batch mode, as well as a general parallel processing
-framework, PROOF, that can considerably speed up an analysis.
-
-Use apt-get (or yum) to install other dependencies (steps marked with recommended are not obligatory):
-
-```bash
-# Install gcc and other developer tools
-sudo apt-get install coreutils
-# Install python
-sudo apt-get install python
-# Install needed CVS
-sudo apt-get install git subversion
-# (Recommended) Install numpy and scipy
-sudo apt-get install python-numpy python-scipy python-matplotlib ipython ipython-notebook python-pandas python-sympy python-nose
-# (Recommended) Install boost
-sudo apt-get install libboost-all-dev
-```
-
-And install the root package in your local directory:
-
-
-```bash
-# in your root dir
-mkdir .bin
-cd .bin
-# download the root
-git clone https://gitlab.cern.ch/jodafons/root.git
-# checkout the custom branch
-git checkout v6-16-00
-# create the build dir
-mkdir build
-cd build
-```
-
-Setup the python binary paths for Linux OS:
-
-```bash
-# For linux
-cmake --Dpython_version=3   
-```
-
-
-Setup the python binary paths for MaxOS:
-
-```bash
-# For MacOS
-cmake -DPYTHON_EXECUTABLE=/usr/local/bin/python3 \
-      -DPYTHON_INCLUDE_DIR=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/Headers \
-      -DPYTHON_LIBRARY=/usr/local/Cellar/python/3.7.2_1/Frameworks/Python.framework/Versions/3.7/lib/libpython3.7.dylib 
-```
-
-And finally compile the root.
-
-```bash
-make -j4
-```
-
-Then use this commands to include the root into your path.
-
-```bash
-echo 'source ~/.bin/root/build/bin/thisroot.sh' >> ~/.bashrc
-source $HOME/root/bin/thisroot.sh
 ```
 
 
