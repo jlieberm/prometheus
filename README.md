@@ -6,7 +6,7 @@ The prometheus analysis framework for ringer and Lorenzett simulator team.
 ## Dataframe support:
 
 - PhysVal ntuple schemma from athena Online trigger e/g framework;
-- SkimmedNtuple schemma from e/g Tag and probe Offline frameworl; 
+- SkimmedNtuple schemma from e/g Tag and probe Offline framework; 
 - Lorenzett from generic simulator;
 
 
