@@ -11,7 +11,7 @@ export PATH=$PATH:$PWD/gaugi/scripts
 cd build
 rm -rf lib
 mkdir lib
-for file in $(find . -iname *.pcm)
+for file in $(find `pwd` -iname *.pcm)
 do
   echo "ln -sf $file lib"
   ln -sf $file lib
