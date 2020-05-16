@@ -50,21 +50,28 @@ from ROOT import TCanvas, kBlack, kAzure
 #eta=atanh(cos(theta))
 theta = np.radians(np.array( list(range(90+1))))
 eta=  -1*np.log(np.tan( theta/2. ) )
-#eta = np.arctan ( np.cos(theta) )
+print(theta)
 
 
-deadMaterialBeforeECal = get_values('data/matScan_deadMaterialBeforeECal.txt','x0')
-em1= get_values('data/matScan_em1.txt','x0')
-em2= get_values('data/matScan_em2.txt','x0')
-em3= get_values('data/matScan_em3.txt','x0')
+eta[0] = 5
+eta=eta[::-1]
+eta = eta[0:75].tolist()
+
+
+deadMaterialBeforeECal = get_values('data/matScan_deadMaterialBeforeECal.txt','x0')[0:75]
+em1= get_values('data/matScan_em1.txt','x0')[0:75]
+em2= get_values('data/matScan_em2.txt','x0')[0:75]
+em3= get_values('data/matScan_em3.txt','x0')[0:75]
 
  
 drawopt = 'hist'
 canvas = TCanvas( 'canvas', "", 500, 500 ) 
-h_deadMaterialBeforeECal= TH1F("h1", "", 90,0, 5 )
-h_em1= TH1F("h2", "", 90,0, 5 )
-h_em2= TH1F("h3", "", 90,0, 5 )
-h_em3= TH1F("h4", "", 90,0, 5 )
+
+h_deadMaterialBeforeECal=TH1F("h1", "", len(eta)-1 , np.array(eta) )
+h_em1= TH1F("h2", "", len(eta)-1 , np.array(eta) )
+h_em2= TH1F("h3", "", len(eta)-1 , np.array(eta) )
+h_em3= TH1F("h4", "", len(eta)-1 , np.array(eta) )
+
 fill( h_deadMaterialBeforeECal, deadMaterialBeforeECal )
 fill( h_em1, em1 )
 fill( h_em2, em2 )

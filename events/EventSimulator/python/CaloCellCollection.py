@@ -1,4 +1,3 @@
-
 __all__ = ["CaloCellCollection","CaloCell","CaloSample"]
 
 
@@ -155,5 +154,3 @@ class CaloCellCollection(EDM):
     else:
       self._logger.warning("Impossible to retrieve the value of Calo match flag.")
       return -999
-
-

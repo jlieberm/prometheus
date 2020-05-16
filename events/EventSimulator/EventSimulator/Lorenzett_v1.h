@@ -5,7 +5,10 @@
 #include "Rtypes.h"
 // Header file for the classes stored in the TTree if any.
 #include "vector"
+
+
 namespace edm{
+
 
 struct Lorenzett_v1 {
 
@@ -68,8 +71,10 @@ struct Lorenzett_v1 {
   float cl_e2tsts1        ;
   bool  cl_ringer_match   ;
 
-  std::vector<float> *mc_cl_rings      ;
-  std::vector<float> *cl_rings         ;
+  std::vector<float> *mc_cl_rings       ;
+  std::vector<float> *cl_rings          ;
+
+
   std::vector<float> *mc_cell_et       ;
   std::vector<float> *mc_cell_eta      ;
   std::vector<float> *mc_cell_phi      ;
@@ -82,9 +87,8 @@ struct Lorenzett_v1 {
   std::vector<float> *cell_deta        ;
   std::vector<float> *cell_dphi        ;
   std::vector<float> *cell_energy      ;
-  std::vector<int>   *mc_cell_sampling ; 
+  std::vector<int>   *mc_cell_sampling ;
   std::vector<int>   *cell_sampling    ;
- 
 
 
 };

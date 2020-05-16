@@ -50,17 +50,21 @@ from ROOT import TCanvas, kBlack, kAzure
 #eta=atanh(cos(theta))
 theta = np.radians(np.array( list(range(90+1))))
 eta=  -1*np.log(np.tan( theta/2. ) )
+eta[0] = 5
+eta =  eta[::-1]
+eta = eta[0:75].tolist()
+
 #eta = np.arctan ( np.cos(theta) )
 
 
-deadMaterialBeforeECal = get_values('data/matScan_deadMaterialBeforeECal.txt','L')
-deadMaterialBeforeHCal = get_values('data/matScan_deadMaterialBeforeHCal.txt','L')
-em1= get_values( 'data/matScan_em1.txt','L')
-em2= get_values( 'data/matScan_em2.txt','L')
-em3= get_values( 'data/matScan_em3.txt','L')
-had1= get_values('data/matScan_had1.txt','L')
-had2= get_values('data/matScan_had2.txt','L')
-had3= get_values('data/matScan_had3.txt','L')
+deadMaterialBeforeECal = get_values('data/matScan_deadMaterialBeforeECal.txt','L')[0:75]
+deadMaterialBeforeHCal = get_values('data/matScan_deadMaterialBeforeHCal.txt','L')[0:75]
+em1= get_values( 'data/matScan_em1.txt','L')[0:75]
+em2= get_values( 'data/matScan_em2.txt','L')[0:75]
+em3= get_values( 'data/matScan_em3.txt','L')[0:75]
+had1= get_values('data/matScan_had1.txt','L')[0:75]
+had2= get_values('data/matScan_had2.txt','L')[0:75]
+had3= get_values('data/matScan_had3.txt','L')[0:75]
 
 
  
@@ -68,16 +72,16 @@ drawopt = 'hist'
 canvas = TCanvas( 'canvas', "", 500, 500 ) 
 
 
-h_deadMaterialBeforeECal= TH1F("h1", "", 90,0, 5 )
-h_em1 = TH1F("h2", "", 90,0, 5 )
-h_em2 = TH1F("h3", "", 90,0, 5 )
-h_em3 = TH1F("h4", "", 90,0, 5 )
-h_had1= TH1F("h5", "", 90,0, 5 )
-h_had2= TH1F("h6", "", 90,0, 5 )
-h_had3= TH1F("h7", "", 90,0, 5 )
+h_deadMaterialBeforeECal= TH1F("h1", "", len(eta)-1, np.array(eta) )
+h_em1 = TH1F("h2", "", len(eta)-1, np.array(eta) )
+h_em2 = TH1F("h3", "", len(eta)-1, np.array(eta) )
+h_em3 = TH1F("h4", "", len(eta)-1, np.array(eta) )
+h_had1= TH1F("h5", "", len(eta)-1, np.array(eta) )
+h_had2= TH1F("h6", "", len(eta)-1, np.array(eta) )
+h_had3= TH1F("h7", "", len(eta)-1, np.array(eta) )
 
 
-h_deadMaterialBeforeHCal= TH1F("h8", "", 90,0, 5 )
+h_deadMaterialBeforeHCal= TH1F("h8", "", len(eta)-1, np.array(eta) )
 
 
 
