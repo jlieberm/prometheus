@@ -18,7 +18,7 @@ class EventATLAS( TEventLoop ):
 
   def __init__(self, name , **kw):
     # Retrieve all information needed
-    TEventLoop.__init__(self, **kw)
+    TEventLoop.__init__(self, name,**kw)
     ROOT.gSystem.Load('libprometheus')
 
 
@@ -108,8 +108,8 @@ class EventATLAS( TEventLoop ):
 
       # set basepath into the root file
       if edm.useMetadataParams():
-        edm.setMetadataParams( {'basepath':metadataInputFile[1].rsplit('/',1)[0],
-                                 'file':metadataInputFile[0]} ) # remove the last name after '/' (tree name)
+        edm.setMetadataParams( {'basepath':self._metadataInputFile[1].rsplit('/',1)[0],
+                                 'file':self._metadataInputFile[0]} ) # remove the last name after '/' (tree name)
       # If initializations is failed, we must remove this from the container
       # service
       if(edm.initialize().isFailure()):

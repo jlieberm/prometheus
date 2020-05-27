@@ -5,7 +5,7 @@ from Gaugi.messenger.macros import *
 from Gaugi.messenger import Logger
 from Gaugi.gtypes import NotSet
 from Gaugi import StatusCode
-from prometheus import Algorithm
+from Gaugi import Algorithm
 import numpy as np
 import math
 

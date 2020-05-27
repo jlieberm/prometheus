@@ -3,10 +3,10 @@
 
 
 
-from prometheus import EventATLASLoop
+from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
-from prometheus import ToolSvc, ToolMgr
+from Gaugi import ToolSvc, ToolMgr
 import argparse
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -47,17 +47,15 @@ args = parser.parse_args()
 
 
 
-ToolMgr += EventATLASLoop(  "EventATLASLoop",
-                            inputFiles = args.inputFiles, 
-                            #treePath= '*/HLT/Physval/Egamma/fakes' if args.jf17 else '*/HLT/Physval/Egamma/probes',
-                            treePath= '*/HLT/Egamma/Egamma/fakes' if args.jf17 else '*/HLT/Egamma/Egamma/probes',
-                            nov = args.nov,
-                            #nov = 1000,
-                            dataframe = DataframeEnum.PhysVal_v2, 
-                            #outputFile = args.outputFile,
-                            outputFile = 'dummy.root',
-                            level = LoggingLevel.INFO
-                          )
+acc = EventATLAS(  "EventATLASLoop",
+                   inputFiles = args.inputFiles, 
+                   #treePath= '*/HLT/Physval/Egamma/fakes' if args.jf17 else '*/HLT/Physval/Egamma/probes',
+                   treePath= '*/HLT/Egamma/Egamma/fakes' if args.jf17 else '*/HLT/Egamma/Egamma/probes',
+                   dataframe = DataframeEnum.PhysVal_v2, 
+                   #outputFile = args.outputFile,
+                   outputFile = 'dummy.root',
+                   level = LoggingLevel.INFO
+                  )
 
 
 
@@ -126,11 +124,7 @@ alg.AddFeature( "HLT__isLHLoose"                  )
 alg.AddFeature( "HLT__isLHVLoose"                 )
 ToolSvc += alg
 
-from prometheus import job
-job.initialize()
-job.execute()
-job.finalize()
-
+acc.run(args.nov)
 
 
 
