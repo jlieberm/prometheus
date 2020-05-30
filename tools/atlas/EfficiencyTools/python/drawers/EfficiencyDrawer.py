@@ -1,9 +1,9 @@
 
 __all__ = ["PlotProfiles"]
 
-from monet.PlotFunctions import *
-from monet.TAxisFunctions import *
-from monet.AtlasStyle import SetAtlasStyle
+from Gaugi.monet.PlotFunctions import *
+from Gaugi.monet.TAxisFunctions import *
+from Gaugi.monet.AtlasStyle import SetAtlasStyle
 from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor
 
 # force atlas style
@@ -36,7 +36,7 @@ def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', legTextSize=15
       if type(extraText1) is str:
         extraText1=[extraText1]
       text_lines.extend( extraText1 )
-    
+
     DrawText(can,text_lines,.15,.68,.47,.93,totalentries=4)
     if legend:
         MakeLegend( can,legendX1,legendY1,.98,legendY2,textsize=legTextSize
@@ -45,7 +45,7 @@ def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', legTextSize=15
 
 
 
-def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', runLabel=None, outname=None, 
+def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', runLabel=None, outname=None,
                   doShadedProfile=None, theseColors=None,theseTransColors=None,theseMarker=None,
                   doRatioCanvas=True, extraText1=None, doFitting=False, formula='pol1',drawFitting=False,
                   legendX1=.65, xlabel=None, rlabel='Trigger/Ref.',ylabel='Trigger Efficiency',
@@ -56,7 +56,7 @@ def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', run
   these_transcolors = theseTransColors if theseTransColors else local_these_transcolors
   these_marker = theseMarker if theseMarker else local_these_marker
   from ROOT import TCanvas
-  outcan = RatioCanvas( 'canvas', "", 500, 500) if doRatio else TCanvas( 'canvas', "", 500, 500 ) 
+  outcan = RatioCanvas( 'canvas', "", 500, 500) if doRatio else TCanvas( 'canvas', "", 500, 500 )
 
 
   collect=[]
@@ -80,8 +80,8 @@ def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', run
       canvas.Modified()
       canvas.Update()
       return fitting
- 
-    for idx, hist in enumerate(hists): 
+
+    for idx, hist in enumerate(hists):
       try:
         if doRatio: f=Fitting(pad_top,hist,'',formula,these_colors[idx])
         else:  f=Fitting(outcan,hist,'',formula,these_colors[idx])
@@ -90,9 +90,9 @@ def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', run
         f=None
       collect.append(f)
       res['fitting'].append(f)
-     
+
   refHist = hists[0]
-  for idx, hist in enumerate(hists): 
+  for idx, hist in enumerate(hists):
     if doRatio:
       if idx < 1:
         AddHistogram(pad_top, refHist, drawopt = drawopt)
@@ -125,14 +125,14 @@ def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', run
     #SetColors(pad_bot,these_colors=[kOrange-3], lineColor=False,markerColor=False,fillColor=True)
   else:
     SetColors(outcan,these_colors=these_transcolors, lineColor=False,markerColor=False,fillColor=True)
-  
- 
+
+
 
   AddTopLabels(outcan, legends, runLabel=runLabel, legOpt='p',extraText1=extraText1, legendX1=legendX1)
   FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
   if not xlabel:  xlabel=refHist.GetXaxis().GetTitle()
   SetAxisLabels(outcan,xlabel,ylabel,rlabel)
-  
+
   if doRatio:
     AddHorizontalLine(pad_bot,color=kBlack)
     FixYaxisRanges(pad_bot, ignoreErrors=False, yminc=-eps )
@@ -145,9 +145,9 @@ def PlotProfiles( hists, legends=None, title=None, divide='B',drawopt='pE1', run
     #FixYaxisRanges(outcan, ignoreErrors=True, yminc=-eps )
     #AddBinLines(outcan,hists[0],useHistMax=True,horizotalLine=0.)
     #AddBinLines(outcan,hists[0],useHistMax=True,horizotalLine=0.)
- 
+
   if outname:
-    outcan.SaveAs( outname ) 
+    outcan.SaveAs( outname )
     if SaveAsC:
       outcan.SaveAs(outname.replace('.pdf','.C'))
 

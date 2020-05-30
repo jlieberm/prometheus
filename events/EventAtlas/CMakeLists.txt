@@ -9,13 +9,13 @@ file(GLOB_RECURSE HEADERS EventAtlas/*)
 
 ROOT_GENERATE_DICTIONARY(EventAtlasDict ${HEADERS}
                                         LINKDEF
-                                        ${CMAKE_CURRENT_SOURCE_DIR}/Root/LinkDef.h
+                                        ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h
                                         MODULE
                                         EventAtlas)
-                                 
+
 add_library(EventAtlas  OBJECT EventAtlasDict.cxx)
 install(FILES ${HEADERS}  DESTINATION EventAtlas)
 
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EventAtlas)
+prometheus_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EventAtlas)
 
 

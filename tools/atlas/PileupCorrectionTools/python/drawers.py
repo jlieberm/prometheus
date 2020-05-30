@@ -5,8 +5,8 @@ def AddTopLabels1(can,legend, legOpt = 'p', quantity_text = '', etlist = None
                      , runLabel = '', extraText1 = None, legendY1=.68, legendY2=.93
                      , maxLegLength = 19, logger=None):
     text_lines = []
-    from monet.PlotFunctions import *
-    from monet.TAxisFunctions import * 
+    from Gaugi.monet.PlotFunctions import *
+    from Gaugi.monet.TAxisFunctions import *
     text_lines += [GetAtlasInternalText()]
     text_lines.append( GetSqrtsText(13) )
     if runLabel: text_lines.append( runLabel )
@@ -40,8 +40,8 @@ def AddTopLabels1(can,legend, legOpt = 'p', quantity_text = '', etlist = None
         pass
 
 def AddTopLabels2(can, etlist = None, etalist = None, etidx = None, etaidx = None, logger=None):
-    from monet.PlotFunctions import *
-    from monet.TAxisFunctions import * 
+    from Gaugi.monet.PlotFunctions import *
+    from Gaugi.monet.TAxisFunctions import *
     try:
         from copy import copy
         extraText = [GetAtlasInternalText()]
@@ -66,11 +66,11 @@ def AddTopLabels2(can, etlist = None, etalist = None, etidx = None, etaidx = Non
 
 
 
-def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, runLabel=None,  
+def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, runLabel=None,
             etBinIdx=None, etaBinIdx=None, etBins=None,etaBins=None):
-  from monet.PlotFunctions import *
-  from monet.TAxisFunctions import * 
- 
+  from Gaugi.monet.PlotFunctions import *
+  from Gaugi.monet.TAxisFunctions import *
+
   from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack,TLine,kBird, kOrange,kGray
   from ROOT import TGraphErrors,TF1,TColor
   gStyle.SetPalette(kBird)
@@ -100,7 +100,7 @@ def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, run
                 etlist=etBins,
                 etalist=etaBins,
                 etidx=etBinIdx,etaidx=etaBinIdx)
-  
+
   FormatCanvasAxes(canvas, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
   SetAxisLabels(canvas,xlabel,'#epsilon('+xlabel+')')
   FixYaxisRanges(canvas, ignoreErrors=False,yminc=-eps)
@@ -115,10 +115,10 @@ def PlotEff( chist, hist_eff, hist_eff_corr, refvalue, outname, xlabel=None, run
 
 def Plot2DHist( chist, hist2D, a, b, discr_points, nvtx_points, error_points, outname, xlabel='',
                 etBinIdx=None, etaBinIdx=None, etBins=None,etaBins=None):
-  
-  from monet.PlotFunctions import *
-  from monet.TAxisFunctions import * 
-  from monet.AtlasStyle import *
+
+  from Gaugi.monet.PlotFunctions import *
+  from Gaugi.monet.TAxisFunctions import *
+  from Gaugi.monet.AtlasStyle import *
   from ROOT import TCanvas, gStyle, TLegend, kRed, kBlue, kBlack,TLine,kBird, kOrange,kGray
   from ROOT import TGraphErrors,TF1,TColor
   gStyle.SetPalette(kBird)

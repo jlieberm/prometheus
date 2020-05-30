@@ -2,4 +2,4 @@
 # Package: prometheus
 ################################################################################
 
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python QuadrantTools)
+prometheus_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python QuadrantTools)

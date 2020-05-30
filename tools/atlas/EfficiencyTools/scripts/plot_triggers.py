@@ -52,7 +52,7 @@ parser.add_argument('--pdf_output', action='store',
 parser.add_argument('--removeInnefBefore', action='store_true', default=False,
     dest='removeInnefBefore', help = "Remove innef before.", required = False)
 
-parser.add_argument('--triggers', action='store', 
+parser.add_argument('--triggers', action='store',
     dest='triggers', required = True, default='[()]',
     help = "Use like: ['HLT_et_etcut','HLT_e24_lhtight','HLT_e28_lhtight_nod0_ivarloose','HLT_e5_lhtight' ]")
 
@@ -118,7 +118,7 @@ step = int(entries/100) if int(entries/100) > 0 else 1
 
 from EfficiencyTools.drawers import PlotProfiles
 for trigItem in progressbar(triggerList, entries, step=step,logger=mainLogger, prefix='Plotting...'):
-  
+
   isL1 = True if trigItem.startswith('L1_') else False
   these_level_names = ['L1Calo'] if isL1 else level_names
   ### Plot all profiles here!
@@ -139,14 +139,14 @@ for trigItem in progressbar(triggerList, entries, step=step,logger=mainLogger, p
         legends.append( args.legends[jdx] ) #+args.legends[jdx])
 
       # make plots!
-      res = PlotProfiles( curves, 
-                          legends = legends, 
+      res = PlotProfiles( curves,
+                          legends = legends,
                           runLabel=args.runLabel,
-                          outname=outname, 
+                          outname=outname,
                           extraText1='%s%s'%(level, trigItem.replace('HLT','')),
                           doFitting=False,
-                          xlabel=xlabel_names[idx], 
-                          doRatioCanvas=False, 
+                          xlabel=xlabel_names[idx],
+                          doRatioCanvas=False,
                           legendX1=0.58,
                           SaveAsC=True)
 
@@ -162,8 +162,8 @@ pprint(summary)
 
 from copy import copy
 from pprint import pprint
-from pytex.TexAPI import *
-from pytex.BeamerAPI import *
+from Gaugi.tex.TexAPI import *
+from Gaugi.tex.BeamerAPI import *
 
 # apply beamer
 with BeamerTexReportTemplate2( theme = 'Berlin'
@@ -201,7 +201,7 @@ with BeamerTexReportTemplate2( theme = 'Berlin'
       lines2 = copy(lines1)
       lines1 += [ TableLine( columns = ['Trigger Efficiency'] + [level+'[\%]' for level in these_level_names], _contextManaged = False ) ]
       lines1 += [ HLine(_contextManaged = False) ]
-      
+
       for idx, s in enumerate(summary):
         leg = args.legends[idx]
         lines1 += [ TableLine( columns = [leg] + [('%1.2f')%(s[trigItem][level]) for level in these_level_names] , _contextManaged = False ) ]

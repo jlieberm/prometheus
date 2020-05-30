@@ -36,20 +36,20 @@ mainLogger = Logger.getModuleLogger("PlotTools", LoggingLevel.INFO)
 parser = argparse.ArgumentParser(description = '', add_help = False)
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-l','--legends', action='store', 
+parser.add_argument('-l','--legends', action='store',
     dest='legends', required = False, nargs='+', default=None,
     help = "The legends to be add in the TLegend display")
 
-parser.add_argument('--extraText1', action='store', 
+parser.add_argument('--extraText1', action='store',
     dest='extraText1', required = False, default='[]',
     help = "This used in (extraText1)")
 
 
-parser.add_argument('-o','--outputDir', action='store', 
+parser.add_argument('-o','--outputDir', action='store',
     dest='outputDir', required = False, default = 'plots',
     help = "The output directory name.")
 
-parser.add_argument('-r','--reference', action='store', nargs='+', 
+parser.add_argument('-r','--reference', action='store', nargs='+',
     dest='reference', required = False, default = None,
     help = "The reference file location")
 
@@ -57,34 +57,34 @@ parser.add_argument('-t','--test', action='store',  nargs='+',
     dest='test', required = True,
     help = "The test file location")
 
-parser.add_argument('--pdf_title', action='store', 
+parser.add_argument('--pdf_title', action='store',
     dest='pdf_title', required = False, default = "Efficiency plots",
     help = "The slide title")
 
-parser.add_argument('--pdf_output', action='store', 
+parser.add_argument('--pdf_output', action='store',
     dest='pdf_output', required = False, default = "efficiencies",
     help = "The output PDF file")
 
 parser.add_argument('--doNonLinearityTest', action='store_true', default=False,
-    help = "Draw the fitting curve and apply the non linearity test.", required = False) 
+    help = "Draw the fitting curve and apply the non linearity test.", required = False)
 
 parser.add_argument('--doRatio', action='store_true', default=False,
-    help = "Apply Ratio Canvas", required = False) 
+    help = "Apply Ratio Canvas", required = False)
 
-parser.add_argument('--runLabel', action='store', 
+parser.add_argument('--runLabel', action='store',
     dest='runLabel', required = False, default = "Data 2017",
     help = "Set the run label text.")
 
 parser.add_argument('--debug', action='store_true', default=False,
-    help = "Debug mode", required = False) 
+    help = "Debug mode", required = False)
 
 parser.add_argument('--ref_is_emulation', action='store_true', default=False,
-    help = "Use emulation plots in reference curves", required = False) 
+    help = "Use emulation plots in reference curves", required = False)
 
 parser.add_argument('--test_is_emulation', action='store_true', default=False,
-    help = "Use emulation plots in test curves", required = False) 
+    help = "Use emulation plots in test curves", required = False)
 
-parser.add_argument('--groups', action='store', 
+parser.add_argument('--groups', action='store',
     dest='groups', required = True, default='[()]',
     help = "Use like: [('HLT_et_etcut','HLT_e24_lhtight'),('HLT_e28_lhtight_nod0_ivarloose'), ('HLT_e5_lhtight') ]")
 
@@ -153,24 +153,24 @@ paths_test=[]; paths_ref=[]; keys=[]
 for trigItem in progressbar(triggerList, entries, step=step, prefix='Making paths...', logger=mainLogger):
   #mainLogger.info(trigItem)
   isL1 = True if trigItem.startswith('L1_') else False
-  these_level_names = ['L1Calo'] if isL1 else level_names  
+  these_level_names = ['L1Calo'] if isL1 else level_names
   ### Retrieve all paths
   for level in these_level_names:
     for histname in plot_names:
 
       if not isL1 and 'et' == histname and is_high_et(trigItem):  histname='highet'
       histpath = 'HLT/Egamma/Expert/{TRIGGER}/{CORE}/{LEVEL}/{HIST}'
-      
+
       # Ref
       if args.reference:
-        paths_ref.append(histpath.format(TRIGGER=trigItem,HIST='match_'+histname,LEVEL=level, CORE='Emulation' if args.ref_is_emulation else 'Efficiency')) 
+        paths_ref.append(histpath.format(TRIGGER=trigItem,HIST='match_'+histname,LEVEL=level, CORE='Emulation' if args.ref_is_emulation else 'Efficiency'))
         paths_ref.append(histpath.format(TRIGGER=trigItem,HIST=histname,LEVEL='L1Calo', CORE='Emulation' if args.ref_is_emulation else 'Efficiency'))
-      
+
       # Test
-      paths_test.append(histpath.format(TRIGGER=trigItem,HIST='match_'+histname,LEVEL=level, CORE='Emulation' if args.test_is_emulation else 'Efficiency')) 
+      paths_test.append(histpath.format(TRIGGER=trigItem,HIST='match_'+histname,LEVEL=level, CORE='Emulation' if args.test_is_emulation else 'Efficiency'))
       paths_test.append(histpath.format(TRIGGER=trigItem,HIST=histname,LEVEL='L1Calo', CORE='Emulation' if args.test_is_emulation else 'Efficiency'))
-      
-      if 'highet' == histname:  histname='et' 
+
+      if 'highet' == histname:  histname='et'
       keys.append(trigItem+'_'+level+'_match_'+histname)
       keys.append(trigItem+'_'+level+'_'+histname)
 # Loop over triggers
@@ -182,7 +182,7 @@ if args.reference:
   objects_ref = GetHistogramFromMany(files_ref, paths_ref, keys, prefix='Getting reference...', logger=mainLogger)
 objects_test = GetHistogramFromMany(files_test, paths_test, keys, prefix='Getting test...', logger=mainLogger)
 
- 
+
 
 
 idx=0
@@ -211,7 +211,7 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
     for level in these_level_names:
       legends=[]; h_ref=[]; h_test=[];
       pname=str()
-      for trigItem in group:  
+      for trigItem in group:
         pname+='_'+trigItem
         legends.append(trigItem)
         if not trigItem in values[idx].keys():
@@ -223,7 +223,7 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
                                                float(objects_ref[trigItem+'_'+level+'_'+histname].GetEntries()))*100
           h_ref.append(GetProfile(objects_ref[trigItem+'_'+level+'_match_'+histname],
                                   objects_ref[trigItem+'_'+level+'_'+histname],resize=resize))
- 
+
         if 'eta' in histname:
           values[idx][trigItem][level]['test_eff']=(objects_test[trigItem+'_'+level+'_match_'+histname].GetEntries()/
                                              float(objects_test[trigItem+'_'+level+'_'+histname].GetEntries()))*100
@@ -239,7 +239,7 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
       else:
         these_colors=local_these_colors; these_transcolors=local_these_transcolors; these_marker=local_these_marker
 
-      ### NOTE: hack legend for werner's article. 
+      ### NOTE: hack legend for werner's article.
       #if len(legends)==2:
       #  legends = ['Ringer chain','Baseline chain']
       #extraText1='Full: without ringer, Open: with ringer'
@@ -248,10 +248,10 @@ for group in progressbar(triggerList_group, entries, step=step, prefix="Plotting
       if args.legends:
         legends = args.legends
       outname = localpath+'/'+dirpath+'/'+level+pname+'_'+histname+'.pdf'
-      res = PlotProfiles( h_ref+h_test, legends = legends, outname=outname, runLabel=args.runLabel, extraText1=extraText1, 
+      res = PlotProfiles( h_ref+h_test, legends = legends, outname=outname, runLabel=args.runLabel, extraText1=extraText1,
                           doFitting=False, doRatioCanvas=args.doRatio,xlabel=xlabel_names[jdx],theseColors=these_colors,theseMarker=these_marker,
                           theseTransColors=these_transcolors, legendX1=0.65,
-                          SaveAsC=True)  
+                          SaveAsC=True)
 
     #Loop over histograms
   #Loop over levels
@@ -265,8 +265,8 @@ from pprint import pprint
 #pprint( values )
 #Loop over triggers
 
-from pytex.TexAPI import *
-from pytex.BeamerAPI import *
+from Gaugi.tex.TexAPI import *
+from Gaugi.tex.BeamerAPI import *
 
 # apply beamer
 with BeamerTexReportTemplate2( theme = 'Berlin'
@@ -274,8 +274,8 @@ with BeamerTexReportTemplate2( theme = 'Berlin'
                              , title = args.pdf_title
                              , outputFile = args.pdf_output
                              , font = 'structurebold' ):
-  
-  
+
+
   for idx, group in enumerate(triggerList_group):
     #section = (trigItem).replace('_','\_')
     section = ''
@@ -289,14 +289,14 @@ with BeamerTexReportTemplate2( theme = 'Berlin'
         isL1=True
 
     these_level_names = ['L1Calo'] if isL1 else level_names
- 
+
     for histname in plot_names:
       for level in these_level_names:
         abspath = localpath+'/'+dirpath+'/'+level+pname+'_'+histname+'.pdf'
         paths.append( abspath )
 
     with BeamerSection( name = section ):
-      
+
       BeamerMultiFigureSlide( title = 'L1Calo Efficiency Plots' if isL1 else 'Efficiency plots'
                     , paths = paths
                     , nDivWidth = 3 if isL1 else 5  # x
@@ -313,19 +313,19 @@ with BeamerTexReportTemplate2( theme = 'Berlin'
       lines1 += [ HLine(_contextManaged = False) ]
       lines1 += [ TableLine( columns = ['Trigger Efficiency'] + [level+'[\%]' for level in these_level_names], _contextManaged = False ) ]
       lines1 += [ HLine(_contextManaged = False) ]
-      
+
       for trigItem in group:
-        lines1 += [ TableLine( columns = [trigItem.replace('_','\_')] + [('%1.2f')%(values[idx][trigItem][level]['test_eff']) for level in these_level_names] , 
-            _contextManaged = False ) ]   
+        lines1 += [ TableLine( columns = [trigItem.replace('_','\_')] + [('%1.2f')%(values[idx][trigItem][level]['test_eff']) for level in these_level_names] ,
+            _contextManaged = False ) ]
         if args.reference:
-          lines1 += [ TableLine( columns = [trigItem.replace('_','\_')+' (Ref.)'] + [('%1.2f')%(values[idx][trigItem][level]['ref_eff']) for level in these_level_names] , 
-                      _contextManaged = False ) ]   
+          lines1 += [ TableLine( columns = [trigItem.replace('_','\_')+' (Ref.)'] + [('%1.2f')%(values[idx][trigItem][level]['ref_eff']) for level in these_level_names] ,
+                      _contextManaged = False ) ]
           lines1 += [ HLine(_contextManaged = False) ]
-          
+
       if not args.reference:
         lines1 += [ HLine(_contextManaged = False) ]
       lines1 += [ HLine(_contextManaged = False) ]
-      
+
       with BeamerSlide( title = "Trigger Monitoring"  ):
         with Table( caption = 'Trigger Efficiency for each step.') as table:
           with ResizeBox( size = 0.4 if isL1 else 1.) as rb:
@@ -336,4 +336,4 @@ with BeamerTexReportTemplate2( theme = 'Berlin'
                   tabular += line
                 else:
                   TableLine(line, rounding = None)
-       
+
