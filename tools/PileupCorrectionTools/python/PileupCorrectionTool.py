@@ -461,12 +461,8 @@ class PileupCorrectionTool( AlgorithmTool ):
             ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
         bkg_hist2D = sg.histogram(self._basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+
             ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
-
-        sgn_eff, sgn_passed, sgn_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx )
-        bkg_eff, bkg_passed, bkg_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx, True )
-        sgn_counters   = {'eff':sgn_eff,'passed':sgn_passed,'total':sgn_total}
-        bkg_counters   = {'eff':bkg_eff,'passed':bkg_passed,'total':bkg_total}
-
+        
+        
         # apply the threshold linear correction follow the last strategy using the root linear fitting
         # This functions was implemented taken some functions from the tag and probe offline framework.
         # If the false alarm is higher than an threshold (default is 0.5) than we will reduce the
@@ -475,6 +471,16 @@ class PileupCorrectionTool( AlgorithmTool ):
         h=self._histparams
         xres = h.xresolution()[etBinIdx][etaBinIdx] if type(h.xresolution()) is list else h.xresolution()
         yres = h.yresolution()[etBinIdx][etaBinIdx] if type(h.yresolution()) is list else h.yresolution()
+
+
+        # Retreive the reference for the pileup selected region
+        sgn_eff, sgn_passed, sgn_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx, h.ymin(), h.ymax() )
+        bkg_eff, bkg_passed, bkg_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx, h.ymin(), h.ymax(), True )
+        sgn_counters   = {'eff':sgn_eff,'passed':sgn_passed,'total':sgn_total}
+        bkg_counters   = {'eff':bkg_eff,'passed':bkg_passed,'total':bkg_total}
+
+
+
 
         csummary, objects = ApplyThresholdLinearCorrection( h.xmin(),h.xmax(),xres,h.ymin(),h.ymax(),yres,
                                                             sgn_hist2D, bkg_hist2D, sgn_eff,
@@ -530,7 +536,7 @@ class PileupCorrectionTool( AlgorithmTool ):
 
         etbin   = (self._threshold_etbins[etBinIdx]   , self._threshold_etbins[etBinIdx+1]  )
         etabin  = (self._threshold_etabins[etaBinIdx] , self._threshold_etabins[etaBinIdx+1])
-        muBin   = (0,100) # this should be used in config for future
+        muBin   = (0,200) # this should be used in config for future
         obj=objects['correction']
         summary[target.name()]['thresholds'].append( {
                                                         'etBin'     : np.array(etbin),

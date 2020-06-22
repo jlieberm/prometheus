@@ -70,6 +70,16 @@ def Copy2DRegion(hist, xbins, xmin, xmax, ybins, ymin, ymax):
   return h.Clone()
 
 
+
+
+
+
+
+
+
+
+
+
 def calcSP( pd, pj ):
   #  ret  = calcSP(x,y) - Calculates the normalized [0,1] SP value.
   #  effic is a vector containing the detection efficiency [0,1] of each
@@ -252,15 +262,23 @@ def ApplyThresholdLinearCorrection( xmin, xmax, xres, mumin, mumax, mures,
   xbins=int((xmax-xmin)/float(xres))
   sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
   bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
-  
+
+  print( "Sgn entries after 2D copy is" )
+  print(sgn_hist2D.GetEntries() )
+
+  print( "Bkg entries after 2D copy is" )
+  print(bkg_hist2D.GetEntries() )
+
 
   if isinstance(mures,(float,int)):
     mubins=int((mumax-mumin)/float(mures))
     sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/mubins)))
     bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/mubins)))
   else:
+    print ('rebin...')
     sgn_hist2D = rebinY(sgn_hist2D,mures)
     bkg_hist2D = rebinY(bkg_hist2D,mures)
+    print('done rebin')
 
 
   false_alarm = 1.0

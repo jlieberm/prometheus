@@ -70,7 +70,7 @@ class Target( Logger ):
 
 
   # Retrive the reference value from the target
-  def reference( self, storegate, basepath, etbinidx=None, etabinidx=None, useFalseAlarm=False ):
+  def reference( self, storegate, basepath, etbinidx=None, etabinidx=None, mumin=0.0, mumax=100.0, useFalseAlarm=False ):
     
     # The refrence is a str and need to access the histogram directory
     if type(self._refname) is str:
@@ -87,9 +87,25 @@ class Target( Logger ):
         passed = int(total * fa) if useFalseAlarm else int(total * det)
         eff     = passed/float(total) if total>0 else 0
       else:
+        # integrate all entries along x axis
+        def _integrate(hist, xmin, xmax):
+          total=0
+          print( xmin)
+          print(xmax)
+          print("total inside of the histogram...")
+          print( hist.GetEntries() )
+          xhighidx = hist.GetXaxis().FindBin(xmax)
+          xlowidx = hist.GetXaxis().FindBin(xmin) - 1
+          xhighidx = min(hist.GetNbinsX(),xhighidx)
+          for bx in range(int(xlowidx),int(xhighidx)):
+            total+= hist.GetBinContent(bx)  
+          print("total inside of the selected range")
+          print(total)
+          return total
+
         path = '{}/{}/{}/{}/{}'.format(basepath,'fakes' if useFalseAlarm else 'probes',self.name(),self.refname(),binningname)
-        total   = storegate.histogram(path+'/eta').GetEntries()
-        passed  = storegate.histogram(path+'/match_eta').GetEntries()
+        total   = _integrate( storegate.histogram(path+'/mu'), mumin, mumax )
+        passed  = _integrate( storegate.histogram(path+'/match_mu'), mumin, mumax )
         eff     = passed/float(total) if total>0 else 0
     else:
       MSG_FATAL( self,"Impossible to retrive the reference value. Abort!")
@@ -102,6 +118,7 @@ class Target( Logger ):
 
     # return the calculated reference values
     return eff, passed, total
+
 
 
 
