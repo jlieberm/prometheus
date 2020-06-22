@@ -5,13 +5,13 @@ export RCM_NO_COLOR=0
 export RCM_GRID_ENV=0
 export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
 export PATH=$PATH:$PWD/gaugi/scripts
-
+export PRT_PATH=$PWD
 
 
 cd build
 rm -rf lib
 mkdir lib
-for file in "`pwd`"/*/*/*.pcm
+for file in "`pwd`"/*/*.pcm
 do
   echo "ln -sf $file lib"
   ln -sf $file lib
@@ -38,7 +38,11 @@ fi
 
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
+
+
+
 cd ..
+export PATH=`pwd`/tools/EfficiencyTools/scripts:$PATH
 
 
 

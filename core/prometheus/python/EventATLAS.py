@@ -2,16 +2,13 @@
 __all__ = ['EventATLAS']
 
 
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
-from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi import StatusCode
 from Gaugi.gtypes import NotSet
 from Gaugi import TEventLoop
 
-
-# Import all root classes
-import ROOT
 
 
 class EventATLAS( TEventLoop ):
@@ -19,6 +16,7 @@ class EventATLAS( TEventLoop ):
   def __init__(self, name , **kw):
     # Retrieve all information needed
     TEventLoop.__init__(self, name,**kw)
+    import ROOT
     ROOT.gSystem.Load('libprometheus')
 
 
@@ -56,6 +54,8 @@ class EventATLAS( TEventLoop ):
     from EventAtlas import EventInfo
     from EventAtlas import MonteCarlo
     from EventAtlas import TDT
+   
+    
     # Initialize the base of this container.
     # Do not change this key names!
     self._containersSvc  = {
