@@ -37,10 +37,10 @@ from PileupCorrectionTools import PileupCorrectionTool, Target
 alg = PileupCorrectionTool( 'PileupCorrection' )
 
 targets = [
-            Target( 'L2_Tight' , 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloTight"  , "TrigL2CaloRingerElectronTightThresholds.root"    ) , 
-            #Target( 'L2_Medium', 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloMedium" , "TrigL2CaloRingerElectronMediumThresholds.root"   ) ,
-            #Target( 'L2_Loose' , 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloLoose"  , "TrigL2CaloRingerElectronLooseThresholds.root"    ) ,
-            #Target( 'L2_VLoose', 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloVLoose" , "TrigL2CaloRingerElectronVeryLooseThresholds.root") ,
+            Target( 'L2_Tight' , 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloTight"  , "") , 
+            Target( 'L2_Medium', 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloMedium" , "TrigL2CaloRingerElectronMediumThresholds.root"   ) ,
+            Target( 'L2_Loose' , 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloLoose"  , "TrigL2CaloRingerElectronLooseThresholds.root"    ) ,
+            Target( 'L2_VLoose', 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloVLoose" , "TrigL2CaloRingerElectronVeryLooseThresholds.root") ,
           ]
        
 
@@ -68,10 +68,10 @@ res_xbins       = [[0.001]*5]*5
 #if args.doEgam7:
 etbins  = [15.0, 20.0, 30.0, 40.0, 50.0, 1000000.0]
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
-etbins=[15.0,20.0]
-etabins=[0.0,0.8]
-alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, res_xbins, res_ybins )
-#alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, 0.001, 1.0 )
+#etbins=[15.0,20.0]
+#etabins=[0.0,0.8]
+#alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, res_xbins, res_ybins )
+alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, 0.001, 1.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger = True

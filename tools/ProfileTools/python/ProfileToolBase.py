@@ -1,10 +1,12 @@
 __all__ = ['ProfileToolBase']
 
-from CommonTools  import AlgorithmTool
+from CommonTools  import AlgBase
 from Gaugi import StatusCode
 from Gaugi import retrieve_kw
  
-class ProfileToolBase( AlgorithmTool ):
+
+
+class ProfileToolBase( AlgBase ):
 
   def __init__(self, name, **kw):
     AlgorithmTool.__init__(self, name)

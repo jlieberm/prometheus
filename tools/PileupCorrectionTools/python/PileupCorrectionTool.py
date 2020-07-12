@@ -6,13 +6,13 @@ __all__ = ["PileupCorrectionTool"]
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
 from prometheus.enumerations import Dataframe as DataframeEnum
-from CommonTools import AlgorithmTool
+from CommonTools import AlgBase
 import numpy as np
 
-class PileupCorrectionTool( AlgorithmTool ):
+class PileupCorrectionTool( AlgBase ):
 
   def __init__(self, name):
-    AlgorithmTool.__init__(self, name)
+    AlgBase.__init__(self, name)
     self._basepath = 'Event/PileupCorrection'
     from Gaugi.gtypes import NotSet
     self._threshold_etbins   = NotSet
@@ -299,6 +299,7 @@ class PileupCorrectionTool( AlgorithmTool ):
                 fa  = summary[target.name()]['summary_values'][etBinIdx][etaBinIdx]['background_corr_values']['eff']*100.0
                 ref = summary[target.name()]['summary_values'][etBinIdx][etaBinIdx]['signal_reference']['eff']*100.0
 
+
                 if (det-ref) > 0.0:
                   values_det.append( ('\\cellcolor[HTML]{9AFF99}%1.2f ($\\uparrow$%1.2f[$\\Delta_{ref}$])')%(det,det-ref) )
                 elif (det-ref) < 0.0:
@@ -476,8 +477,8 @@ class PileupCorrectionTool( AlgorithmTool ):
         # Retreive the reference for the pileup selected region
         sgn_eff, sgn_passed, sgn_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx, h.ymin(), h.ymax() )
         bkg_eff, bkg_passed, bkg_total  = target.reference( self.getStoreGateSvc(), self._basepath, etBinIdx, etaBinIdx, h.ymin(), h.ymax(), True )
-        sgn_counters   = {'eff':sgn_eff,'passed':sgn_passed,'total':sgn_total}
-        bkg_counters   = {'eff':bkg_eff,'passed':bkg_passed,'total':bkg_total}
+        #sgn_counters   = {'eff':sgn_eff,'passed':sgn_passed,'total':sgn_total}
+        #bkg_counters   = {'eff':bkg_eff,'passed':bkg_passed,'total':bkg_total}
 
 
 
@@ -485,6 +486,10 @@ class PileupCorrectionTool( AlgorithmTool ):
         csummary, objects = ApplyThresholdLinearCorrection( h.xmin(),h.xmax(),xres,h.ymin(),h.ymax(),yres,
                                                             sgn_hist2D, bkg_hist2D, sgn_eff,
                                                             doLinearCorrection=doLinearCorrection, logger=self._logger)
+
+
+        sgn_counters   = {'eff':sgn_eff,'passed':int( sgn_eff *csummary['signal_values']['total']),'total': csummary['signal_values']['total']}
+        bkg_counters   = {'eff':bkg_eff,'passed':int( bkg_eff *csummary['background_values']['total']),'total': csummary['background_values']['total']}
 
         # helper function to increase the counter
         def UpdateCounters(obj1,obj2):
@@ -502,7 +507,7 @@ class PileupCorrectionTool( AlgorithmTool ):
         UpdateCounters( summary[target.name()]['signal_reference']      , sgn_counters                      )
         UpdateCounters( summary[target.name()]['background_reference']  , bkg_counters                      )
 
-
+        
         # Plot signal efficicency w.r.t the pileup
         outname = localpath+'/eff_signal_corr_'+target.name()+'_'+binningname
         plotname = PlotEff( self._histparams, objects['signal_hists']['eff'], objects['signal_corr_hists']['eff'],
@@ -546,7 +551,6 @@ class PileupCorrectionTool( AlgorithmTool ):
                                                         'etaBinIdx' : etaBinIdx,
                                                         'threshold' : (obj['angular'],obj['offset'], obj['offset0'])
                                                      } ) # angular, offset, threshold_no_correction
-
 
 
     return summary

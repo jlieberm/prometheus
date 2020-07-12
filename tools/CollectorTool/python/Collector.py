@@ -2,6 +2,7 @@
 __all__ = ["Collector"]
 
 
+from CommonTools import AlgBase
 from prometheus import Dataframe as DataframeEnum
 from Gaugi import StatusCode, NotSet, retrieve_kw, progressbar
 from Gaugi import csvStr2List, expandFolders, save, load
@@ -14,10 +15,7 @@ import numpy as np
 
 
 
-
-from CommonTools import AlgorithmTool
-
-class Collector( AlgorithmTool ):
+class Collector( AlgBase ):
 
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)

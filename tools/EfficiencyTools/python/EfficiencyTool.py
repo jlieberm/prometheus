@@ -2,12 +2,12 @@
 __all__ = ['EfficiencyTool']
 
 
-from CommonTools import AlgorithmTool
+from CommonTools import AlgBase
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
 from EfficiencyTools import EfficiencyMode
 
-class EfficiencyTool( AlgorithmTool ):
+class EfficiencyTool( AlgBase ):
   
   _triggerLevels = ['L1Calo','L2Calo','L2','EFCalo','HLT']
 

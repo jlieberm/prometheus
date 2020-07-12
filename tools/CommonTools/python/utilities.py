@@ -2,6 +2,7 @@
 
 __all__ = ["RetrieveBinningIdx"]
 
+
 def RetrieveBinningIdx(et,eta,etbins,etabins, logger=None):
   # Fix eta value if > 2.5
   if eta > etabins[-1]:  eta = etabins[-1]
@@ -12,8 +13,7 @@ def RetrieveBinningIdx(et,eta,etbins,etabins, logger=None):
       for etaBinIdx in range(len(etabins)-1):
         if eta >= etabins[etaBinIdx] and eta < etabins[etaBinIdx+1]:
           return etBinIdx, etaBinIdx
-
-  #if logger:  logger.warning('Can not retrieve the correct et (%1.3f)/eta (%1.3f) idx.',et,eta)
+  if logger:  logger.warning('Can not retrieve the correct et (%1.3f)/eta (%1.3f) idx.',et,eta)
   return -1, -1
 
 

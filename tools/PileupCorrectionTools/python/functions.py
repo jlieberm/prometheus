@@ -226,9 +226,9 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
       histEff.SetBinError(bin+1,0)
   eff=passed/float(total)
   if doCorrection:
-    return histNum, histDen, histEff, (eff,passed,float(histDen.GetEntries())), b, a
+    return histNum, histDen, histEff, (eff,passed,float(total)), b, a
   else:
-    return histNum, histDen, histEff, (eff,passed,float(histDen.GetEntries()))
+    return histNum, histDen, histEff, (eff,passed,float(total))
 
 
 
@@ -263,22 +263,14 @@ def ApplyThresholdLinearCorrection( xmin, xmax, xres, mumin, mumax, mures,
   sgn_hist2D = Copy2DRegion(sgn_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/sgn_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
   bkg_hist2D = Copy2DRegion(bkg_hist2D.Clone(),xbins,xmin,xmax,np.int(np.round((mumax-mumin)/bkg_hist2D.GetYaxis().GetBinWidth(1))),mumin,mumax)
 
-  print( "Sgn entries after 2D copy is" )
-  print(sgn_hist2D.GetEntries() )
-
-  print( "Bkg entries after 2D copy is" )
-  print(bkg_hist2D.GetEntries() )
-
 
   if isinstance(mures,(float,int)):
     mubins=int((mumax-mumin)/float(mures))
     sgn_hist2D = sgn_hist2D.RebinY(np.int(math.floor(sgn_hist2D.GetNbinsY()/mubins)))
     bkg_hist2D = bkg_hist2D.RebinY(np.int(math.floor(bkg_hist2D.GetNbinsY()/mubins)))
   else:
-    print ('rebin...')
     sgn_hist2D = rebinY(sgn_hist2D,mures)
     bkg_hist2D = rebinY(bkg_hist2D,mures)
-    print('done rebin')
 
 
   false_alarm = 1.0

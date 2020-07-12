@@ -1,16 +1,19 @@
 
 
-__all__ = ['AlgorithmTool']
+__all__ = ['AlgBase']
 
 
 from Gaugi import Algorithm
 
-class AlgorithmTool( Algorithm ):
+
+
+class AlgBase( Algorithm ):
 
   def __init__(self, name):
     Algorithm.__init__(self,name)
     self._doTrigger = False
     self._doJpsiee = False
+
 
   def initialize(self):
     from EventSelectionTool import Interpreter
@@ -47,7 +50,6 @@ class AlgorithmTool( Algorithm ):
   def accept( self, expression ):
     return self._re.apply(expression)
 
-  # get the regex interpreter
   def re(self):
     return self._re
 

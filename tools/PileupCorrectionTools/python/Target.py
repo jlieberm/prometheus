@@ -33,11 +33,6 @@ class ExpertAndExperimentalMethods(object):
 # pileup correction tool.
 class Target( Logger ):
 
-  # The input target description
-  # @param1 : dir name
-  # @param2 : selector name used as discriminant
-  # @param3 : selector name used as reference
-  # @param4 : the export file name
   def __init__( self, name, algname, reference, outputfile=None ):
     Logger.__init__(self)
     # Target name will be used as the root directory
@@ -78,6 +73,7 @@ class Target( Logger ):
       if (etbinidx is None) or (etabinidx is None):
         MSG_FATAL( self,"Can not access the reference. You must pass et/eta bin index as argument.")
       binningname = ('et%d_eta%d') % (etbinidx,etabinidx)
+      
       if self.expertAndExperimentalMethods().doSP:
         det, fa, sp = CalculateMaxSP(
         storegate.histogram('{}/{}/{}/{}/{}/discriminantVsMu'.format(basepath,'probes',self.name(),self.algname(),binningname)).ProjectionX(),
@@ -90,17 +86,11 @@ class Target( Logger ):
         # integrate all entries along x axis
         def _integrate(hist, xmin, xmax):
           total=0
-          print( xmin)
-          print(xmax)
-          print("total inside of the histogram...")
-          print( hist.GetEntries() )
           xhighidx = hist.GetXaxis().FindBin(xmax)
           xlowidx = hist.GetXaxis().FindBin(xmin) - 1
           xhighidx = min(hist.GetNbinsX(),xhighidx)
           for bx in range(int(xlowidx),int(xhighidx)):
             total+= hist.GetBinContent(bx)  
-          print("total inside of the selected range")
-          print(total)
           return total
 
         path = '{}/{}/{}/{}/{}'.format(basepath,'fakes' if useFalseAlarm else 'probes',self.name(),self.refname(),binningname)
