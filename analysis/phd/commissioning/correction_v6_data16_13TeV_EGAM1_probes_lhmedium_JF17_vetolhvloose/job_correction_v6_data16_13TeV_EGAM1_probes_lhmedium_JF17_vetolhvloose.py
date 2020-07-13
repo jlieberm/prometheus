@@ -62,7 +62,7 @@ if args.doEgam7:
   pidname = '!el_lhvloose'
 else:
   #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
-  pidname = 'el_lhtight'
+  pidname = 'el_lhmedium'
 
 
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 

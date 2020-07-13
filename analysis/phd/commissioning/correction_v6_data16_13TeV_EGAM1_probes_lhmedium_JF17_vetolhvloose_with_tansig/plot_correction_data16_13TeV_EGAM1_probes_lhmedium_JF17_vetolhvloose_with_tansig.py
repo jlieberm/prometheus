@@ -69,7 +69,7 @@ etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
 #etbins=[15.0,20.0]
 #etabins=[0.0,0.8]
 #alg.setHistogram2DRegion( -1, 1, 16.5, 40.5, res_xbins, res_ybins )
-alg.setHistogram2DRegion( -1, 1, 16.5, 40.5, 0.001, 1.5 )
+alg.setHistogram2DRegion( -1, 1, 16.5, 40.5, 0.02, 1.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger = True
