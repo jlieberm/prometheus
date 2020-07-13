@@ -23,20 +23,20 @@ args = parser.parse_args()
 
 if args.name == 'lps':
   path1 = '/home/asp-calo/jodafons/cern_data'
-  path2 = '/home/asp-calo/jodafons/phd_data/analysis/commissioning'
+  path2 = '/home/asp-calo/jodafons/phd_data/analysis/run2/commissioning'
   path3 = '/home/asp-calo/jodafons/tuning_data'
 elif args.name == 'castor':
   path1 = '/Volumes/castor/cern_data'
-  path2 = '/Volumes/castor/phd_data/analysis/commissioning'
+  path2 = '/Volumes/castor/phd_data/analysis/run2/commissioning'
   path3 = '/Volumes/castor/tuning_data'
 elif args.name == 'cern':
   path1 = '/eos/user/j/jodafons/cern_data'
-  path2 = '/eos/user/j/jodafons/phd_data/analysis/commissioning'
+  path2 = '/eos/user/j/jodafons/phd_data/analysis/run2/commissioning'
   path3 = '/eos/user/j/jodafons/tuning_data'
 else:
   print('Using default path')
   path1 = '/Volumes/castor/cern_data'
-  path2 = '/Volumes/castor/phd_data/analysis/commissioning'
+  path2 = '/Volumes/castor/phd_data/analysis/run2/commissioning'
   path3 = '/Volumes/castor/tuning_data'
 
 
