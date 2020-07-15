@@ -11,7 +11,10 @@ from EventAtlas import *
 
 
 def norm1( data ):
-  return (data/abs(sum(data))).reshape((1,100))
+  norms = np.abs( data.sum(axis=1) )
+  norms[norms==0] = 1
+  return data/norms[:,None]
+
 
 
 class RingerSelectorTool(Algorithm):

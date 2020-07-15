@@ -123,6 +123,53 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
 
 
   
+###########################################################
+################## Testing 2020 tuning  ###################
+###########################################################
+def installElectronL2CaloRingerSelector_v10( toolname = "EgammaEmulation" ):
+
+  from RingerSelectorTools import RingerSelectorTool
+  # do not change this paths...
+  #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
+  calibpath = os.environ['PRT_PATH'] + '/tools/Selectors/RingerSelectorTools/data/TrigL2_20200715_v10'
+
+  
+  def norm1_and_reshape( data ):
+      norms = np.abs( data.sum(axis=1) )
+      norms[norms==0] = 1
+      data = data/norms[:,None]
+      data = np.array([data])
+      return np.transpose(data, [1,2,0])
+
+
+  selectors = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v10", 
+                          calibpath+'/TrigL2CaloRingerElectronTightConstants.json', 
+                          calibpath+'/TrigL2CaloRingerElectronTightThresholds.json', 
+                          norm_and_reshape )
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v10", 
+                          calibpath+'/TrigL2CaloRingerElectronMediumConstants.json', 
+                          calibpath+'/TrigL2CaloRingerElectronMediumThresholds.json', 
+                          norm_and_reshape )
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v10", 
+                          calibpath+'/TrigL2CaloRingerElectronLooseConstants.json', 
+                          calibpath+'/TrigL2CaloRingerElectronLooseThresholds.json', 
+                          norm_and_reshape )
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.json', 
+                          calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.json', 
+                          norm_and_reshape )
+
+    ]
+
+  from Gaugi import ToolSvc as toolSvc
+  tool = toolSvc.retrieve( toolname )
+  if tool:
+    for sel in selectors:
+      tool.addFastCaloSelector( sel.name(), sel )
+  else:
+    raise RuntimeError( "%s not found into the ToolSvc." % toolname )
+
 
 
 
