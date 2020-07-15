@@ -121,7 +121,7 @@ for t in targets:
 #if args.doEgam7:
 etbins  = [15.0, 20.0, 30.0, 40.0, 50.0, 1000000.0]
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
-alg.setHistogram2DRegion( -8, 4, 0, 100, 0.02, 0.5 )
+alg.setHistogram2DRegion( -8, 4, 0, 100, 0.001, 0.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger  = True
