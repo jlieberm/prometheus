@@ -11,10 +11,7 @@ from EventAtlas import *
 
 
 def norm1( data ):
-  norms = np.abs( data.sum(axis=1) )
-  norms[norms==0] = 1
-  return data/norms[:,None]
-
+  return (data/abs(sum(data))).reshape((1,100))
 
 
 class RingerSelectorTool(Algorithm):
@@ -87,7 +84,7 @@ class RingerSelectorTool(Algorithm):
       model.set_weights(weights)
       if self.remove_last_activation:
         model.pop()
-      model.summary()
+      #model.summary()
       models.append( Model( model, d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
     return models
   
@@ -146,6 +143,7 @@ class RingerSelectorTool(Algorithm):
     self.output = model().predict( data )[0][0]
     # get the threshold 
     threshold = self.getThreshold( et, eta )
+
 
     # If not fount, return false
     if not threshold:

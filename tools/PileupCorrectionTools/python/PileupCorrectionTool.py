@@ -52,7 +52,7 @@ class PileupCorrectionTool( AlgBase ):
   def initialize(self):
 
     # initialize the base tool
-    AlgorithmTool.initialize(self)
+    AlgBase.initialize(self)
 
     from ROOT import TH2F, TH1F, TProfile
     keyWanted = ['probes','fakes']

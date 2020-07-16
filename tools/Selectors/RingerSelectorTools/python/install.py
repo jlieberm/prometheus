@@ -43,6 +43,7 @@ def installElectronL2CaloRingerSelector_v5( toolname = "EgammaEmulation" ):
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
+
       tool.addFastCaloSelector( sel.name(), sel )
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
@@ -117,6 +118,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
+      print(sel.name())
       tool.addFastCaloSelector( sel.name(), sel )
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
@@ -136,11 +138,7 @@ def installElectronL2CaloRingerSelector_v10( toolname = "EgammaEmulation" ):
 
   
   def norm1_and_reshape( data ):
-      norms = np.abs( data.sum(axis=1) )
-      norms[norms==0] = 1
-      data = data/norms[:,None]
-      data = np.array([data])
-      return np.transpose(data, [1,2,0])
+      return (data/abs(sum(data))).reshape((1,100, 1))
 
 
   selectors = [
