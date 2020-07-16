@@ -93,6 +93,7 @@ def get_thresholds( fname ):
           'threshold' : thresholds,
           'etBin'     : stdvector_to_list(t.etBin),
           'etaBin'    : stdvector_to_list(t.etaBin),
+          'muBin'     : [0,100],
          }
     cuts.append( d )
   return cuts
@@ -118,6 +119,7 @@ def import_all_models( path ):
     model.summary()
     models.append( {'etBin' : d['etBin'],
                     'etaBin': d['etaBin'],
+                    'muBin' : [0,100],
                     'model' : model
                     })
   return models
@@ -137,25 +139,18 @@ def import_all_thresholds( path ):
 
 
 
-
-
-
-
-
-
 #
 # Dump the root file into the new json format
 #
-def convert_and_dump_models( dpath, tpath, outname, version='', name='', operation_point=''):
+def convert_and_dump_models( path, outname, version='', name='', operation_point=''):
 
-  discrs = get_discriminators(dpath)
-  thr = get_thresholds(tpath)
+  discrs = get_discriminators(path)
   archieve = {
                 'models'          : discrs,
-                'thresholds'      : thr,
                 '__version__'     : version,
                 '__name__'        : name,
                 '__description__' : "",
+                '__type__'        : 'Model',
                 '__operation__'   : operation_point,
              }
   
@@ -167,16 +162,15 @@ def convert_and_dump_models( dpath, tpath, outname, version='', name='', operati
 #
 # Dump the root file into the new json format
 #
-def convert_and_dump_thresholds( dpath, tpath, outname, version='', name='', operation_point=''):
+def convert_and_dump_thresholds( path, outname, version='', name='', operation_point=''):
 
-  discrs = get_discriminators(dpath)
-  thr = get_thresholds(tpath)
+  thr = get_thresholds(path)
   archieve = {
-                'models'          : discrs,
                 'thresholds'      : thr,
                 '__version__'     : version,
                 '__name__'        : name,
                 '__description__' : "",
+                '__type__'        : 'Threshold',
                 '__operation__'   : operation_point,
              }
   
@@ -187,52 +181,22 @@ def convert_and_dump_thresholds( dpath, tpath, outname, version='', name='', ope
 
 
 
+for op in ['Tight','Medium','Loose','VeryLoose']:
 
-#dump( "/Users/jodafons/Desktop/v8_export/TrigL2_20180125_v8/TrigL2CaloRingerElectronLooseConstants.root",
-#      "/Users/jodafons/Desktop/v8_export/TrigL2_20180125_v8/TrigL2CaloRingerElectronLooseThresholds.root",
-#      "test.json")
+  #cpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Constants.root"
+  cpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Constants.root"
+  #tpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Thresholds.root"
+  tpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Thresholds.root"
+  coutput = "TrigL2CaloRingerElectron"+op+"Constants.json"
+  toutput = "TrigL2CaloRingerElectron"+op+"Thresholds.json"
 
-import_all_models( "test.json" )
-
-
-
-
-
-
-
-
-
-
+  #convert_and_dump_models( cpath, coutput, 'v6', 'TrigL2_20170505_v6', op)
+  convert_and_dump_models( cpath, coutput, 'v8', 'TrigL2_20180125_v8', op)
+  #convert_and_dump_thresholds( tpath, toutput, 'v6', 'TrigL2_20170505_v6', op)
+  convert_and_dump_thresholds( tpath, toutput, 'v8', 'TrigL2_20180125_v8', op)
+  
 
 
-
-
-
-
-
-
-# Test
-
-#for op in ['Tight','Medium','Loose','VeryLoose']:
-#
-#  discrs = get_discriminators("/Users/jodafons/Desktop/v8_export/TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Constants.root")
-#  thr = get_thresholds("/Users/jodafons/Desktop/v8_export/TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Thresholds.root")
-#  
-#  archieve = {
-#                'models'          : discrs,
-#                'thresholds'      : thr,
-#                '__version__'     : 'v8',
-#                '__name__'        : 'TrigL2_20180125_v8',
-#                '__description__' : "",
-#                '__operation__'   : op,
-#             }
-#  
-#  
-#  #from pprint import pprint
-#  #pprint(archieve)
-#  
-#  with open("TrigL2CaloRingerElectron"+op+"Constants.json","w") as f:
-#    json.dump(archieve,f)
 
 
 
