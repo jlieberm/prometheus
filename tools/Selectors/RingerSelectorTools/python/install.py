@@ -4,6 +4,7 @@ __all__ =  [
             "installElectronL2CaloRingerSelector_v5", 
             "installElectronL2CaloRingerSelector_v6",
             "installElectronL2CaloRingerSelector_v8",
+            "installElectronL2CaloRingerSelector_v10",
            ]
 import os
 
@@ -146,19 +147,19 @@ def installElectronL2CaloRingerSelector_v10( toolname = "EgammaEmulation" ):
       RingerSelectorTool( "T0HLTElectronRingerTight_v10", 
                           calibpath+'/TrigL2CaloRingerElectronTightConstants.json', 
                           calibpath+'/TrigL2CaloRingerElectronTightThresholds.json', 
-                          norm_and_reshape )
+                          norm1_and_reshape ),
       RingerSelectorTool( "T0HLTElectronRingerMedium_v10", 
                           calibpath+'/TrigL2CaloRingerElectronMediumConstants.json', 
                           calibpath+'/TrigL2CaloRingerElectronMediumThresholds.json', 
-                          norm_and_reshape )
+                          norm1_and_reshape ),
       RingerSelectorTool( "T0HLTElectronRingerLoose_v10", 
                           calibpath+'/TrigL2CaloRingerElectronLooseConstants.json', 
                           calibpath+'/TrigL2CaloRingerElectronLooseThresholds.json', 
-                          norm_and_reshape )
+                          norm1_and_reshape ),
       RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", 
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.json', 
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.json', 
-                          norm_and_reshape )
+                          norm1_and_reshape ),
 
     ]
 

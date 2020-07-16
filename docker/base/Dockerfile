@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM tensorflow/tensorflow:latest-gpu-py3
 
 LABEL maintainer "Joao Victor da Fonseca Pinto <jodafons@lps.ufrj.br>"
 
@@ -65,7 +65,9 @@ ENV PYTHONPATH "/opt/root_cern/build/lib:$PYTHONPATH"
 
 
 # Install Gaugi
-RUN pip3 install --upgrade gaugi saphyra future
+
+RUN apt-get install -y zsh
+RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 
 RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && echo "Etc/UTC" > /etc/timezone \
@@ -74,6 +76,11 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /eos
+RUN mkdir /afs
+
+
+RUN pip3 install gaugi saphyra future
 # Install Lorenzetti!
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh
