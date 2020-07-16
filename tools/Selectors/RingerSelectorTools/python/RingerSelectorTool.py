@@ -75,17 +75,20 @@ class RingerSelectorTool(Algorithm):
 
     import json
     from tensorflow.keras.models import model_from_json
-    archieve = json.load(open(path,'r'))
+
     models = []
-    for d in archieve['models']:
-      #model = model_from_json( json.dumps(d['sequence'], separators=(',', ':')) )
-      model = model_from_json( d['sequence'] )
-      weights = _treat_weights(d['weights'])
-      model.set_weights(weights)
-      if self.remove_last_activation:
-        model.pop()
-      #model.summary()
-      models.append( Model( model, d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
+    
+    with open(path,'r') as f:
+      archieve = json.load(f)
+      for d in archieve['models']:
+        #model = model_from_json( json.dumps(d['sequence'], separators=(',', ':')) )
+        model = model_from_json( d['sequence'] )
+        weights = _treat_weights(d['weights'])
+        model.set_weights(weights)
+        if self.remove_last_activation:
+          model.pop()
+        #model.summary()
+        models.append( Model( model, d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
     return models
   
   
@@ -115,9 +118,11 @@ class RingerSelectorTool(Algorithm):
     
     import json
     thresholds = []
-    archieve = json.load(open(path,'r'))
-    for d in  archieve['thresholds']:
-      thresholds.append( Threshold( d['threshold'], d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
+    
+    with open(path,'r') as f:
+      archieve = json.load(f)
+      for d in  archieve['thresholds']:
+        thresholds.append( Threshold( d['threshold'], d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
     # Return all phase spaces    
     return thresholds
 
