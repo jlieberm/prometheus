@@ -1,6 +1,4 @@
 build:
-	docker build --network host --compress -t jodafons/prometheus:latest .
-	docker build --network host --compress -t jodafons/prometheus:base .
+	docker build --network host --compress -t jodafons/root:latest .
 push:
-	docker push jodafons/prometheus:latest
-	docker push jodafons/prometheus:base
+	docker push jodafons/root:latest

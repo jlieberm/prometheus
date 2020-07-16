@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:latest-gpu-py3
+FROM ubuntu:18.04
 
 LABEL maintainer "Joao Victor da Fonseca Pinto <jodafons@lps.ufrj.br>"
 
@@ -6,10 +6,15 @@ ENV LC_ALL C.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV TERM screen
-
+RUN mkdir /eos
+RUN mkdir /afs
 USER root
 SHELL [ "/bin/bash", "-c" ]
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+#RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+
+
+
 
 RUN apt-get update --fix-missing
 RUN apt-get install -y python3.7 python3-pip
@@ -50,7 +55,6 @@ RUN cd ${HOME}/.vim_runtime/ && source install_awesome_vimrc.sh
 RUN wget https://cmake.org/files/v3.17/cmake-3.17.2-Linux-x86_64.sh -P /usr/
 RUN chmod 755 /usr/cmake-3.17.2-Linux-x86_64.sh
 RUN cd /usr && ./cmake-3.17.2-Linux-x86_64.sh --skip-license
-
 RUN ln -sf /usr/bin/python3.6 /usr/bin/python
 
 
@@ -64,23 +68,7 @@ ENV LD_LIBRARY_PATH "$ROOTSYS/lib:$LD_LIBRARY_PATH"
 ENV PYTHONPATH "/opt/root_cern/build/lib:$PYTHONPATH"
 
 
-# Install Gaugi
+RUN ln -sf /usr/bin/pip3 /usr/bin/pip
 
-RUN apt-get install -y zsh
-RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-
-RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
-    && echo "Etc/UTC" > /etc/timezone \
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /eos
-RUN mkdir /afs
-
-
-RUN pip3 install gaugi saphyra future
-# Install Lorenzetti!
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh
