@@ -16,20 +16,17 @@ def norm1( data ):
 
 class RingerSelectorTool(Algorithm):
 
-  def __init__(self, name, models_path, thresholds_path, preproc_callback=norm1, remove_last_activation=True ):
+  def __init__(self, name, configFile, preprocCallback=norm1  ):
 
     Algorithm.__init__(self, name)
-    self.models_path = models_path
-    self.thresholds_path = thresholds_path
-    self.__preproc_callback = preproc_callback
-    self.remove_last_activation=remove_last_activation
+    self._preproc_callback=preprocCallback
 
 
   #
   # Apply the data transformation
   #
   def preproc( self, data ):
-    return self.__preproc_callback(data)
+    return self._preproc_callback(data)
 
 
   #
@@ -37,26 +34,22 @@ class RingerSelectorTool(Algorithm):
   #
   def initialize(self):
 
-    # retrieve the keras model
-    self.__models = self.import_all_models( self.models_path )
-    # retrieve the thresholds
-    self.__thresholds = self.import_all_thresholds( self.thresholds_path )
+    #
+    # Onnx model inference
+    #
+    class OnnxModel(object):
 
-    return StatusCode.SUCCESS
+      def __init__( self, modelPath, etmin, etmax, etamin, etamax):
+        self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
+        import onnxruntime as rt
+        self._session = rt.InferenceSession(modelPath)
+        self._input_name = self._session.get_inputs()[0].name
+        self._input_shape = self._session.get_inputs()[0].shape
+        self._output_name = self._session.get_outputs()[0].name
 
-  def finalize(self):
-    return StatusCode.SUCCESS
+      def predict( self, input ):
+        return self_session.run([self._output_name], {self._input_name: input})
 
-
-  #
-  # Import all models from json to keras
-  #
-  def import_all_models( self, path ):
-
-    # Discriminant model class
-    class Model(object):
-      def __init__( self, model, etmin, etmax, etamin, etamax):
-        self.model=model; self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
       def etmin(self):
         return self._etmin
       def etmax(self):
@@ -65,42 +58,13 @@ class RingerSelectorTool(Algorithm):
         return self._etamin
       def etamax(self):
         return self._etamax
-      def __call__(self):
-        return self.model
 
-    def _treat_weights( weights ):
-      for i, w in enumerate(weights):
-        weights[i] = np.array(w, dtype='float32')
-      return weights
-
-    import json
-    from tensorflow.keras.models import model_from_json
-
-    models = []
-    
-    with open(path,'r') as f:
-      archieve = json.load(f)
-      for d in archieve['models']:
-        #model = model_from_json( json.dumps(d['sequence'], separators=(',', ':')) )
-        model = model_from_json( d['sequence'] )
-        weights = _treat_weights(d['weights'])
-        model.set_weights(weights)
-        if self.remove_last_activation:
-          model.pop()
-        #model.summary()
-        models.append( Model( model, d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
-    return models
-  
-  
-  #
-  # Import all thresholds from json to dict
-  #
-  def import_all_thresholds( self,path ):
-   
+    # 
     # Threshold model class
+    #
     class Threshold(object):
-      def __init__( self, thresholds, etmin, etmax, etamin, etamax):
-        self.thresholds=thresholds; self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
+      def __init__( self, slope, offset, etmin, etmax, etamin, etamax):
+        self.slope=slope; self.offset=offset; self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
       def etmin(self):
         return self._etmin
       def etmax(self):
@@ -110,21 +74,49 @@ class RingerSelectorTool(Algorithm):
       def etamax(self):
         return self._etamax
       def __call__(self, avgmu):
-        return avgmu*self.alpha() + self.beta()
-      def alpha(self):
-        return self.thresholds[0]
-      def beta(self):
-        return self.thresholds[1]
+        return avgmu*self.slope + self.offset
     
-    import json
-    thresholds = []
+
+    def treat_float( env, key ):
+      return [float(value) for value in  env.GetValue(key, '').split('; ')]
     
-    with open(path,'r') as f:
-      archieve = json.load(f)
-      for d in  archieve['thresholds']:
-        thresholds.append( Threshold( d['threshold'], d['etBin'][0], d['etBin'][1], d['etaBin'][0], d['etaBin'][1] ) )
-    # Return all phase spaces    
-    return thresholds
+    def treat_string( env, key ):
+      return [str(value) for value in  env.GetValue(key, '').split('; ')]
+
+
+
+    basepath = '/'.join(self._configPath.split('/')[:-1])
+
+    from ROOT import TEnv
+
+    env = TEnv( self._configFile )
+
+    number_of_models = int(env.GetValue("Model__size"))
+    etmin_list = treat_float( env, 'Model__etmin' )
+    etmax_list = treat_float( env, 'Model__etmax' )
+    etamin_list = treat_float( env, 'Model__etamin' )
+    etamax_list = treat_float( env, 'Model__etamax' )
+    paths = treat_string( env, 'Model__path' )
+    
+    for idx, path in enumerate( paths ):
+      model = ModelOnnx( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
+      self._models.append(model)
+
+    number_of_models = int(env.GetValue("Threshold__size"))
+    etmin_list = treat_float( env, 'Threshold__etmin' )
+    etmax_list = treat_float( env, 'Threshold__etmax' )
+    etamin_list = treat_float( env, 'Threshold__etamin' )
+    etamax_list = treat_float( env, 'Threshold__etamax' )
+    slopes = treat_string( env, 'Threshold__slope' )
+    offsets = treat_string( env, 'Threshold__offset' )
+ 
+    for idx, slope in enumerate(slopes):
+      threshold = Threshold( slope, offsets[idx], etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
+      self._thresholds.append(threshold)
+
+
+    return StatusCode.SUCCESS
+
 
 
 
@@ -145,7 +137,7 @@ class RingerSelectorTool(Algorithm):
     # normalize the inpur data
     data = self.preproc( fc.ringsE() )
     # compute the output
-    self.output = model().predict( data )[0][0]
+    self.output = model.predict( data )[0][0]
     # get the threshold 
     threshold = self.getThreshold( et, eta )
 
@@ -165,6 +157,7 @@ class RingerSelectorTool(Algorithm):
 
   def getDiscriminant(self):
     return self.output
+
 
   #
   # Get the corret model given all the phase spaces

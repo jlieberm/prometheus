@@ -36,14 +36,23 @@ sg =  restoreStoreGate( args.inputFile )
 from PileupCorrectionTools import PileupCorrectionTool, Target
 alg = PileupCorrectionTool( 'PileupCorrection' )
 
-targets = [
-            Target( 'L2_Tight_v10' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  , "TrigL2CaloRingerElectronTightThresholds.json") , 
-            Target( 'L2_Medium_v10', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" , "TrigL2CaloRingerElectronMediumThresholds.json"   ) ,
-            Target( 'L2_Loose_v10' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  , "TrigL2CaloRingerElectronLooseThresholds.json"    ) ,
-            Target( 'L2_VLoose_v10', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" , "TrigL2CaloRingerElectronVeryLooseThresholds.json") ,
-          ]
-       
+      
 
+targets = [
+            Target( 'L2_Tight_v10' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronRingerTight_v8"  ) , 
+            Target( 'L2_Medium_v10', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronRingerMedium_v8" ) ,
+            Target( 'L2_Loose_v10' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronRingerLoose_v8"  ) ,
+            Target( 'L2_VLoose_v10', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronRingerVeryLoose_v8" ) ,
+
+
+            #Target( 'L2_Tight_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  ) , 
+            #Target( 'L2_Medium_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" ) ,
+            #Target( 'L2_Loose_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  ) ,
+            #Target( 'L2_VLoose_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" ) ,
+
+
+          ]
+ 
 scale     = [0.0, 0.1, 0.2, 0.25]
 
 for idx, t in enumerate(targets):
@@ -51,24 +60,11 @@ for idx, t in enumerate(targets):
   alg.addTarget( t )
 
 
-import numpy as np
-barrel          = np.arange(16.5,40.5+1,1).tolist()
-longbarrel      = np.arange(16.5,40.5+1,1).tolist()
-crack           = np.arange(16.5,40.5+1,1).tolist()
-endcap          = np.arange(16.5,40.5+1,1).tolist()
-lastendcap      = np.arange(16.5,40.5+1,1).tolist()
-res_ybins       = [[ barrel, longbarrel, crack, endcap, lastendcap] for _ in range(5)]
-res_xbins       = [[0.001]*5]*5
-
-
 
 #if args.doEgam7:
 etbins  = [15.0, 20.0, 30.0, 40.0, 50.0, 1000000.0]
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
-#etbins=[15.0,20.0]
-#etabins=[0.0,0.8]
-#alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, res_xbins, res_ybins )
-alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, 0.02, 1.5 )
+alg.setHistogram2DRegion( -16, 16, 16, 60, 0.02, 0.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger = True

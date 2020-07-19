@@ -99,18 +99,14 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
   calibpath = os.environ['PRT_PATH'] + '/tools/Selectors/RingerSelectorTools/data/TrigL2_20180125_v8'
 
   selectors = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronTightConstants.json', 
-                          calibpath+'/TrigL2CaloRingerElectronTightThresholds.json'), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v8",
+                          calibpath+'/ElectronRingerTightTriggerConfig.conf'), 
       RingerSelectorTool( "T0HLTElectronRingerMedium_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronMediumConstants.json', 
-                          calibpath+'/TrigL2CaloRingerElectronMediumThresholds.json'), 
+                          calibpath+'/ElectronRingerMediumTriggerConfig.conf'), 
       RingerSelectorTool( "T0HLTElectronRingerLoose_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronLooseConstants.json', 
-                          calibpath+'/TrigL2CaloRingerElectronLooseThresholds.json'), 
+                          calibpath+'/ElectronRingerLooseTriggerConfig.conf'), 
       RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8", 
-                          calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.json', 
-                          calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.json'), 
+                          calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf'), 
 
     ]
 

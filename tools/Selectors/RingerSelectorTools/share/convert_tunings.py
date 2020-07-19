@@ -37,6 +37,9 @@ def convert2keras( neuron, W, B ):
   ww = np.array([ np.array(w0).T, np.array(b0), np.array(w1), np.array(b1) ] )
   ww[2]=ww[2].reshape((ww[2].shape[0],1))
   model.set_weights(ww)
+  
+  model.pop()
+  model.summary()
   return model
 
 
@@ -69,9 +72,9 @@ def get_discriminators( fname ):
     b = stdvector_to_list(t.bias)
     model = convert2keras( nodes[1], w, b )
     d = {
-         'sequence' : model.to_json(),
-         'weights'  : keras_weights_to_list(model.get_weights()),
-         #'model'    : model,
+         #'sequence' : model.to_json(),
+         #'weights'  : keras_weights_to_list(model.get_weights()),
+         'model'    : model,
          'etBin'    : stdvector_to_list(t.etBin),
          'etaBin'   : stdvector_to_list(t.etaBin),
          }
@@ -179,24 +182,132 @@ def convert_and_dump_thresholds( path, outname, version='', name='', operation_p
 
 
 
+def convert_to_onnx( cpath, tpath, version, name, operation_point, maxAvgmu, tname, output, netas ):
+
+
+  models = get_discriminators(cpath)
+  thresholds = get_thresholds(tpath)
+
+  import onnx
+  import keras2onnx
+
+
+  from ROOT import TEnv
+  file = TEnv( 'ringer' )
+
+  model_et_lower_edges = []
+  model_et_high_edges = []
+  model_eta_lower_edges = []
+  model_eta_high_edges = []
+
+  thr_et_lower_edges = []
+  thr_et_high_edges = []
+  thr_eta_lower_edges = []
+  thr_eta_high_edges = []
+
+  slopes = []
+  offsets = []
+
+  model_paths = []
+
+
+  et=0; eta=0
+
+  for idx, model in enumerate(models):
+
+    model_et_lower_edges.append( model['etBin'][0] )
+    model_et_high_edges.append( model['etBin'][1] )
+
+    model_eta_lower_edges.append( model['etaBin'][0] )
+    model_eta_high_edges.append( model['etaBin'][1] )
+
+    onnx_model_name = tname%( et, eta )
+    onnx_model = keras2onnx.convert_keras(model['model'], model['model'].name)
+    onnx.save_model(onnx_model, 'models/'+onnx_model_name)
+
+    model_paths.append( onnx_model_name )
+
+    eta+=1
+    if eta==netas:
+      eta=0
+      et+=1
+
+
+  for idx, thr in enumerate( thresholds ):
+
+    thr_et_lower_edges.append( thr['etBin'][0] )
+    thr_et_high_edges.append( thr['etBin'][1] )
+
+    thr_eta_lower_edges.append( thr['etaBin'][0] )
+    thr_eta_high_edges.append( thr['etaBin'][1] )
+
+    slopes.append( thr['threshold'][0] )
+    offsets.append( thr['threshold'][1] )
+
+
+  def list_to_str( l ):
+    s = str()
+    for ll in l:
+      s+=str(ll)+'; '
+    #s[-1]='' # remove last ;
+    return s[:-2]
+
+
+
+  
+  file.SetValue( "__name__", name )
+  file.SetValue( "__version__", version )
+  file.SetValue( "__operation__", operation_point )
+  file.SetValue( "__signature__", 'electron' )
+
+
+  file.SetValue( "Model__size"  , str(len(models)) )
+  file.SetValue( "Model__etmin" , list_to_str(model_et_lower_edges) )
+  file.SetValue( "Model__etmax" , list_to_str(model_et_high_edges) )
+  file.SetValue( "Model__etamin", list_to_str(model_eta_lower_edges) )
+  file.SetValue( "Model__etamax", list_to_str(model_eta_high_edges) )
+  file.SetValue( "Model__path"  , list_to_str( model_paths ) )
+
+
+  file.SetValue( "Threshold__size"  , str(len(thresholds)) )
+  file.SetValue( "Threshold__etmin" , list_to_str(thr_et_lower_edges) )
+  file.SetValue( "Threshold__etmax" , list_to_str(thr_et_high_edges) )
+  file.SetValue( "Threshold__etamin", list_to_str(thr_eta_lower_edges) )
+  file.SetValue( "Threshold__etamax", list_to_str(thr_eta_high_edges) )
+  file.SetValue( "Threshold__slope" , list_to_str(slopes) )
+  file.SetValue( "Threshold__offset", list_to_str(offsets) )
+  file.SetValue( "Threshold__MaxAverageMu", str(maxAvgmu) )
+  
+  
+  
+  file.WriteFile(output)
+
+
+
+
+
+
+
+
 
 
 for op in ['Tight','Medium','Loose','VeryLoose']:
 
-  #cpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Constants.root"
   cpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Constants.root"
-  #tpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Thresholds.root"
   tpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Thresholds.root"
-  coutput = "TrigL2CaloRingerElectron"+op+"Constants.json"
-  toutput = "TrigL2CaloRingerElectron"+op+"Thresholds.json"
-
-  #convert_and_dump_models( cpath, coutput, 'v6', 'TrigL2_20170505_v6', op)
-  convert_and_dump_models( cpath, coutput, 'v8', 'TrigL2_20180125_v8', op)
-  #convert_and_dump_thresholds( tpath, toutput, 'v6', 'TrigL2_20170505_v6', op)
-  convert_and_dump_thresholds( tpath, toutput, 'v8', 'TrigL2_20180125_v8', op)
-  
+  convert_to_onnx( cpath, tpath , 'v8', 'TrigL2_20180125_v8', op, 100, 
+      'data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.model_v8.electron'+op+'.et%d_eta%d.onnx',
+      "ElectronRinger%sTriggerConfig.conf"%op, 5)
 
 
+
+#for op in ['Tight','Medium','Loose','VeryLoose']:
+#
+#  cpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Constants.root"
+#  tpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Thresholds.root"
+#  convert_to_onnx( cpath, tpath , 'v6', 'TrigL2_20170505_v6', op, 40, 
+#      'mc15_13TeV.423300.Zee_probes_lhmedium.423300.JF17_Truth.model_v6.electron'+op+'.et%d_eta%d.onnx',
+#      "ElectronRinger%sTriggerConfig.conf"%op, 4)
 
 
 

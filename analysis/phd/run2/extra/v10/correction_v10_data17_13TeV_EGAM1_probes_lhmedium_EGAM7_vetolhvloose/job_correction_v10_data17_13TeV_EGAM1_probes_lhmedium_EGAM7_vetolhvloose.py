@@ -115,10 +115,10 @@ targets = [
             #Target( 'L2_Loose_v8_cutbasedLike' , 'T0HLTElectronRingerTight_v8'  , "T0HLTElectronT2CaloLoose"  ) ,
             #Target( 'L2_VLoose_v8_cutbasedLike', 'T0HLTElectronRingerTight_v8'  , "T0HLTElectronT2CaloVLoose" ) ,
             # set v10 to be like the legacy cutbased
-            #Target( 'L2_Tight_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  ) , 
-            #Target( 'L2_Medium_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" ) ,
-            #Target( 'L2_Loose_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  ) ,
-            #Target( 'L2_VLoose_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" ) ,
+            Target( 'L2_Tight_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  ) , 
+            Target( 'L2_Medium_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" ) ,
+            Target( 'L2_Loose_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  ) ,
+            Target( 'L2_VLoose_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" ) ,
 
 
           ]
