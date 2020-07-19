@@ -71,7 +71,7 @@ class PileupCorrectionTool( AlgBase ):
           etabins = default_etabins
           xmin = self._histparams.xmin(); xmax = self._histparams.xmax()
           mumin = self._histparams.ymin(); mumax = self._histparams.ymax()
-          xbins = int( (xmax-xmin) / float(0.001) )
+          xbins = int( (xmax-xmin) / float(0.02) )
           nmubins = int((mumax-mumin)/ float(0.5))
 
           # create neural network histograms

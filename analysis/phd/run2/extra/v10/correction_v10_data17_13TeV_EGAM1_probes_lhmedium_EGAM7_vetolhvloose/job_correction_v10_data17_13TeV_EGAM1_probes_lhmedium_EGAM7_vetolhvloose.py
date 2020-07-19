@@ -73,7 +73,7 @@ from EmulationTools import EmulationTool
 ToolSvc += EmulationTool( "EgammaEmulation" )
 
 # Install ringer v6
-#from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
+from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
 #installElectronL2CaloRingerSelector_v6() 
 
 # Install ringer v8
@@ -94,6 +94,8 @@ alg = PileupCorrectionTool( 'PileupCorrection' )
 
 targets = [
             #Target( 'L2_Tight_v6' , 'T0HLTElectronRingerTight_v6'  , "T0HLTElectronT2CaloTight"  ) , 
+            #Target( 'L2_Mediun_v6' , 'T0HLTElectronRingerTight_v6'  , "T0HLTElectronT2CaloMedium"  ) , 
+            #Target( 'L2_Loose_v6' , 'T0HLTElectronRingerTight_v6'  , "T0HLTElectronT2CaloLoose"  ) , 
             #Target( 'L2_VLoose_v6', 'T0HLTElectronRingerTight_v6'  , "T0HLTElectronT2CaloVLoose" ) ,
 
             #Target( 'L2_Tight_v8' , 'T0HLTElectronRingerTight_v8' , "T0HLTElectronRingerTight_v6"  ) , 
@@ -128,7 +130,7 @@ for t in targets:
 #if args.doEgam7:
 etbins  = [15.0, 20.0, 30.0, 40.0, 50.0, 1000000.0]
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
-alg.setHistogram2DRegion( -16, 16, 0, 100, 0.001, 0.5 )
+alg.setHistogram2DRegion( -16, 16, 0, 70, 0.02, 0.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger  = True
