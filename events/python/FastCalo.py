@@ -127,10 +127,10 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             rings = stdvector_to_list( getattr(self._event, ('elCand%d_trig_L2_calo_ringsE')%(self._elCand)) )
-            return np.array(rings)
+            return np.array(rings, dtype=np.float32)
         elif self._dataframe is DataframeEnum.PhysVal_v2:
             rings = stdvector_to_list(self._event.trig_L2_calo_rings)
-            return np.array(rings)
+            return np.array(rings, dtype=np.float32)
         else:
             self._logger.warning("Impossible to retrieve the value of L2Calo Ringer Rings. Unknow dataframe")
             return None
