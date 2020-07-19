@@ -1,8 +1,8 @@
 
 
 
-command_1='python job_correction_v10_data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.py --Zee'
-command_2="python job_correction_v10_data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.py --egam7"
+command_1='python job_correction_v8_data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.py --Zee'
+command_2="python job_correction_v8_data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.py --egam7"
 
 
 BASEPATH_EGAM1='/eos/user/j/jodafons/CERN-DATA/cern_data/data17_13TeV/PhysVal_v2/EGAM1'

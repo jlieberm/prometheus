@@ -15,7 +15,7 @@ class EventATLAS( TEventLoop ):
 
   def __init__(self, name , **kw):
     # Retrieve all information needed
-    TEventLoop.__init__(self, name,**kw)
+    TEventLoop.__init__(self, name, **kw)
     import ROOT
     ROOT.gSystem.Load('libprometheus')
 
