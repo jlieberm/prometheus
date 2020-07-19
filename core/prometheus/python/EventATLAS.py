@@ -26,9 +26,9 @@ class EventATLAS( TEventLoop ):
   def initialize( self ):
 
     MSG_INFO( self, 'Initializing EventATLAS...')
-
     if super(EventATLAS,self).initialize().isFailure():
       MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
+
 
 
     from ROOT import edm
@@ -54,6 +54,7 @@ class EventATLAS( TEventLoop ):
     from EventAtlas import EventInfo
     from EventAtlas import MonteCarlo
     from EventAtlas import TDT
+    from EventAtlas import Menu
    
     
     # Initialize the base of this container.
@@ -65,6 +66,7 @@ class EventATLAS( TEventLoop ):
                             'ElectronContainer'          : Electron(),
                             'CaloClusterContainer'       : CaloCluster(),
                             'TrackParticleContainer'     : TrackParticle(),
+                            'MenuContainer'              : Menu("EgammaEmulation"),
                            }
 
     self._containersSvc.update({
@@ -114,6 +116,7 @@ class EventATLAS( TEventLoop ):
       # service
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
+
 
     self.getContext().initialize()
     return StatusCode.SUCCESS

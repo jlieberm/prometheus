@@ -1,6 +1,7 @@
 
 __all__ = ['TrigEgammaL2CaloSelectorTool']
 
+from Gaugi.constants  import GeV
 from Gaugi.messenger.macros import *
 from Gaugi.messenger import Logger
 from Gaugi.gtypes import NotSet
@@ -30,12 +31,12 @@ class TrigEgammaL2CaloHypoTool( Logger ):
     self._WSTOTthr			  = retrieve_kw( kw, 'WSTOTthr' 			, 99999.	)
     self._F3thr				    = retrieve_kw( kw, 'F3thr'					, 99999.	)
 
+
   def initialize(self):
     return StatusCode.SUCCESS
 
 
-
-  def decide(self, pClus, info):
+  def accept(self, pClus):
 
     # get the equivalent L1 EmTauRoi object in athena
     emTauRoi = pClus.emTauRoI()
@@ -234,15 +235,16 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
     return StatusCode.SUCCESS
 
 
-  def accept(self, fc, mu=0.0):
-    from Gaugi.constants  import GeV
+  def accept(self, context):
+
+    fc = context.getHandler( "HLT__FastCaloContainer" )
     et = fc.et()
     if et < 12*GeV:
-      return self._tools[0].decide(fc, None)
+      return self._tools[0].accept(fc)
     elif et>=12*GeV and et < 22*GeV:
-      return self._tools[1].decide(fc, None)
+      return self._tools[1].accept(fc)
     else:
-      return self._tools[2].decide(fc, None)
+      return self._tools[2].accept(fc)
 
 
   def finalize(self):

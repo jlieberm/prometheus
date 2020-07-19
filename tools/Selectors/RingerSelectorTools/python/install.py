@@ -43,8 +43,7 @@ def installElectronL2CaloRingerSelector_v5( toolname = "EgammaEmulation" ):
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
-
-      tool.addFastCaloSelector( sel.name(), sel )
+      tool+=sel
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
 
@@ -82,7 +81,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "EgammaEmulation" ):
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
-      tool.addFastCaloSelector( sel.name(), sel )
+      tool+=sel
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
 
@@ -114,8 +113,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "EgammaEmulation" ):
   tool = toolSvc.retrieve( toolname )
   if tool:
     for sel in selectors:
-      print(sel.name())
-      tool.addFastCaloSelector( sel.name(), sel )
+      tool+=sel
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
 
@@ -154,14 +152,12 @@ def installElectronL2CaloRingerSelector_v10( toolname = "EgammaEmulation" ):
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseConstants.json', 
                           calibpath+'/TrigL2CaloRingerElectronVeryLooseThresholds.json', 
                           norm1_and_reshape ),
-
     ]
 
   from Gaugi import ToolSvc as toolSvc
   tool = toolSvc.retrieve( toolname )
   if tool:
-    for sel in selectors:
-      tool.addFastCaloSelector( sel.name(), sel )
+      tool+=sel
   else:
     raise RuntimeError( "%s not found into the ToolSvc." % toolname )
 

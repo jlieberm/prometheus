@@ -128,11 +128,24 @@ class RingerSelectorTool(Algorithm):
     return StatusCode.SUCCESS
 
 
-
-
-  def accept( self, fc, avgmu):
-
+  def getAcceptInfo( self ):
+    
+    accept = Accept(self.name())
     self.output=-999
+    accept.setCutResult( "Pass", False )
+    accept.setDecor( "discriminant", self.output )
+    return accept
+
+
+
+  def accept( self, context):
+
+    accept = self.getAcceptInfo()
+    fc = context.getHandler("HLT__FastCaloContainer")
+    eventInfo = context.getHandler( "EventInfoContainer" )
+    avgmu = eventInfo.avgmu()
+
+
 
     eta = abs(fc.eta())
     if eta>2.5: eta=2.5
@@ -143,7 +156,7 @@ class RingerSelectorTool(Algorithm):
     
     # If not fount, return false
     if not model:
-      return False
+      return accept
     
     # normalize the inpur data
     data = self.preproc( fc.ringsE() )
@@ -155,19 +168,17 @@ class RingerSelectorTool(Algorithm):
 
     # If not fount, return false
     if not threshold:
-      return False
+      return accept
 
     # If the output is below of the cut, reprove it
     if self.output <= threshold(avgmu):
-      return False
+      return accept
 
     # If arrive until here, so the event was passed by the ringer
-    return True
+    accept.setCutResult( "Pass", True )
+    accept.setDecor( "discriminant", self.output )
+    return accept
 
-
-
-  def getDiscriminant(self):
-    return self.output
 
 
   #
@@ -180,7 +191,6 @@ class RingerSelectorTool(Algorithm):
         if eta > obj.etamin() and eta <= obj.etamax():
           model=obj; break
     return model
-
   
    
   #

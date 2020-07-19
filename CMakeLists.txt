@@ -36,7 +36,7 @@ add_subdirectory(tools/PileupCorrectionTools)
 add_subdirectory(tools/ProfileTools)
 add_subdirectory(tools/QuadrantTools)
 add_subdirectory(tools/Selectors/RingerSelectorTools)
-add_subdirectory(tools/Selectors/TrigEgammaL2CaloSelectorTool)
+add_subdirectory(tools/Selectors/EgammaSelectorTools)
 add_subdirectory(events)
 
 

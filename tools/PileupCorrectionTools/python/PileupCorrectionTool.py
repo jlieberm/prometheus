@@ -108,7 +108,6 @@ class PileupCorrectionTool( AlgBase ):
 
   def execute(self, context):
 
-    print('insisde')
     from Gaugi.constants import GeV
     # offline electron
     el = context.getHandler( "ElectronContainer" )
@@ -156,28 +155,19 @@ class PileupCorrectionTool( AlgBase ):
     for name , target in self._targets.items():
 
       algname = target.algname(); refname = target.refname()
-      # get the target answer
-      if self.doTrigger:
-        # Get the decoration from HLT electron or fast calo (only for skimmed)
-        passed = self.accept(refname)
-        if self.dataframe is DataframeEnum.PhysVal_v2:
-          obj = context.getHandler( "HLT__ElectronContainer" )
-        elif self.dataframe is DataframeEnum.SkimmedNtuple_v2:
-          obj = context.getHandler( "HLT__FastCaloContainer" )
-        # get the ringer RNN discriminant
-        discriminant = obj.getDecor(algname+'_discriminant')
+      
+      # Get the decision from the menu assitent
+      dec = context.getHandler( "MenuContainer" )
+      passed = bool(dec.accept(refname))
+      accept = dec.accept( algname )
+      discriminant = accept.getDecor( "discriminant" )
 
-      else:
-        # Get de decision from Offline electron
-        passed = el.accept(refname)
-        # get the ringer RNN discriminant
-        discriminant = el.getDecor(algname+'_discriminant')
+
 
       path = self._basepath+'/'+dirname+'/'+name+'/'+refname+'/'+binningname
       MSG_DEBUG( self, 'Et = %1.2f, Eta = %1.2f, phi = %1.2f, nvtx = %1.2f, mu = %1.2f, passed = %d',
           et,eta,phi,nvtx,avgmu,int(passed))
 
-      print('fill')
       # Fill all target histograms
       sg.histogram(path+'/et').Fill(et)
       sg.histogram(path+'/eta').Fill(eta)
@@ -205,7 +195,6 @@ class PileupCorrectionTool( AlgBase ):
       sg.histogram(path+'/discriminantVsMu').Fill(discriminant, avgmu)
       sg.histogram(path+'/discriminantVsNvtx').Fill(discriminant, nvtx)
 
-    print('done')
     return StatusCode.SUCCESS
 
 
@@ -215,7 +204,7 @@ class PileupCorrectionTool( AlgBase ):
 
 
 
-  def plot(self, dirname, pdftitle, pdfoutput,  exportTool=None ):
+  def plot(self, dirname, pdftitle, pdfoutput,  export=True ):
 
     from Gaugi.monet.AtlasStyle import SetAtlasStyle
     SetAtlasStyle()
@@ -223,17 +212,37 @@ class PileupCorrectionTool( AlgBase ):
     summary = self.generate_plots(dirname)
 
 
-    if exportTool:
-      try:
-        from TuningTools.export import TrigMultiVarHypo_v2
-        exportTool = TrigMultiVarHypo_v2( removeOutputTansigTF=True )
-        #generate thresholds config file
-        for target in self._targets:
-          exportTool.create_thresholds( summary[target.name()]['thresholds'], target.outputname() )
-      except:
-        MSG_ERROR(self, "Can not import export code since TuningTools was not included in the path...")
+    if export:
+      from ROOT import TEnv
+      for _, target in self._targets.items():
+ 
+        etmin_list = []; etmax_list = []; etamin_list = []; etamax_list = []; slopes = []; offsets = []
+        
+        for threshold in summary[target.name()]['thresholds']:
+          etmin_list.append( threshold['etBin'][0] ) 
+          etmax_list.append( threshold['etBin'][1] )
+          etamin_list.append( threshold['etaBin'][0] ) 
+          etamax_list.append( threshold['etaBin'][1] )
+          slopes.append( threshold['threshold'][0] )
+          offsets.append( threshold['threshold'][1] )
+        # helper function
+        def list_to_str( l ):
+          s = str()
+          for ll in l:
+            s+=str(ll)+'; '
+          #s[-1]='' # remove last ;
+          return s[:-2]
 
-
+        env = TEnv('correction')
+        env.SetValue("Threshold__etmin" , list_to_str( etmin_list ) )
+        env.SetValue("Threshold__etmax" , list_to_str( etmax_list ) )
+        env.SetValue("Threshold__etamin", list_to_str( etamin_list ) )
+        env.SetValue("Threshold__etamax", list_to_str( etamax_list ) )
+        env.SetValue("Threshold__slope" , list_to_str( slopes ) )
+        env.SetValue("Threshold__offset", list_to_str( offsets ) )
+        MSG_INFO( self, "Export %s...", target.name() )
+        env.WriteFile( target.name() +'.conf' )
+          
 
 
     from Gaugi.tex.TexAPI import Table, ResizeBox, Tabular, HLine, TableLine
