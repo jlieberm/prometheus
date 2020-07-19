@@ -108,6 +108,7 @@ class PileupCorrectionTool( AlgBase ):
 
   def execute(self, context):
 
+    print('insisde')
     from Gaugi.constants import GeV
     # offline electron
     el = context.getHandler( "ElectronContainer" )
@@ -128,6 +129,7 @@ class PileupCorrectionTool( AlgBase ):
     # TODO: This should be a property for future?
     # Remove events after 2.47 in eta. This region its not good for calo cells. (Fat cells)
     if abs(eta)>2.47:
+      MSG_WARNING(self, "Skippint. event eta > 2.47")
       return StatusCode.SUCCESS
 
     # retrieve the pileup event information
@@ -144,7 +146,7 @@ class PileupCorrectionTool( AlgBase ):
     from CommonTools.utilities import RetrieveBinningIdx
     etBinIdx, etaBinIdx = RetrieveBinningIdx( et, abs(eta), self._threshold_etbins, self._threshold_etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
-      #MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
+      MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
       return StatusCode.SUCCESS
 
     # get bin name to point to the correct directory
@@ -175,6 +177,7 @@ class PileupCorrectionTool( AlgBase ):
       MSG_DEBUG( self, 'Et = %1.2f, Eta = %1.2f, phi = %1.2f, nvtx = %1.2f, mu = %1.2f, passed = %d',
           et,eta,phi,nvtx,avgmu,int(passed))
 
+      print('fill')
       # Fill all target histograms
       sg.histogram(path+'/et').Fill(et)
       sg.histogram(path+'/eta').Fill(eta)
@@ -202,7 +205,7 @@ class PileupCorrectionTool( AlgBase ):
       sg.histogram(path+'/discriminantVsMu').Fill(discriminant, avgmu)
       sg.histogram(path+'/discriminantVsNvtx').Fill(discriminant, nvtx)
 
-
+    print('done')
     return StatusCode.SUCCESS
 
 

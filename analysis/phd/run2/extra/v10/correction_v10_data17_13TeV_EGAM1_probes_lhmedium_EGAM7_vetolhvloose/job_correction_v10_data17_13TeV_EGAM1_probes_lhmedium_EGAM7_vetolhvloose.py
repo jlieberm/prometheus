@@ -3,7 +3,7 @@
 from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi import ToolSvc, ToolMgr
+from Gaugi import ToolSvc
 import argparse
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -78,11 +78,11 @@ ToolSvc += EmulationTool( "EgammaEmulation" )
 
 # Install ringer v8
 from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
-#installElectronL2CaloRingerSelector_v8() 
+installElectronL2CaloRingerSelector_v8() 
 
 # Install ringer v6
 from RingerSelectorTools import installElectronL2CaloRingerSelector_v10
-#installElectronL2CaloRingerSelector_v10() 
+installElectronL2CaloRingerSelector_v10() 
 
 # intall trigger e/g fastcalo cut-based selector (T2Calo)
 from TrigEgammaL2CaloSelectorTool import installTrigEgammaL2CaloSelectors
@@ -113,15 +113,14 @@ targets = [
             #Target( 'L2_Loose_v8_cutbasedLike' , 'T0HLTElectronRingerTight_v8'  , "T0HLTElectronT2CaloLoose"  ) ,
             #Target( 'L2_VLoose_v8_cutbasedLike', 'T0HLTElectronRingerTight_v8'  , "T0HLTElectronT2CaloVLoose" ) ,
             # set v10 to be like the legacy cutbased
-            Target( 'L2_Tight_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  ) , 
-            Target( 'L2_Medium_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" ) ,
-            Target( 'L2_Loose_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  ) ,
-            Target( 'L2_VLoose_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" ) ,
+            #Target( 'L2_Tight_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloTight"  ) , 
+            #Target( 'L2_Medium_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloMedium" ) ,
+            #Target( 'L2_Loose_v10_cutbasedLike' , 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloLoose"  ) ,
+            #Target( 'L2_VLoose_v10_cutbasedLike', 'T0HLTElectronRingerTight_v10' , "T0HLTElectronT2CaloVLoose" ) ,
 
 
           ]
        
-targets = []
 for t in targets:
   alg.addTarget( t )
 
@@ -135,9 +134,8 @@ alg.setEtaBinningValues( etabins )
 alg.doTrigger  = True
 if args.doEgam7:
   alg.isBackground = True
+
 ToolSvc += alg
-
-
 acc.run(args.nov)
 
 
