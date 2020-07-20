@@ -19,35 +19,36 @@ class TrigEgammaElectronSelectorTool( Algorithm ):
 
   def initialize(self):
    
-      
+    elCont = self.getContext().getHandler("HLT__ElectronContainer")
+    if not elCont.checkBody( self._branch ):
+      MSG_FATAL( self, "The branch %s is not found into the HLT electron body.", self._branch )
+
+    self.init_lock()
     return StatusCode.SUCCESS
 
 
   def accept(self, context):
 
-    if self.dataframe is DataframeEnum.PhysVal_v2:
-      el= context.getHandler("HLT__ElectronContainer")
-      # helper accessor function
-      def getDecision( container, branch ):
-        passed=False
-        current = container.getPos()
-        for it in container:
-          if it.accept(branch):  passed=True;  break;
-        container.setPos(current) # to avoid location fail
-        return passed
+    el= context.getHandler("HLT__ElectronContainer")
+    # helper accessor function
+    def getDecision( container, branch ):
+      passed=False
+      current = container.getPos()
+      for it in container:
+        if it.accept(branch):  passed=True;  break;
+      container.setPos(current) # to avoid location fail
+      return passed
 
-      # Decorate the HLT electron with all final decisions
-      passed = getDecision(el, self._branch)
-      accept = Accept( self.name )
-      accept.setCutResult( 'Pass', passed )
-      return accept
-    else:
-      MSG_FATAL( self, "It's not possible to emulate the HLT since the dataframe is not reconized")
-
+    # Decorate the HLT electron with all final decisions
+    passed = getDecision(el, self._branch)
+    accept = Accept( self.name )
+    accept.setCutResult( 'Pass', passed )
+    return accept
 
 
 
   def finalize(self):
+    self.fina_lock()
     return StatusCode.SUCCESS
 
 

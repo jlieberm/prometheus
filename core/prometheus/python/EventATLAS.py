@@ -119,6 +119,26 @@ class EventATLAS( TEventLoop ):
 
 
     self.getContext().initialize()
+
+
+
+    MSG_INFO( self, 'Initializing all tools...')
+    from Gaugi import ToolSvc as toolSvc
+    self._alg_tools = toolSvc.getTools()
+    for alg in self._alg_tools:
+      if alg.status is StatusTool.DISABLE:
+        continue
+      # Retrieve all services
+      alg.level = self._level
+      alg.setContext( self.getContext() )
+      alg.setStoreGateSvc( self.getStoreGateSvc() )
+      alg.dataframe = self._dataframe
+      if alg.isInitialized():
+        continue
+      if alg.initialize().isFailure():
+        MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
+
+
     return StatusCode.SUCCESS
 
 

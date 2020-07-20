@@ -1,10 +1,11 @@
 
 __all__ = ['TrigEgammaL2CaloSelectorTool']
 
+from Gaugi.gtypes import NotSet
 from Gaugi.constants  import GeV
 from Gaugi.messenger.macros import *
 from Gaugi.messenger import Logger
-from Gaugi.gtypes import NotSet
+from Gaugi import retrieve_kw
 from Gaugi import StatusCode
 from Gaugi import Algorithm
 import numpy as np
@@ -192,24 +193,16 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
 
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
-    from Gaugi import retrieve_kw
+
     self._IDinfo = retrieve_kw( kw, 'IDinfo', 'lhvloose')
     self._tools = []
 
-  @property
-  def IDinfo(self):
-    return self._IDinfo
-
-  @IDinfo.setter
-  def IDinfo(self,v):
-    self._IDinfo=v
 
 
   def initialize(self):
 
     # take from hypo config
     from .TrigEgammaL2CaloSelectorCuts import L2CaloCutMaps
-    from Gaugi.constants  import GeV
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
 
     for idx, threshold in enumerate(thrs):
@@ -230,8 +223,12 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
         CARCOREthr     = cuts.MapsCARCOREthr[self._IDinfo],
         CAERATIOthr    = cuts.MapsCAERATIOthr[self._IDinfo],
         )
+      if selector.initialize().isFailure():
+        return StatusCode.FAILURE
+
       self._tools.append(selector)
 
+    self.init_lock()
     return StatusCode.SUCCESS
 
 
@@ -248,8 +245,11 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
 
 
   def finalize(self):
+    
     for tool in self._tools:
-      tool.finalize()
+      if tool.finalize().isFailure():
+        return StatusCode.FAILURE
+
     return StatusCode.SUCCESS
 
 
