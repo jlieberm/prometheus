@@ -2,11 +2,10 @@ __all__ = ['QuadrantTool']
 
 
 
-from Gaugi import StatusCode
+from Gaugi import StatusCode, Algorithm
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi import retrieve_kw, mkdir_p
 from Gaugi.gtypes import NotSet
-from CommonTools import AlgBase
 from CommonTools.constants import *
 from CommonTools.utilities import RetrieveBinningIdx
 import ROOT
@@ -18,7 +17,7 @@ from Gaugi.tex.BeamerAPI import *
 from functools import reduce
 
 
-class QuadrantTool( AlgBase ):
+class QuadrantTool( Algorithm ):
 
   # quadrant names definition
   _quadrants = ['passed_passed',
@@ -28,7 +27,7 @@ class QuadrantTool( AlgBase ):
 
   def __init__(self, name, **kw):
     
-    AlgBase.__init__(self, name)
+    Algorithm.__init__(self, name)
     self._basepath = 'Event/QuadrantTool'
     self._quadrantFeatures = list()
     self._etBins  = NotSet
@@ -49,7 +48,7 @@ class QuadrantTool( AlgBase ):
 
   def initialize(self):
     
-    AlgorithmTool.initialize(self)
+    Algorithm.initialize(self)
     sg = self.getStoreGateSvc()
 
     #if super(TrigBaseTool,self).initialize().isFailure():
@@ -110,6 +109,8 @@ class QuadrantTool( AlgBase ):
     et = el.et()/GeV
     track = el.trackParticle()
     
+    dec = context.getHandler( "MenuContainer" )
+
     evt = context.getHandler("EventInfoContainer")
     pw = evt.MCPileupWeight()
     sg = self.getStoreGateSvc()
@@ -125,8 +126,8 @@ class QuadrantTool( AlgBase ):
     for feat in self._quadrantFeatures:
       
       name     = feat.name_a()+'_Vs_'+feat.name_b()
-      passed_x = self.accept( feat.expression_a() )
-      passed_y = self.accept( feat.expression_b() )
+      passed_x = bool(dec.accept( feat.expression_a() ))
+      passed_y = bool(dec.accept( feat.expression_b() ))
       passed_x = 'passed' if passed_x else 'rejected'
       passed_y = 'passed' if passed_y else 'rejected'
       dirname  = self._basepath+'/'+name+'/'+binning_name+'/'+passed_x +'_'+ passed_y

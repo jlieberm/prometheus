@@ -2,17 +2,16 @@
 __all__ = ['EfficiencyTool']
 
 
-from CommonTools import AlgBase
 from Gaugi.messenger.macros import *
-from Gaugi import StatusCode
+from Gaugi import Algorithm, StatusCode
 from EfficiencyTools import EfficiencyMode
 
-class EfficiencyTool( AlgBase ):
+class EfficiencyTool( Algorithm ):
   
   _triggerLevels = ['L1Calo','L2Calo','L2','EFCalo','HLT']
 
   def __init__(self, name, **kw):
-    AlgorithmTool.__init__(self, name)
+    Algorithm.__init__(self, name)
     self._triggerList = []
     self._basepath = 'Event/EfficiencyTool'
 
@@ -20,14 +19,15 @@ class EfficiencyTool( AlgBase ):
 
   # Athena:  ( TDT__HLT__e24_lhmedium, e24_medium )
   # Selector: ('Et>15GeV && el_lhtight && TDT__HLT__e60_lhmedium' , 'Medium' )
-  def addTrigger( self, name, expression, mode=EfficiencyMode.Selector ):
-    from utilities import TriggerInfo
-    self._triggerList.append( TriggerInfo(expression, mode, name) )  
+  def addMonitoring( self, chain, pidname, etthr=0 ):
+    from Gaugi import ToolSvc
+    emulator = ToolSvc.retrieve( "Emulator" )
+    emulator+=chain
+    self._chains.append( (chain,pidname,etthr) )  
 
 
   def initialize(self):
     
-    AlgorithmTool.initialize(self)
     import numpy as np
     sg = self.getStoreGateSvc()
     from CommonTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
@@ -38,10 +38,11 @@ class EfficiencyTool( AlgBase ):
     et_bins = jpsiee_etbins if self.doJpsiee() else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
 
     from ROOT import TH1F, TH2F, TProfile, TProfile2D
-    for info in self._triggerList:
-      for dirname in ( self._triggerLevels if info.isAthena() else ['Selector'] ):
+    for chain in self._chains:
+      for dirname in ( self._triggerLevels if type(chain) is Chain else ['Selector'] ):
 
-        sg.mkdir( self._basepath+'/'+info.label()+'/Efficiency/'+dirname )
+        sg.mkdir( self._basepath+'/'+chain.name()+'/Efficiency/'+dirname )
+        
         sg.addHistogram(TH1F('et','E_{T} distribution;E_{T};Count', len(et_bins)-1, np.array(et_bins)))
         sg.addHistogram(TH1F('eta','#eta distribution;#eta;Count', len(eta_bins)-1, np.array(eta_bins)))
         sg.addHistogram(TH1F("phi", "#phi distribution; #phi ; Count", 20, -3.2, 3.2));
@@ -75,32 +76,29 @@ class EfficiencyTool( AlgBase ):
     from Gaugi.constants import GeV
     # Retrieve Electron container
     elCont = context.getHandler( "ElectronContainer" )
-    self._evt = context.getHandler("EventInfoContainer")
-    
-    for info in self._triggerList:
+    dec = context.getHandler( "MenuContainer" )
 
-      if info.isAthena():
+    for chain in self._triggerList:
+      
+      if type(chain) is Chain:
 
         for el in elCont:
-          if el.et()  < (info.etthr()- 5)*GeV:  continue 
+          if el.et()  < (etthr- 5)*GeV:  continue 
           if abs(el.eta())>2.47: continue
           dirname = self._basepath+'/'+info.label()+'/Efficiency'
-          self.fillEfficiency(dirname+'/'+'L1Calo', el, info.etthr(), info.pid(), self.accept(info.core()+'__L1Calo__'+info.trigger() ))
-          self.fillEfficiency(dirname+'/'+'L2Calo', el, info.etthr(), info.pid(), self.accept(info.core()+'__L2Calo__'+info.trigger() ))
-          self.fillEfficiency(dirname+'/'+'L2'    , el, info.etthr(), info.pid(), self.accept(info.core()+'__L2__'    +info.trigger() ))
-          self.fillEfficiency(dirname+'/'+'EFCalo', el, info.etthr(), info.pid(), self.accept(info.core()+'__EFCalo__'+info.trigger() ))
-          self.fillEfficiency(dirname+'/'+'HLT'   , el, info.etthr(), info.pid(), self.accept(info.core()+'__HLT__'   +info.trigger() ))  
-      
-      else: # Selector mode
-        # retrieve internal selection tool from the main framework
-        # el_lhtight && Et>15GeV && HLT__isElectronRingerTight 
-        dirname = self._basepath+'/'+info.label()+'/Efficiency'
-        etthr = self.re().search_et( info.expression() )
-        pid = self.re().search_pid( info.expression() )
-        for el in elCont:
-          if abs(el.eta())>2.47: continue
-          if el.et()/GeV < (etthr - 5):  continue 
-          self.fillEfficiency(dirname+'/'+'Selector' , el, etthr, pidword, self.re().apply( info.expression() )  )
+
+          accept = dec.accept( chain.name() )
+
+          self.fillEfficiency(dirname+'/'+'L1Calo', el, etthr, pidname, accept.getCutResult("L1Calo") ))
+          self.fillEfficiency(dirname+'/'+'L2Calo', el, etthr, pidname, accept.getCutResult("L2Calo") ))
+          self.fillEfficiency(dirname+'/'+'L2'    , el, etthr, pidname, accept.getCutResult("L2")     ))
+          self.fillEfficiency(dirname+'/'+'EFCalo', el, etthr, pidname, accept.getCutResult("EFCalo") ))
+          self.fillEfficiency(dirname+'/'+'HLT'   , el, etthr, pidname, accept.getCutResult("HLT")    ))  
+
+      else:
+        MSG_FATAL( self, "Chain type not reconized." )
+
+
 
     return StatusCode.SUCCESS 
 
@@ -109,6 +107,7 @@ class EfficiencyTool( AlgBase ):
     
     from Gaugi.constants import GeV
     pid = el.accept(pidword)
+
     eta = el.caloCluster().etaBE2()
     et = el.et()/GeV
     phi = el.phi()
@@ -155,11 +154,11 @@ class EfficiencyTool( AlgBase ):
 
   def finalize(self):
     
-    for info in self._triggerList:
-      MSG_INFO( self, '{:-^78}'.format((' %s ')%(item[0])))
-      if info.isAthena():
+    for chain in self._chains:
+      MSG_INFO( self, '{:-^78}'.format((' %s ')%(chain.name())))
+      if type(chain) is Chain:
         for trigLevel in self._triggerLevels:
-          dirname = self._basepath+'/'+info.label()+'/Efficiency/'+trigLevel
+          dirname = self._basepath+'/'+chain.name()+'/Efficiency/'+trigLevel
           total  = sg.histogram( dirname+'/eta' ).GetEntries()
           passed = sg.histogram( dirname+'/match_eta' ).GetEntries()
           eff = passed/float(total) * 100. if total>0 else 0
@@ -167,13 +166,8 @@ class EfficiencyTool( AlgBase ):
           stroutput = '| {0:<30} | {1:<5} ({2:<5}, {3:<5}) |'.format(trigLevel,eff,passed,total)
           MSG_INFO( self, stroutput)
       else:
-        dirname = self._basepath+'/'+info.label()+'/Efficiency/Selector'
-        total  = sg.histogram( dirname+'/eta' ).GetEntries()
-        passed = sg.histogram( dirname+'/match_eta' ).GetEntries()
-        eff = passed/float(total) * 100. if total>0 else 0
-        eff=('%1.2f')%(eff); passed=('%d')%(passed); total=('%d')%(total)
-        stroutput = '| {0:<30} | {1:<5} ({2:<5}, {3:<5}) |'.format('Efficiency',eff,passed,total)
-        MSG_INFO(stroutput)
+        pass
+        
       MSG_INFO('{:-^78}'.format((' %s ')%('-')))
     self.fina_lock()
     return StatusCode.SUCCESS 
