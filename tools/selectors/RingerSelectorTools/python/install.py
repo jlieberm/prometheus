@@ -56,7 +56,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "Emulator" ):
   from RingerSelectorTools import RingerSelectorTool
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
-  calibpath = os.environ['PRT_PATH'] + '/tools/Selectors/RingerSelectorTools/data/TrigL2_20170505_v6'
+  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20170505_v6'
 
   selectors = [
       RingerSelectorTool( "T0HLTElectronRingerTight_v6",
@@ -89,7 +89,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
   from RingerSelectorTools import RingerSelectorTool
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
-  calibpath = os.environ['PRT_PATH'] + '/tools/Selectors/RingerSelectorTools/data/TrigL2_20180125_v8'
+  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20180125_v8'
 
   selectors = [
       RingerSelectorTool( "T0HLTElectronRingerTight_v8",
@@ -122,7 +122,7 @@ def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
   from RingerSelectorTools import RingerSelectorTool
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
-  calibpath = os.environ['PRT_PATH'] + '/tools/Selectors/RingerSelectorTools/data/TrigL2_20200715_v10'
+  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20200715_v10'
 
   
   def norm1_and_reshape( data ):
