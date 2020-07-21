@@ -5,7 +5,7 @@ __all__ = ['EventATLAS']
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
-from Gaugi import StatusCode
+from Gaugi import StatusCode, StatusTool
 from Gaugi.gtypes import NotSet
 from Gaugi import TEventLoop
 
@@ -66,7 +66,7 @@ class EventATLAS( TEventLoop ):
                             'ElectronContainer'          : Electron(),
                             'CaloClusterContainer'       : CaloCluster(),
                             'TrackParticleContainer'     : TrackParticle(),
-                            'MenuContainer'              : Menu("EgammaEmulation"),
+                            'MenuContainer'              : Menu(),
                            }
 
     self._containersSvc.update({

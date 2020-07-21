@@ -10,12 +10,15 @@ from EventAtlas import DecisionCore, AcceptType, Accept
 
 class Menu(EDM):
     
-  def __init__(self, emulation_name ):
+  def __init__(self):
     EDM.__init__(self)
-    self._emulation_name = emulation_name
 
 
   def initialize(self):
+
+    if not ToolSvc.retrieve("Emulator"):
+      MSG_FATAL( self, "The emulator tool is not in the ToolSvc" )
+
     return StatusCode.SUCCESS
 
   
@@ -65,9 +68,9 @@ class Menu(EDM):
     
     # This name is not in metadata and not in cache, let's access the emulation svc and run it!
     else:  
-      emulation = ToolSvc.retrieve( self._emulation_name )
-      if emulation.isValid( key ):
-        accept = emulation.accept( self.getContext(), key )
+      emulator = ToolSvc.retrieve( "Emulator" )
+      if emulator.isValid( key ):
+        accept = emulator.accept( self.getContext(), key )
         self.setDecor( key, accept )
         return accept
       else:
