@@ -82,7 +82,7 @@ groups = [
 
   Group( Chain( "e17_lhvloose_noringer", Signature    = 'electron', 
                                 L1Item       = 'L1_EM15VH', 
-                                L2CaloItem   = 'T0HLTElectronRingerVeryLoose_v6', 
+                                L2CaloItem   = 'L2Calo_LHVLoose', 
                                 L2Item       = 'L2_Electron_15to20GeV',
                                 HLTItem      = 'HLT_LHVLoose', 
                                 L2CaloEtCut  = 17-3, 
