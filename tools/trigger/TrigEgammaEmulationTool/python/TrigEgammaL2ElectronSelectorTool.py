@@ -1,4 +1,5 @@
 
+
 __all__ = ['TrigEgammaL2ElectronSelectorTool']
 
 
@@ -13,6 +14,10 @@ import re
 
 class TrigEgammaL2ElectronSelectorTool( Algorithm ):
 
+
+  #
+  # Constructor
+  #
   def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
@@ -26,11 +31,17 @@ class TrigEgammaL2ElectronSelectorTool( Algorithm ):
     checkForUnusedVars(kw)
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
     self.init_lock()
     return StatusCode.SUCCESS
 
 
+  #
+  # Accept method
+  #
   def accept( self, context ):
 
     elCont = context.getHandler( "HLT__FastElectronContainer" )

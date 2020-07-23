@@ -28,37 +28,6 @@ class DecisionCore(EnumStringification):
 
 
 
-class Accept( object ):
-
-  def __init__(self, name):
-    self._name = name
-    self._cuts = {}
-    self._decoration = {}
-
-  def name(self):
-    return self._name
-
-  def setCutResult( self, key, value ):
-    self._cuts[key] = value
-
-  def getCutResult( self, key ):
-    try:
-      return self._cuts[key]
-    except KeyError as e:
-      print( e )
-
-  def __bool__(self):
-    return all( [value for _, value in self._cuts.items()] )
-
-
-  def setDecor( self, key, value ):
-    self._decoration[key] = value
-
-
-  def getDecor( self, key ):
-    return self._decoration[key]
-
-
 
 
 class TDT(EDM):

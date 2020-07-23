@@ -1,5 +1,5 @@
 
-__all__ = ['TrigEgammaElectronSelectorTool']
+__all__ = ['TrigEgammaElectronHypoTool']
 
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
@@ -11,12 +11,24 @@ from prometheus.enumerations import Dataframe as DataframeEnum
 
 class TrigEgammaElectronSelectorTool( Algorithm ):
 
+  __property = [
+                "Branch"
+                ]
 
+  #
+  # Constructor
+  #
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
-    self._branch = retrieve_kw( kw, 'branch', '')
+
+    for key, value in kw.items():
+      if key in self.__property:
+        self.declareProperty( key, value )
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
    
     elCont = self.getContext().getHandler("HLT__ElectronContainer")
@@ -27,6 +39,9 @@ class TrigEgammaElectronSelectorTool( Algorithm ):
     return StatusCode.SUCCESS
 
 
+  #
+  # Accept method
+  # 
   def accept(self, context):
 
     el= context.getHandler("HLT__ElectronContainer")
@@ -40,10 +55,9 @@ class TrigEgammaElectronSelectorTool( Algorithm ):
       return passed
 
     # Decorate the HLT electron with all final decisions
-    passed = getDecision(el, self._branch)
-    accept = Accept( self.name )
-    accept.setCutResult( 'Pass', passed )
-    return accept
+    passed =  getDecision(el, self._branch)
+
+    return Accept( self.name(), [ ("Pass", passed] )
 
 
 

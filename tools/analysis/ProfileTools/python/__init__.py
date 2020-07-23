@@ -1,10 +1,11 @@
 __all__ = []
+from . import constants
+__all__.extend(constants.__all__)
+from .constants import *
 
 from . import ProfileToolBase
 __all__.extend(ProfileToolBase.__all__)
 from .ProfileToolBase import *
-
-
 
 from . import BasicInfoProfiles
 __all__.extend(BasicInfoProfiles.__all__)
@@ -25,3 +26,5 @@ from .DiscriminantProfiles import *
 from . import drawers
 __all__.extend(drawers.__all__)
 from .drawers import *
+
+

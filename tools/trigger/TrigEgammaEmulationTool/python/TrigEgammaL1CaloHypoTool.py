@@ -1,76 +1,89 @@
 
-__all__ = ['TrigEgammaL1CaloSelectorTool']
+__all__ = ['TrigEgammaL1CaloHypoTool']
 
 from Gaugi import Algorithm, StatusCode
-from Gaugi import checkForUnusedVars, retrieve_kw
 from Gaugi.messenger.macros import *
-from EventAtlas import Accept
 import numpy as np
 import math
 import re
 
 
-class TrigEgammaL1CaloSelectorTool( Algorithm ):
+class TrigEgammaL1CaloHypoTool( Algorithm ):
 
+  __property = [
+                "WPNames",
+                "HadCoreCutMin",
+                "HadCoreCutOff",
+                "HadCoreSlope",
+                "EmIsolCutMin",
+                "EmIsolCutOff",
+                "EmIsolSlope",
+                "IsolCutMax",
+                "L1Item",
+               ]
+
+  #
+  # Constructor
+  #
   def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
     # L1 configuration parameters
     
-    self._wpNames        = retrieve_kw( kw, 'WPNames' 			,        ['Tight','Medium','Loose']) # must be: ["T","M","L"] (Tight,Medium and Loose)
-    self._hadCoreCutMin  = retrieve_kw( kw, 'HadCoreCutMin'	, [ 1.0   ,  1.0  ,  1.0  ,  1.0  ]) # must be a list with for values: (default,tight,medium and loose)
-    self._hadCoreCutOff  = retrieve_kw( kw, 'HadCoreCutOff'	, [-0.2   , -0,2  , -0.2  , -0.2  ])
-    self._hadCoreSlope   = retrieve_kw( kw, 'HadCoreSlope'	, [ 1/23. ,  1/23.,  1/23.,  1/23.])
-    self._emIsolCutMin   = retrieve_kw( kw, 'EmIsolCutMin'	, [ 2.0   ,  1.0  ,  1.0  ,  1.5  ])
-    self._emIsolCutOff   = retrieve_kw( kw, 'EmIsolCutOff'	, [-1.8   , -2.6  , -2.0  , -1.8  ])
-    self._emIsolCutSlope = retrieve_kw( kw, 'EmIsolSlope'		, [ 1/8.  ,  1/8. ,  1/8. ,  1/8. ])
-    self._isolMaxCut     = retrieve_kw( kw, 'IsolCutMax'		, 50 )
-    self._l1item         = retrieve_kw( kw, 'L1Item'        , 'L1_EM3' ) # default
-    checkForUnusedVars(kw)
+    for key, value in kw.items():
+      self.declareProperty( key, value )
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
     
-    self._l1type      = self._l1item.replace('L1_','')
+    l1type = self.getProperty("L1Item")
+    self._isolMaxCut = self.getProperty( 'IsolCutMax' )
+    self._l1type = l1type.replace('L1_','')
     self._l1threshold = float(re.findall('\d+', self._l1type)[0])
+
     self.init_lock()
     return StatusCode.SUCCESS
 
 
-
+  #
+  # Finalize method
+  #
   def finalize(self):
     self.fina_lock()
     return StatusCode.SUCCESS
 
 
+  #
+  # Accept method
+  #
   def accept( self, context ):
 
     l1 = context.getHandler( "HLT__EmTauRoIContainer" )
-    accept = Accept( self.name() )
     passed = self.emulation( l1, self._l1type, self._l1item, self._l1threshold )
-    accept.setCutResult( "Pass" , passed )
-    return accept
+    return Accept( self.name(), [ ("Pass", passed] )
 
 
+  #
+  # L1 emulation
+  #
   def emulation(self, l1, l1type, L1Item, l1threshold):
-    
+   
+
+    workingPoint = getProperty( "WPNames" )
+
     c=0
-    if(self._wpNames[0] in l1type):  c=1 # Tight
-    if(self._wpNames[1] in l1type):  c=2 # Medium
-    if(self._wpNames[2] in l1type):  c=3 # Loose
-    hadCoreCutMin  = self._hadCoreCutMin[c]
-    hadCoreCutOff  = self._hadCoreCutOff[c]
-    hadCoreSlope   = self._hadCoreSlope[c]
-    emIsolCutMin   = self._emIsolCutMin[c] 
-    emIsolCutOff   = self._emIsolCutOff[c]
-    emIsolCutSlope = self._emIsolCutSlope[c]
-    
-    # hadCoreCutMin = 1.0; // This could be defined somewhere else
-    # hadCoreCutOff = -0.2;
-    # hadCoreSlope = 1/23.0;
-    # emIsolCutMin = 2.0; // This could be defined somewhere else
-    # emIsolCutOff = -1.8;
-    # emIsolCutSlope = 1/8.0;
+    if(workingPoint[0] in l1type):  c=1 # Tight
+    if(workingPoint[1] in l1type):  c=2 # Medium
+    if(workingPoint[2] in l1type):  c=3 # Loose
+    hadCoreCutMin  = self.getProperty("HadCoreCutMin")[c]
+    hadCoreCutOff  = self.getProperty("HadCoreCutOff")[c]
+    hadCoreSlope   = self.getProperty("HadCoreSlope")[c]
+    emIsolCutMin   = self.getProperty("EmIsolCutMin")[c]
+    emIsolCutOff   = self.getProperty("EmIsolCutOff")[c]
+    emIsolCutSlope = self.getProperty("EmIsolCutSlope")[c]
     
     emE = 0.0
     emIsol = 0.0
@@ -83,26 +96,26 @@ class TrigEgammaL1CaloSelectorTool( Algorithm ):
     emIsol  = l1.emIsol()/1.e3   # EM Isolation energy
     
     if ('H' in l1type):
-      self._logger.debug("L1 (H) CUT")
+      MSG_DEBUG(self, "L1 (H) CUT")
       if not self.isolationL1(hadCoreCutMin,hadCoreCutOff,hadCoreSlope,hadCore,emE):
-        self._logger.debug("rejected")
+        MSG_DEBUG(self, "rejected")
         return False
-      self._logger.debug("accepted")
+      MSG_DEBUG(self, "accepted")
     
     if ('I' in l1type):
-      self._logger.debug("L1 (I) CUT")
+      MSG_DEBUG(self, "L1 (I) CUT")
       if not self.isolationL1(emIsolCutMin,emIsolCutOff,emIsolCutSlope,emIsol,emE):
-        self._logger.debug("rejected")
+        MSG_DEBUG(self, "rejected")
         return False
-      self._logger.debug("accepted")
+      MSG_DEBUG(self, "accepted")
     
     
     if ('V' in l1type):
-      self._logger.debug("L1 (V) CUT")
+      MSG_DEBUG(self, "L1 (V) CUT")
       if not self.variableEtL1(L1Item,emE,eta):
-        self._logger.debug("rejected")
+        MSG_DEBUG(self, "rejected")
         return False
-      self._logger.debug("accepted")
+      MSG_DEBUG(self, "accepted")
     
     # add new method for this also
     elif  (emE <= l1threshold): # // this cut is confirmed to be <=
@@ -117,14 +130,14 @@ class TrigEgammaL1CaloSelectorTool( Algorithm ):
   def isolationL1(self, min_, offset, slope, energy, emE):
   	
     if (emE > self._isolMaxCut):
-      self._logger.debug("L1 Isolation skipped, ET > Maximum isolation")
+      MSG_DEBUG(self, "L1 Isolation skipped, ET > Maximum isolation")
       return True
     
     isolation = offset + emE*slope
     if (isolation < min_): isolation = min_;
     
     value = False if (energy > isolation) else True
-    #self._logger.debug( ("L1 Isolation ET = %1.3f ISOLATION CUT %1.3f")%(energy,isolation) )
+    #MSG_DEBUG(self,  ("L1 Isolation ET = %1.3f ISOLATION CUT %1.3f")%(energy,isolation) )
     return value
   
   #//!==========================================================================
