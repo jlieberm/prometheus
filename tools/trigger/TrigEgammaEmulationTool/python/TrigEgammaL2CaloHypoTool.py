@@ -231,4 +231,37 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
 
 
+def configure( trigger ):
 
+  info = TrigInfo( trigger )
+  etthr = info.etthr()
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve("Emulator")
+  pidname = info.pidname()
+  name = 'L2Calo_' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+
+  if not emulator.isValid(name):
+
+    def same(value):
+      return [value]*9
+
+    cuts = L2CaloCutMaps(etthr)
+    hypo  = TrigEgammaL2CaloHypoTool(name,
+                                     dETACLUSTERthr = 0.1,
+                                     dPHICLUSTERthr = 0.1,
+                                     EtaBins        = [0.0, 0.6, 0.8, 1.15, 1.37, 1.52, 1.81, 2.01, 2.37, 2.47],
+                                     F1thr          = same(0.005),
+                                     ETthr          = same(0),
+                                     ET2thr         = same(90.0*GeV),
+                                     HADET2thr      = same(999.0),
+                                     WETA2thr       = same(99999.),
+                                     WSTOTthr       = same(99999.),
+                                     F3thr          = same(99999.),
+                                     HADETthr       = cuts.MapsHADETthr[pidname],
+                                     CARCOREthr     = cuts.MapsCARCOREthr[pidname],
+                                     CAERATIOthr    = cuts.MapsCAERATIOthr[pidname],
+                                     )
+    emulator+=hypo
+
+  return name

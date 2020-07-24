@@ -29,9 +29,13 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
     
     Algorithm.__init__(self, name, self.__property)
 
+    # Set all properties
     for key, value in kw.items():
       if key in self.__property:
         self.declareProperty( key, value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
 
   #
   # Initialize method
@@ -101,6 +105,48 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
     return Accept( self.name(), [("Pass", passed)] )
 
      
+
+
+
+
+
+def configure( trigger ):
+
+  info = TrigInfo( trigger )
+  etthr = info.etthr()
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve("Emulator")
+
+  name = 'L2Electron_' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+
+  if not emulator.isValid(name):
+
+    hypo = TrigEgammaL2ElectronSelectorTool(name
+                                        EtCut                =   (etthr - 3)*GeV, 
+                                        TrackPt              =   1*GeV, 
+                                        CaloTrackdETA        =   0.2  , 
+                                        CaloTrackdPHI        =   0.3  , 
+                                        CaloTrackdEoverPLow  =   0    , 
+                                        CaloTrackdEoverPHigh =   999  , 
+                                        TRTRatio             =   -999 ),
+
+    if etthr < 15:
+      hypo.TrackPt = 1*GeV
+    elif etthr >= 15 and etthr < 20:
+      hypo.TrackPt = 2*GeV
+    elif etthr >=20 and etthr < 50:
+      hypo.TrackPt = 3*GeV
+    else:
+      hypo.TrackPt = 5*GeV
+      hypo.CaloTrackdETA = 999 
+      hypo.CaloTrackdPHI = 999
+      
+    emulator+=hypo
+
+
+
+
 
 
 

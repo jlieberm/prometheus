@@ -1,70 +1,83 @@
 
-__all__ = ['Chain', 'Group']
+__all__ = ['Chain']
 
-from Gaugi import Algorithm, StatusCode, NotSet, GeV
-from Gaugi import checkForUnusedVars, retrieve_kw
+from Gaugi import Algorithm, 
+from Gaugi import StatusCode
+from Gaugi import GeV
 from Gaugi.messenger.macros import *
 from EventAtlas import Accept
+from TrigEgammaEmulatorTool import TriggerInfo
 
 
-
-class Group( object ):
-
-  def __init__( self, chain, pidname, etthr ):
-    self._chain = chain
-    self._pidname = pidname
-    self._etthr = etthr
-
-  def chain(self):
-    return self._chain
-
-  def pidname(self):
-    return self._pidname
-  
-  def etthr(self):
-    return self._etthr
-
-
-
-
-
+#
+# Chain definition
+#
 class Chain( Algorithm ):
 
-  def __init__(self, name, **kw):
+
+  def __init__(self, name, L1Item, chain):
     
     Algorithm.__init__(self, name)
-    # L1 configuration parameters
-    
-    self._signature    = retrieve_kw( kw, 'Signature' , '' )
-    self._l1Item       = retrieve_kw( kw, 'L1Item'    , '' )
-    self._l2caloItem   = retrieve_kw( kw, 'L2CaloItem', '' )
-    self._l2Item       = retrieve_kw( kw, 'L2Item'    , '' )
-    self._hltItem      = retrieve_kw( kw, 'HLTItem'   , '' )
-    self._l2caloEtCut  = retrieve_kw( kw, 'L2CaloEtCut', 0 )
-    self._efcaloEtCut  = retrieve_kw( kw, 'EFCaloEtCut', 0 )
-    self._hltEtCut     = retrieve_kw( kw, 'HLTEtCut'   , 0 )
-    
-    checkForUnusedVars(kw)
+    self.__trigInfo = TriggerInfo(chain)
+    self.__l1item = L1Item
+    self.__trigger = chain
+    self.__trigInfo.compile()
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
+    
+     
+    # Configure the L2Calo hypo step
+    from TrigEgammaEmulatorTool.TrigEgammaL1CaloHypoTool import configure
+    self.__l1caloItem = configure( self.__l1item )
+
+    
+    # Configure the L2 hypo step
+    from TrigEgammaEmulatorTool.TrigEgammaL2CaloHypoTool import configure
+    self.__l2caloItem = configure( self.__trigger )
+    
+     
+    # Configure the EFCalo hypo step
+    from TrigEgammaEmulatorTool.TrigEgammaL2ElectronHypoTool import configure
+    self.__l2Item = configure( self.__trigger )
+    
+
+    # Configure the HLT hypo step
+    from TrigEgammaEmulatorTool.TrigEgammaEFElectronHypoTool import configure
+    self.__hltItem = configure( self.__trigger )
+    
+
+    # configure et cuts
+    self.__l2caloEtCuts = (self.__trigInfo.etthr() - 3 ) * GeV
+    self.__efcaloEtCuts = (self.__trigInfo.etthr()) * GeV
+    self.__hltEtCuts = (self.__trigInfo.etthr()) * GeV
+
     self.init_lock()
     return StatusCode.SUCCESS
 
 
 
+  #
+  # Finalize method
+  #
   def finalize(self):
     self.fina_lock()
     return StatusCode.SUCCESS
 
 
+  #
+  # Accept method
+  #
   def accept( self, context ):
 
     dec = context.getHandler( "MenuContainer" )
 
     accept = self.getAcceptInfo()
 
-    passedL1 = bool(dec.accept( self._l1Item ))
+    passedL1 = bool(dec.accept( self.L1Item ))
 
     # Is passed by L1?
     if not passedL1:
@@ -149,6 +162,13 @@ class Chain( Algorithm ):
     accept.setCutResult( 'HLT'    , False )
     accept.setCutResult( 'Pass'   , False )
     return accept
+
+
+
+
+
+
+
 
 
 

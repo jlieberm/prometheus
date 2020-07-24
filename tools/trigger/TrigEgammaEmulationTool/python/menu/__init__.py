@@ -1,26 +1,20 @@
 
 __all__ = []
 
-from . import TrigEgammaL1CaloSelectorTool
-__all__.extend(TrigEgammaL1CaloSelectorTool.__all__)
-from .TrigEgammaL1CaloSelectorTool import *
+from . import Group
+__all__.extend(Group.__all__)
+from .Group import *
 
-from . import TrigEgammaL2CaloSelectorTool
-__all__.extend(TrigEgammaL2CaloSelectorTool.__all__)
-from .TrigEgammaL2CaloSelectorTool import *
+from . import TriggerInfo
+__all__.extend(TriggerInfo.__all__)
+from .TriggerInfo import *
 
-from . import TrigEgammaL2CaloSelectorCuts
-__all__.extend(TrigEgammaL2CaloSelectorCuts.__all__)
-from .TrigEgammaL2CaloSelectorCuts import *
+from . import Chain
+__all__.extend(Chain.__all__)
+from .Chain import *
 
-from . import TrigEgammaL2ElectronSelectorTool
-__all__.extend(TrigEgammaL2ElectronSelectorTool.__all__)
-from .TrigEgammaL2ElectronSelectorTool import *
 
-from . import TrigEgammaElectronSelectorTool
-__all__.extend(TrigEgammaElectronSelectorTool.__all__)
-from .TrigEgammaElectronSelectorTool import *
 
-from . import install
-__all__.extend(install.__all__)
-from .install import *
+
+
+

@@ -3,7 +3,6 @@ __all__ = ['TrigEgammaL1CaloHypoTool']
 
 from Gaugi import Algorithm, StatusCode
 from Gaugi.messenger.macros import *
-import numpy as np
 import math
 import re
 
@@ -28,10 +27,14 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
-    # L1 configuration parameters
     
+    # Set all properties
     for key, value in kw.items():
-      self.declareProperty( key, value )
+      if key in self.__property:
+        self.declareProperty( key, value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
 
 
   #
@@ -246,4 +249,38 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
 
 
 
+
+
+
+#
+# Configure the hypo tool using the trigger chain name
+#
+def configure( l1item ):
+
+  # Get the emulator tool
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve("Emulator")
+
+  name = l1item
+
+  # Check if this hypo is in cache
+  if not emulator.isValid(name):
+    # We need to create the hypo tool
+
+    # L1 configuration parameters
+    hypo = TrigEgammaL1CaloHypoTool( name
+                                     WPNames        =  ['Tight','Medium','Loose'], # must be: ["T","M","L"] (Tight,Medium and Loose)
+                                     HadCoreCutMin  =  [ 1.0   ,  1.0  ,  1.0  ,  1.0  ], # must be a list with for values: (default,tight,medium and loose)
+                                     HadCoreCutOff  =  [-0.2   , -0,2  , -0.2  , -0.2  ],
+                                     HadCoreSlope 	 = [ 1/23. ,  1/23.,  1/23.,  1/23.],
+                                     EmIsolCutMin   = [ 2.0   ,  1.0  ,  1.0  ,  1.5  ],
+                                     EmIsolCutOff   = [-1.8   , -2.6  , -2.0  , -1.8  ],
+                                     EmIsolSlope    = [ 1/8.  ,  1/8. ,  1/8. ,  1/8. ],
+                                     IsolCutMax     = 50,
+                                     L1Item         = l1item )
+
+    emulator+=hypo
+
+
+  return name
 

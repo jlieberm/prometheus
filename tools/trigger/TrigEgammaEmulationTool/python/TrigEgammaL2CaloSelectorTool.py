@@ -23,15 +23,18 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   #
   def __init__(self, name, **kw):
     
-    Algorithm.__init__(self, name, self.__property)
+    Algorithm.__init__(self, name)
 
     # List of hypos in this selector
     self.__hypos = list()
 
-    # configure all properties
+    # Set all properties
     for key, value in kw.items():
       if key in self.__property:
-        self.setProperty( key, value )
+        self.declareProperty( key, value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
 
 
 
@@ -41,9 +44,10 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   def initialize(self):
 
     # take from hypo config
-    from TrigEgammaHypo import TrigEgammaL2CaloHypoTool, L2CaloCutMaps
+    from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
-
+    
+    from TrigEgammaL2Calo
     def same(value):
       return [value]*9
 

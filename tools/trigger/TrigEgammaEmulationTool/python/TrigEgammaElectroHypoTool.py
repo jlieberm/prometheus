@@ -9,7 +9,7 @@ from EventAtlas import Accept
 from prometheus.enumerations import Dataframe as DataframeEnum
 
 
-class TrigEgammaElectronSelectorTool( Algorithm ):
+class TrigEgammaElectronHypoTool( Algorithm ):
 
   __property = [
                 "Branch"
@@ -21,10 +21,12 @@ class TrigEgammaElectronSelectorTool( Algorithm ):
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
 
+    # Set all properties
     for key, value in kw.items():
       if key in self.__property:
         self.declareProperty( key, value )
-
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
   #
   # Initialize method
