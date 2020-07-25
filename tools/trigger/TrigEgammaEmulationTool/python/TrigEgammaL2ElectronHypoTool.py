@@ -9,7 +9,9 @@ from Gaugi import GeV
 from EventAtlas import Accept
 
 
-
+#
+# Hypo tool
+#
 class TrigEgammaL2ElectronHypoTool( Algorithm ):
 
   __property = [
@@ -108,21 +110,23 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
 
 
 
-
-
+#
+# Configure hypo tool from trigger name
+#
 def configure( trigger ):
 
+  from TrigEgammaEmulationTool import TrigInfo
   info = TrigInfo( trigger )
   etthr = info.etthr()
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
 
-  name = 'L2Electron_' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+  name = 'Hypo__L2Electron__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
 
   if not emulator.isValid(name):
 
-    hypo = TrigEgammaL2ElectronSelectorTool(name
+    hypo = TrigEgammaL2ElectronHypoTool(name
                                         EtCut                =   (etthr - 3)*GeV, 
                                         TrackPt              =   1*GeV, 
                                         CaloTrackdETA        =   0.2  , 
@@ -144,7 +148,7 @@ def configure( trigger ):
       
     emulator+=hypo
 
-
+  return name
 
 
 

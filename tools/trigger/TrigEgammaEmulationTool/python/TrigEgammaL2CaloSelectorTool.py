@@ -9,7 +9,7 @@ from EventAtlas import Accept
 
 
 #
-# Hypo tool
+# Selector tool
 #
 class TrigEgammaL2CaloSelectorTool( Algorithm ):
 

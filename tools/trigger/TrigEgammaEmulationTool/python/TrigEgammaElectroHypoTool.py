@@ -9,6 +9,10 @@ from EventAtlas import Accept
 from prometheus.enumerations import Dataframe as DataframeEnum
 
 
+
+#
+# Hypo tool
+#
 class TrigEgammaElectronHypoTool( Algorithm ):
 
   __property = [
@@ -62,11 +66,35 @@ class TrigEgammaElectronHypoTool( Algorithm ):
     return Accept( self.name(), [ ("Pass", passed] )
 
 
-
+  #
+  # Finalize method
+  #
   def finalize(self):
     self.fina_lock()
     return StatusCode.SUCCESS
 
+
+
+
+#
+# Configure the hypo tool from trigger name
+#
+def configure( trigger ):
+
+  from TrigEgammaEmulatorTool import TrigInfo
+  info = TrigInfo( trigger )
+  etthr = info.etthr()
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve("Emulator")
+  pidname = info.pidname()
+  name = 'Hypo__HLT__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+
+  if not emulator.isValid(name):
+    hypo  = TrigEgammaElectronHypoTool(name, Branch = 'el_'+info.pidname() )
+    emulator+=hypo
+
+  return name
 
 
 

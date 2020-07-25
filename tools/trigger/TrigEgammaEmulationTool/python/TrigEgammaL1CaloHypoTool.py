@@ -6,7 +6,9 @@ from Gaugi.messenger.macros import *
 import math
 import re
 
-
+#
+# Hypo tool
+#
 class TrigEgammaL1CaloHypoTool( Algorithm ):
 
   __property = [
@@ -261,7 +263,7 @@ def configure( l1item ):
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
 
-  name = l1item
+  name = 'Hypo__'+l1item
 
   # Check if this hypo is in cache
   if not emulator.isValid(name):

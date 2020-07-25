@@ -3,32 +3,38 @@ __all__ = ['RingerSelectorTool']
 
 
 from Gaugi import Algorithm
-from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
-from Gaugi.gtypes import NotSet
+from Gaugi.messenger.macros import *
+from EventAtlas import Accept
 import numpy as np
-from EventAtlas import *
 
 
-def norm1( data ):
-  return (data/abs(sum(data))).reshape((1,100))
 
-
+#
+# Hypo tool
+#
 class RingerSelectorTool(Algorithm):
 
-  def __init__(self, name, configPath, preprocCallback=norm1  ):
+  __property = [
+                "ConfigFile",
+                "Preproc"
+                ]
+
+  #
+  # Constructor
+  #
+  def __init__(self, name, **kw  ):
 
     Algorithm.__init__(self, name)
-    self._configPath = configPath
-    self._preproc_callback=preprocCallback
     self._models = []
     self._thresholds = []
-
-  #
-  # Apply the data transformation
-  #
-  def preproc( self, data ):
-    return self._preproc_callback(data)
+    
+    # Set all properties
+    for key, value in kw.items():
+      if key in self.__property:
+        self.declareProperty( key, value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   #
@@ -92,7 +98,9 @@ class RingerSelectorTool(Algorithm):
 
     from ROOT import TEnv
 
-    env = TEnv( self._configPath )
+
+    configPath = self.getProperty( "ConfigPath" )
+    env = TEnv( configPath )
 
     version = env.GetValue("__version__", '')
     number_of_models = env.GetValue("Model__size", 0)
@@ -128,15 +136,6 @@ class RingerSelectorTool(Algorithm):
     return StatusCode.SUCCESS
 
 
-  def getAcceptInfo( self ):
-    
-    accept = Accept(self.name())
-    self.output=-999
-    accept.setCutResult( "Pass", False )
-    accept.setDecor( "discriminant", self.output )
-    return accept
-
-
 
   def accept( self, context):
 
@@ -145,23 +144,18 @@ class RingerSelectorTool(Algorithm):
     eventInfo = context.getHandler( "EventInfoContainer" )
     avgmu = eventInfo.avgmu()
 
-
-
     eta = abs(fc.eta())
     if eta>2.5: eta=2.5
     et = fc.et()*1e-3 # in GeV
     if avgmu > self._maxAverageMu: avgmu = self._maxAverageMu
-    
-    model = self.getModel(et,eta)
+
+    # get the model for inference
+    model = self.__getModel(et,eta)
     
     # If not fount, return false
     if not model:
       return accept
     
-    # normalize the inpur data
-    data = self.preproc( fc.ringsE() )
-    # compute the output
-    self.output = model.predict( data )[0][0][0]
     
     # get the threshold 
     threshold = self.getThreshold( et, eta )
@@ -170,13 +164,23 @@ class RingerSelectorTool(Algorithm):
     if not threshold:
       return accept
 
+    # Until here, we have all to run it!
+
+    # apply the normalization step
+    preproc = self.getProperty("Preproc")
+    # normalize the inpur data
+    data = preproc( fc.ringsE() )
+    # compute the output
+    output = model.predict( data )[0][0][0]
+    
+    accept.setDecor("discriminant", output)
+
     # If the output is below of the cut, reprove it
-    if self.output <= threshold(avgmu):
+    if output <= threshold(avgmu):
       return accept
 
     # If arrive until here, so the event was passed by the ringer
     accept.setCutResult( "Pass", True )
-    accept.setDecor( "discriminant", self.output )
     return accept
 
 
@@ -184,7 +188,7 @@ class RingerSelectorTool(Algorithm):
   #
   # Get the corret model given all the phase spaces
   #
-  def getModel( self, et, eta ):
+  def __getModel( self, et, eta ):
     model = None
     for obj in self._models:
       if et > obj.etmin() and et <= obj.etmax():
@@ -196,7 +200,7 @@ class RingerSelectorTool(Algorithm):
   #
   # Get the correct threshold given all phase spaces
   #
-  def getThreshold( self, et, eta ):
+  def __getThreshold( self, et, eta ):
     threshold = None
     for obj in self._thresholds:
       if et > obj.etmin() and et <= obj.etmax():
@@ -204,10 +208,15 @@ class RingerSelectorTool(Algorithm):
           threshold=obj; break
     return threshold
 
-  
-
-
-
-
+  #
+  # Get the accept object
+  #
+  def __getAcceptInfo( self ):
+    
+    accept = Accept(self.name())
+    self.output=-999
+    accept.setCutResult( "Pass", False )
+    accept.setDecor( "discriminant", self.output )
+    return accept
 
 

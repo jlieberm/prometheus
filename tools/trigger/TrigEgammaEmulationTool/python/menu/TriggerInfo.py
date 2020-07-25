@@ -45,13 +45,13 @@ class TriggerInfo(Logger):
 
     # Get the operation point
     pidword = 'lhvloose'
-    if 'lhtight' in trigParts[-1]:
+    if 'lhtight' in trigParts[1]:
       pidword = 'lhtight'
-    elif 'lhmedium' in trigParts[-1]:
+    elif 'lhmedium' in trigParts[1]:
       pidword = 'lhmedium'
-    elif 'lhloose' in trigParts[-1]:
+    elif 'lhloose' in trigParts[1]:
       pidword = 'lhloose'
-    elif 'lhvloose' in trigParts[-1]:
+    elif 'lhvloose' in trigParts[1]:
       pidword = 'lhvloose'
     else: 
       MSG_WARNING( self, "No Pid name was fount in the expression (%s) with path (%s)", self.expression(), trigParts[-1])
@@ -64,6 +64,19 @@ class TriggerInfo(Logger):
       self.__ringer = True
     else:
       self.__ringer = True
+
+    self.__ringerVersion = -1
+    if self.__ringer:
+      if 'v6' in trigger:
+        self.__ringerVersion = 6
+      elif 'v7' in trigger:
+        self.__ringerVersion = 7
+      elif 'v8' in trigger:
+        self.__ringerVersion = 8
+      elif 'v10' in trigger:
+        self.__ringerVersion = 10
+      else:
+        self.__ringerVersion = 8
 
   
   #
@@ -85,6 +98,12 @@ class TriggerInfo(Logger):
     return self.__ringer
 
   #
+  # Get the ringer tuning version
+  #
+  def ringerVersion(self):
+    return self.__ringerVersion
+
+  #
   # Get the chain name
   #
   def trigger(self):
@@ -95,6 +114,9 @@ class TriggerInfo(Logger):
   #
   def pidname(self):
     return self.__pidname
+
+
+
 
 
 

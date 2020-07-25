@@ -38,9 +38,14 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
     Algorithm.__init__(self, self.__property)
 
+    # Set all properties
     for key, value in kw.items():
       if key in self.__property:
         self.declareProperty( key, value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+
 
 
   #
@@ -230,16 +235,19 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
 
 
-
+#
+# Configure the hypo from trigger name
+#
 def configure( trigger ):
 
+  from TrigEgammaEmulatorTool import TrigInfo
   info = TrigInfo( trigger )
   etthr = info.etthr()
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
   pidname = info.pidname()
-  name = 'L2Calo_' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+  name = 'Hypo__L2Calo__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
 
   if not emulator.isValid(name):
 
@@ -265,3 +273,6 @@ def configure( trigger ):
     emulator+=hypo
 
   return name
+
+
+

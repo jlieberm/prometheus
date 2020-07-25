@@ -15,6 +15,9 @@ from TrigEgammaEmulatorTool import TriggerInfo
 class Chain( Algorithm ):
 
 
+  #
+  # Constructor
+  #
   def __init__(self, name, L1Item, chain):
     
     Algorithm.__init__(self, name)
@@ -22,6 +25,10 @@ class Chain( Algorithm ):
     self.__l1item = L1Item
     self.__trigger = chain
     self.__trigInfo.compile()
+
+
+
+
 
 
   #
@@ -34,10 +41,33 @@ class Chain( Algorithm ):
     from TrigEgammaEmulatorTool.TrigEgammaL1CaloHypoTool import configure
     self.__l1caloItem = configure( self.__l1item )
 
-    
-    # Configure the L2 hypo step
-    from TrigEgammaEmulatorTool.TrigEgammaL2CaloHypoTool import configure
-    self.__l2caloItem = configure( self.__trigger )
+
+    # Configure L2Calo step
+    if self.__trigInfo.ringer():
+      version = self.__trigInfo.ringerVersion()
+
+      if version < 0:
+        MSG_FATAL( self, "The trigger %s is ringer chain but you don't specifie a correct tuning version.", self.__trigger)
+     
+      if version == 6:
+        from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
+        names = installElectronL2CaloRingerSelector_v6()
+      elif version == 8:
+        from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
+        names = installElectronL2CaloRingerSelector_v8()
+      elif version == 10:
+        from RingerSelectorTools import installElectronL2CaloRingerSelector_v10
+        names = installElectronL2CaloRingerSelector_v10()
+
+        
+      # define like tight, medium, loose and vloose
+      self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
+
+
+    else:
+      # Configure the L2Calo hypo step
+      from TrigEgammaEmulatorTool.TrigEgammaL2CaloHypoTool import configure
+      self.__l2caloItem = configure( self.__trigger )
     
      
     # Configure the EFCalo hypo step
