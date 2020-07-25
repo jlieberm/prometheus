@@ -116,6 +116,26 @@ class TriggerInfo(Logger):
     return self.__pidname
 
 
+  #
+  # Get the pid index 
+  #
+  def pidnameIdx(self):
+
+    if 'tight' in self.__pidname:
+      return 0
+    elif 'medium' in self.__pidname:
+      return 1
+    elif 'loose' in self.__pidname:
+      return 2
+    elif 'vloose' in self.__pidname:
+      return 3
+    else:
+      return 0
+
+
+
+
+
 
 
 
