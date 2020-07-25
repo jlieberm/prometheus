@@ -47,146 +47,38 @@ from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
 evt = EventSelection('EventSelection')
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
-
 #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
 pidname = 'el_lhmedium'
-
-
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
 evt.setCutValue( EtCutType.L2CaloAbove , 15)
+
 ToolSvc += evt
 
 
-from EmulationTools import EmulationTool, Chain, Group
-ToolSvc += EmulationTool()
+from TrigEgammaEmulationTool import Chain, Group
 
-# install e/g Run2 staff
-from EgammaSelectorTools import installTrigEgammaSelectors_Run2
-installTrigEgammaSelectors_Run2()
-
-# Install official ringer v6
-from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
-installElectronL2CaloRingerSelector_v6() 
-
-# Install official ringer v8
-from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
-installElectronL2CaloRingerSelector_v8() 
-
-# Install dev ringer v10
-from RingerSelectorTools import installElectronL2CaloRingerSelector_v10
-installElectronL2CaloRingerSelector_v10() 
+triggerList = [
+                Group( Chain( "HLT_e17_lhvloose_noringer"   , "L1_EM15VH", "HLT_e17_lhvloose_noringer"   ), "el_lhvloose", 17 ),
+                Group( Chain( "HLT_e17_lhvloose_ringer_v6"  , "L1_EM15VH", "HLT_e17_lhvloose_ringer_v6"  ), "el_lhvloose", 17 ),
+                Group( Chain( "HLT_e17_lhvloose_ringer_v8"  , "L1_EM15VH", "HLT_e17_lhvloose_ringer_v8"  ), "el_lhvloose", 17 ),
+                Group( Chain( "HLT_e17_lhvloose_ringer_v10" , "L1_EM15VH", "HLT_e17_lhvloose_ringer_v10" ), "el_lhvloose", 17 ),
+                
+                Group( Chain( "HLT_e28_lhtight_noringer"   , "L1_EM22VH", "HLT_e28_lhtight_noringer"   ), "el_lhtight", 28 ),
+                Group( Chain( "HLT_e28_lhtight_ringer_v6"  , "L1_EM22VH", "HLT_e28_lhtight_ringer_v6"  ), "el_lhtight", 28 ),
+                Group( Chain( "HLT_e28_lhtight_ringer_v8"  , "L1_EM22VH", "HLT_e28_lhtight_ringer_v8"  ), "el_lhtight", 28 ),
+                Group( Chain( "HLT_e28_lhtight_ringer_v10" , "L1_EM22VH", "HLT_e28_lhtight_ringer_v10" ), "el_lhtight", 28 ),
+              ]
 
 
-
-
-groups = [
-
-  Group( Chain( "e17_lhvloose_noringer", Signature    = 'electron', 
-                                L1Item       = 'L1_EM15VH', 
-                                L2CaloItem   = 'T0HLTElectronRingerVeryLoose_v6', 
-                                L2Item       = 'L2_Electron_15to20GeV',
-                                HLTItem      = 'HLT_LHVLoose', 
-                                L2CaloEtCut  = 17-3, 
-                                EFCaloEtCut  = 17, 
-                                HLTEtCut     = 17 ),
-         'el_lhvloose', 17 ),
-
-  Group( Chain( "e17_lhvloose_ringer_v6", Signature    = 'electron', 
-                                L1Item       = 'L1_EM15VH', 
-                                L2CaloItem   = 'T0HLTElectronRingerVeryLoose_v6', 
-                                L2Item       = 'L2_Electron_15to20GeV',
-                                HLTItem      = 'HLT_LHVLoose', 
-                                L2CaloEtCut  = 17-3, 
-                                EFCaloEtCut  = 17, 
-                                HLTEtCut     = 17 ),
-         'el_lhvloose', 17 ),
-
-
-  Group( Chain( "e17_lhvloose_ringer_v8", Signature    = 'electron', 
-                                L1Item       = 'L1_EM15VH', 
-                                L2CaloItem   = 'T0HLTElectronRingerVeryLoose_v8', 
-                                L2Item       = 'L2_Electron_15to20GeV',
-                                HLTItem      = 'HLT_LHVLoose', 
-                                L2CaloEtCut  = 17-3, 
-                                EFCaloEtCut  = 17, 
-                                HLTEtCut     = 17 ),
-         'el_lhvloose', 17 ),
-
-
-  Group( Chain( "e17_lhvloose_ringer_v10", Signature    = 'electron', 
-                                L1Item       = 'L1_EM15VH', 
-                                L2CaloItem   = 'T0HLTElectronRingerVeryLoose_v10', 
-                                L2Item       = 'L2_Electron_15to20GeV',
-                                HLTItem      = 'HLT_LHVLoose', 
-                                L2CaloEtCut  = 17-3, 
-                                EFCaloEtCut  = 17, 
-                                HLTEtCut     = 17 ),
-         'el_lhvloose', 17 ),
-
-
-
-
-
-
-  Group( Chain( "e26_lhtight_noringer",  Signature    = 'electron', 
-                         L1Item       = 'L1_EM22VH', 
-                         L2CaloItem   = 'L2Calo_LHTight', 
-                         L2Item       = 'L2_Electron_20to50GeV',
-                         HLTItem      = 'HLT_LHTight', 
-                         L2CaloEtCut  = 26-3, 
-                         EFCaloEtCut  = 26, 
-                         HLTEtCut     = 26 ),
-         'el_lhtight', 26 ),
-
-
-  Group( Chain( "e26_lhtight_ringer_v6",  Signature    = 'electron', 
-                         L1Item       = 'L1_EM22VH', 
-                         L2CaloItem   = 'T0HLTElectronRingerTight_v6', 
-                         L2Item       = 'L2_Electron_20to50GeV',
-                         HLTItem      = 'HLT_LHTight', 
-                         L2CaloEtCut  = 26-3, 
-                         EFCaloEtCut  = 26, 
-                         HLTEtCut     = 26 ),
-         'el_lhtight', 26 ),
-
-
-  Group( Chain( "e26_lhtight_ringer_v8",  
-                         Signature    = 'electron', 
-                         L1Item       = 'L1_EM22VH', 
-                         L2CaloItem   = 'T0HLTElectronRingerTight_v8', 
-                         L2Item       = 'L2_Electron_20to50GeV',
-                         HLTItem      = 'HLT_LHTight', 
-                         L2CaloEtCut  = 26-3, 
-                         EFCaloEtCut  = 26, 
-                         HLTEtCut     = 26 ),
-         'el_lhtight', 26 ),
-
-
-  Group( Chain( "e26_lhtight_ringer_v10",  
-                         Signature    = 'electron', 
-                         L1Item       = 'L1_EM22VH', 
-                         L2CaloItem   = 'T0HLTElectronRingerTight_v10', 
-                         L2Item       = 'L2_Electron_20to50GeV',
-                         HLTItem      = 'HLT_LHTight', 
-                         L2CaloEtCut  = 26-3, 
-                         EFCaloEtCut  = 26, 
-                         HLTEtCut     = 26 ),
-         'el_lhtight', 26 ),
-
-
-
-
-]
 
 from EfficiencyTools import EfficiencyTool
-alg = EfficiencyTool( "ElectronEfficiency" )
-alg.doTrigger  = True
+alg = EfficiencyTool( "Efficiency" )
 
 
-for group in groups:
+for group in triggerList:
   alg.addGroup( group )
-ToolSvc += alg
 
+ToolSvc += alg
 
 acc.run(args.nov)
 
