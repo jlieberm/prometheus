@@ -1,48 +1,75 @@
 
 __all__ = ['EfficiencyTool']
 
-from EmulationTools import Chain, Group
+
+# core
+from Gaugi import GeV
+from Gaugi import Algorithm
+from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
-from Gaugi import Algorithm, StatusCode
-from EfficiencyTools import EfficiencyMode
-from CommonTools import AlgBase
 
-class EfficiencyTool( AlgBase ):
+# External
+from ROOT import TH1F, TH2F, TProfile, TProfile2D
+from ProfileTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
+from TrigEgammaEmulationTools import Chain, Group
+import numpy as np
+
+
+#
+# Efficiency tool
+#
+class EfficiencyTool( Algorithm ):
   
-  _triggerLevels = ['L1Calo','L2Calo','L2','EFCalo','HLT']
+  __triggerLevels = ['L1Calo','L2Calo','L2','EFCalo','HLT']
 
+  #
+  # Constructor
+  #
   def __init__(self, name, **kw):
-    AlgBase.__init__(self, name)
-    self._groups = []
-    self._basepath = 'Event/EfficiencyTool'
+
+    Algorithm.__init__(self, name)
+    self.__groups = list()
+
+    # declare all props here
+    self.declareProperty( "Basepath", "Event/EfficiencyTool", "Histograms base path for the efficiency tool"      )
+    self.declareProperty( "DoJpisee", False                 , "Use the J/psiee et bins in the eff et histograms." )
+      
 
 
-
+  #
+  # Add trigger group to the monitoring list
+  #
   def addGroup( self, group ): 
+
     from Gaugi import ToolSvc
     emulator = ToolSvc.retrieve( "Emulator" )
-    emulator+=group.chain()
-    self._groups.append( group )  
+    if not emulator.isValid( group.chain().name() ):
+      emulator+=group.chain()
+    self.__groups.append( group )  
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
     
-    import numpy as np
+    basepath = self.getProperty( "Basepath" )
+    doJpsiee = self.getProperty( "DoJpisee" )
+
     sg = self.getStoreGateSvc()
-    from CommonTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
+    
     #et_bins  = zee_etbins
     eta_bins = default_etabins
     nvtx_bins.extend(high_nvtx_bins)
     #eta_bins = [0,0.6,0.8,1.15,1.37,1.52,1.81,2.01,2.37,2.47]
-    et_bins = jpsiee_etbins if self.doJpsiee() else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
+    et_bins = jpsiee_etbins if doJpsiee else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
 
-    from ROOT import TH1F, TH2F, TProfile, TProfile2D
     for group in self._groups:
       # Get the chain object
       chain = group.chain()
-      for dirname in ( self._triggerLevels if type(chain) is Chain else ['Selector'] ):
+      for dirname in ( self.__triggerLevels if type(chain) is Chain else ['Selector'] ):
 
-        sg.mkdir( self._basepath+'/'+chain.name()+'/Efficiency/'+dirname )
+        sg.mkdir( basepath+'/'+chain.name()+'/Efficiency/'+dirname )
         
         sg.addHistogram(TH1F('et','E_{T} distribution;E_{T};Count', len(et_bins)-1, np.array(et_bins)))
         sg.addHistogram(TH1F('eta','#eta distribution;#eta;Count', len(eta_bins)-1, np.array(eta_bins)))
@@ -70,19 +97,19 @@ class EfficiencyTool( AlgBase ):
 
   def execute(self, context):
   
-    from Gaugi.constants import GeV
+
     # Retrieve Electron container
     elCont = context.getHandler( "ElectronContainer" )
+    dec = context.getHandler( "MenuContainer" )
 
     for group in self._groups:
       chain = group.chain()
       if type(chain) is Chain:
-
         for el in elCont:
           if el.et()  < (group.etthr()- 5)*GeV:  continue 
           if abs(el.eta())>2.47: continue
           dirname = self._basepath+'/'+chain.name()+'/Efficiency'
-          accept = self.accept( chain.name() )
+          accept = dec.accept( chain.name() )
           self.fillEfficiency(dirname+'/'+'L1Calo', el, group.etthr(), group.pidname(), accept.getCutResult("L1Calo") )
           self.fillEfficiency(dirname+'/'+'L2Calo', el, group.etthr(), group.pidname(), accept.getCutResult("L2Calo") )
           self.fillEfficiency(dirname+'/'+'L2'    , el, group.etthr(), group.pidname(), accept.getCutResult("L2")     )
@@ -96,12 +123,12 @@ class EfficiencyTool( AlgBase ):
 
 
 
+  #
+  # Fill efficiency histograms
+  #
   def fillEfficiency( self, dirname, el, etthr, pidword, isPassed ):
   
-
     sg = self.getStoreGateSvc()
-    from Gaugi.constants import GeV
-    
     pid = el.accept(pidword) if pidword else True
 
     eta = el.caloCluster().etaBE2()
@@ -148,15 +175,19 @@ class EfficiencyTool( AlgBase ):
 
 
 
+  #
+  # Finalize method
+  #
   def finalize(self):
     
+    basepath = self.getProperty( "Basepath" )
     sg = self.getStoreGateSvc()
     for group in self._groups:
       chain = group.chain()
       MSG_INFO( self, '{:-^78}'.format((' %s ')%(chain.name())))
       if type(chain) is Chain:
-        for trigLevel in self._triggerLevels:
-          dirname = self._basepath+'/'+chain.name()+'/Efficiency/'+trigLevel
+        for trigLevel in self.__triggerLevels:
+          dirname = basepath+'/'+chain.name()+'/Efficiency/'+trigLevel
           total  = sg.histogram( dirname+'/eta' ).GetEntries()
           passed = sg.histogram( dirname+'/match_eta' ).GetEntries()
           eff = passed/float(total) * 100. if total>0 else 0

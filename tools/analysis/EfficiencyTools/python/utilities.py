@@ -7,68 +7,6 @@ from Gaugi.messenger.macros import *
 from Gaugi.gtypes import NotSet
 
 
-class TriggerInfo(object):
-  
-  def __init__(self, expression, mode, label):
-    self._label = label
-    self._expression = expression
-    # can be Athena or Selector mode
-    self._mode = mode
-    self._core = NotSet
-    self._pid = NotSet
-    self._etthr = 0.0
-    # extract some useful informations from the expression
-    # if the mode is athena
-    self.compile()
-
-  def label(self):
-    return self._label
-
-  def etthr(self):
-    return self._etthr
-
-  def pid(self):
-    return self._pid
-
-  def core(self):
-    return self._core
-
-  def trigger(self):
-    return self._trigger
-
-  def expression(self):
-    return self._expression
-
-  def isAthena( self ):
-    return True if self._mode is EfficicencyMode.Athena else False
-
-  def compile(self):
-    if self.isAthena():
-      try:
-        # (TDT/EMU)__(HLT/EFCalo/L2/L2Calo/L1Calo)__eXX_*
-        trigParts = self.expression().split('__')
-        # default offline pid   
-        pidword = 'el_lhvloose'
-        if 'lhtight' in trigParts[-1]:
-          pidword = 'el_lhtight'
-        elif 'lhmedium' in trigParts[-1]:
-          pidword = 'el_lhmedium'
-        elif 'lhloose' in trigParts[-1]:
-          pidword = 'el_lhloose'
-        elif 'lhvloose' in trigParts[-1]:
-          pidword = 'el_lhvloose'
-        else: 
-          MSG_WARNING( self, "No Pid name was fount in the expression (%s) with path (%s)", self.expression(), trigParts[-1])
-        # get the HLT threshold from the trigger name (eXX_*)
-        self._etthr = float(trigParts[-1].split('_')[0][1::])
-        self.trigger = trigParts[-1]
-        # get the core (TDT or EMU)
-        core = trigParts[0]
-      except e:
-        MSG_ERROR( "Can not extract the trigger info: %s", e)
- 
-
-
 
 
 def GetHistogramFromMany( files, paths, keys , prefix='Loading...' , logger=None):
