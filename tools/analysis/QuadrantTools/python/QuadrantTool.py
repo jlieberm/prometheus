@@ -1,76 +1,112 @@
 __all__ = ['QuadrantTool']
 
 
+# core includes
+from Gaugi import StatusCode
+from Gaugi import Algorithm
+from Gaugi import mkdir_p
+from Gaugi import GeV
+from Gaugi import progressbar
+from Gaugi.tex.TexAPI       import *
+from Gaugi.tex.BeamerAPI    import *
+from Gaugi.monet.AtlasStyle import SetAtlasStyle
 
-from Gaugi import StatusCode, Algorithm
-from prometheus.enumerations import Dataframe as DataframeEnum
-from Gaugi import retrieve_kw, mkdir_p
-from Gaugi.gtypes import NotSet
-from CommonTools.constants import *
-from CommonTools.utilities import RetrieveBinningIdx
-import ROOT
-import numpy as np
-from Gaugi.monet.PlotFunctions import *
-from Gaugi.monet.TAxisFunctions import *
-from Gaugi.tex.TexAPI    import *
-from Gaugi.tex.BeamerAPI import *
+# tool includes
+from PileupCorrectionTools.utilities import RetrieveBinningIdx
+from ProfileTools.constants import *
+from QuadrantTool import *
+from ROOT import TH1F
 from functools import reduce
+from itertools import product
+import os, gc, time, math
+import numpy as np
 
 
+#
+# Analysis tool
+#
 class QuadrantTool( Algorithm ):
 
   # quadrant names definition
-  _quadrants = ['passed_passed',
-                'rejected_rejected',
-                'passed_rejected',
-                'rejected_passed']
+  __quadrants = [
+                  'passed_passed',
+                  'rejected_rejected',
+                  'passed_rejected',
+                  'rejected_passed',
+                  ]
 
+  #
+  # Constructor
+  #
   def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
-    self._basepath = 'Event/QuadrantTool'
+
+    # declare all properties with default values  
+    self.declareProperty( "Basepath", "Event/QuadrantTool", "Quadrant base path histogram." )
+    self.declareProperty( "EtBinningValues" , [], "Et bin selection for data selection." )
+    self.declareProperty( "EtaBinningValues", [], "Et bin selection for data selection." )
+
+
+    # Set all properties values from the contructor args
+    for key, value in kw.items():
+      if key in self.getAllProperties()
+        self.setProperty( key, value )
+
+
     self._quadrantFeatures = list()
-    self._etBins  = NotSet
-    self._etaBins = NotSet
-    
+   
 
+  #
+  # Add quadrant configuration
+  #
   def add_quadrant( self, name_a, expression_a, name_b, expression_b):
-    from .utilities import QuadrantConfig
-    self._quadrantFeatures.append( QuadrantConfig(name_a,expression_a,name_b,expression_b) )
+
+    self.__quadrantFeatures.append( QuadrantConfig(name_a,expression_a,name_b,expression_b) )
 
 
+  #
+  # Set et binning values 
+  #
   def setEtBinningValues( self, etbins ):
-    self._etBins = etbins
-  
+    self.setProperty( "EtBinningValues", etbins )
+ 
+  #
+  # Set eta binning values
+  #
   def setEtaBinningValues( self, etabins ):
-    self._etaBins = etabins
+    self.setProperty( "EtaBinningValues", etabins )
 
 
+  #
+  # Initialize method
+  #
   def initialize(self):
     
     Algorithm.initialize(self)
     sg = self.getStoreGateSvc()
 
-    #if super(TrigBaseTool,self).initialize().isFailure():
-    #  self._logger.fatal("Impossible to initialize the Trigger services.")
-    from ROOT import TH1F
+    basepath = self.getProperty("Basepath")
+    etBins = self.getProperty( "EtBinningValues" )
+    etaBins = self.getProperty( "EtaBinningValues" )
+
     etabins = default_etabins
 
-    for feat in self._quadrantFeatures:
+    for feat in self.__quadrantFeatures:
       # hold quadrant name
       quadrant_name = feat.name_a()+'_Vs_'+feat.name_b()
 
       ### loopover ets...
-      for etBinIdx in range(len(self._etBins)-1):
+      for etBinIdx in range(len(etBins)-1):
         ### loop over etas...
-        for etaBinIdx in range(len(self._etaBins)-1):
+        for etaBinIdx in range(len(etaBins)-1):
           ### loop over quadrants...
-          for quadrant in self._quadrants:  
+          for quadrant in self.__quadrants:  
             # hold binning name
             binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
 
-            dirname = self._basepath+'/'+quadrant_name+'/'+binning_name+'/'+quadrant
+            dirname = basepath+'/'+quadrant_name+'/'+binning_name+'/'+quadrant
             sg.mkdir( dirname )
             sg.addHistogram(TH1F('et',('%s;%s;Count')%(basicInfoQuantities['et'],basicInfoQuantities['et']),
              basicInfoNBins['et'],basicInfoLowerEdges['et'],basicInfoHighEdges['et']) )
@@ -98,10 +134,17 @@ class QuadrantTool( Algorithm ):
 
 
 
+  #
+  # Execute method
+  #
   def execute(self, context):
     
-    import math
-    from Gaugi.constants import GeV
+
+    basepath = self.getProperty("Basepath")
+    etBins = self.getProperty( "EtBinningValues" )
+    etaBins = self.getProperty( "EtaBinningValues" )
+
+
     # Retrieve Electron container
     el = context.getHandler( "ElectronContainer" )
     evt = context.getHandler( "EventInfoContainer" )
@@ -115,22 +158,22 @@ class QuadrantTool( Algorithm ):
     pw = evt.MCPileupWeight()
     sg = self.getStoreGateSvc()
 
-    if et < self._etBins[0]:
+    if et < etBins[0]:
       return StatusCode.SUCCESS
     if eta > 2.47:
       return StatusCode.SUCCESS
 
-    etBinIdx, etaBinIdx = RetrieveBinningIdx(et,eta,self._etBins, self._etaBins, logger=self._logger )
+    etBinIdx, etaBinIdx = RetrieveBinningIdx(et,eta,etBins, etaBins, logger=self._logger )
     binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
-    for feat in self._quadrantFeatures:
+    for feat in self.__quadrantFeatures:
       
       name     = feat.name_a()+'_Vs_'+feat.name_b()
       passed_x = bool(dec.accept( feat.expression_a() ))
       passed_y = bool(dec.accept( feat.expression_b() ))
       passed_x = 'passed' if passed_x else 'rejected'
       passed_y = 'passed' if passed_y else 'rejected'
-      dirname  = self._basepath+'/'+name+'/'+binning_name+'/'+passed_x +'_'+ passed_y
+      dirname  = basepath+'/'+name+'/'+binning_name+'/'+passed_x +'_'+ passed_y
 
       pw=1
       # Fill basic infos
@@ -161,27 +204,34 @@ class QuadrantTool( Algorithm ):
 
     return StatusCode.SUCCESS
 
-
+  
+  #
+  # Finalize method
+  #
   def finalize(self):
     self.fina_lock()
     return StatusCode.SUCCESS
 
 
-
+  #
+  # Standalone plot method
+  #
   def plot(self, dirnames, pdfoutputs, pdftitles, runLabel='' ,doPDF=True):
     
-    from itertools import product
-    from Gaugi import progressbar
-    from Gaugi.monet.AtlasStyle import SetAtlasStyle
-    SetAtlasStyle()
- 
-    import time
-    import os, gc
 
+
+    SetAtlasStyle()
     beamer_plots = {}
     global tobject_collector
 
-    for idx, feat in enumerate(self._quadrantFeatures):
+    basepath = self.getProperty("Basepath")
+    etBins = self.getProperty( "EtBinningValues" )
+    etaBins = self.getProperty( "EtaBinningValues" )
+
+
+
+
+    for idx, feat in enumerate(self.__quadrantFeatures):
       
       dirname = os.getcwd()+'/'+dirnames[idx]
       mkdir_p(dirname)
@@ -193,9 +243,9 @@ class QuadrantTool( Algorithm ):
         beamer_plots[quadrant_name]['integrated']={}
 
       ### Plot binning plots  
-      if (len(self._etBins) * len(self._etaBins)) > 1:
-        for etBinIdx, etaBinIdx in progressbar(product(range(len(self._etBins)-1),range(len(self._etaBins)-1)),
-                                               (len(self._etBins)-1)*(len(self._etaBins)-1),
+      if (len(etBins) * len(etaBins)) > 1:
+        for etBinIdx, etaBinIdx in progressbar(product(range(len(etBins)-1),range(len(etaBins)-1)),
+                                               (len(etBins)-1)*(len(etaBins)-1),
                                                prefix = "Plotting... ", logger=self._logger):
           # hold binning name
           binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
@@ -206,7 +256,7 @@ class QuadrantTool( Algorithm ):
           ### loop over standard quantities
           for key in standardQuantitiesNBins.keys(): 
             outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-            out = self._plotQuantities(self._basepath+'/'+quadrant_name+'/'+binning_name, key, 
+            out = PlotQuantities(basepath+'/'+quadrant_name+'/'+binning_name, key, 
                 outname,etidx=etBinIdx,etaidx=etaBinIdx,xlabel=electronQuantities[key],divide='b',runLabel=runLabel)
             beamer_plots[quadrant_name][binning_name][key] = out
             #del tobject_collector[:]
@@ -214,13 +264,13 @@ class QuadrantTool( Algorithm ):
           ### loop over info quantities
           for key in basicInfoQuantities.keys():
             outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-            out = self._plotQuantities(self._basepath+'/'+quadrant_name+'/'+binning_name, key, 
+            out = PlotQuantities(basepath+'/'+quadrant_name+'/'+binning_name, key, 
                 outname, etidx=etBinIdx,etaidx=etaBinIdx,xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel)
             beamer_plots[quadrant_name][binning_name][key] = out
             #del tobject_collector[:]
 
           
-          beamer_plots[quadrant_name][binning_name]['statistics'] = self._getStatistics(self._basepath+'/'+quadrant_name+'/'+binning_name, \
+          beamer_plots[quadrant_name][binning_name]['statistics'] = GetStatistics(basepath+'/'+quadrant_name+'/'+binning_name, \
                                                                                         'avgmu',etidx=etBinIdx,etaidx=etaBinIdx)
       
 
@@ -228,7 +278,7 @@ class QuadrantTool( Algorithm ):
       ### loop over standard quantities
       for key in standardQuantitiesNBins.keys(): 
         outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key
-        out = self._plotQuantities(self._basepath+'/'+quadrant_name, key, 
+        out = PlotQuantities(basepath+'/'+quadrant_name, key, 
               outname,xlabel=electronQuantities[key],divide='b',runLabel=runLabel,
               addbinlines=True)
         beamer_plots[quadrant_name]['integrated'][key] = out
@@ -237,14 +287,14 @@ class QuadrantTool( Algorithm ):
       ### loop over info quantities
       for key in basicInfoQuantities.keys():
         outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-        out = self._plotQuantities(self._basepath+'/'+quadrant_name, key, 
+        out = PlotQuantities(basepath+'/'+quadrant_name, key, 
             outname,xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel,
             addbinlines=True)
         beamer_plots[quadrant_name]['integrated'][key] = out
         tobject_collector = []
         gc.collect()
       
-      beamer_plots[quadrant_name]['integrated']['statistics'] = self._getStatistics(self._basepath+'/'+quadrant_name, 'avgmu')
+      beamer_plots[quadrant_name]['integrated']['statistics'] = GetStatistics(basepath+'/'+quadrant_name, 'avgmu')
 
 
 
@@ -252,20 +302,20 @@ class QuadrantTool( Algorithm ):
     if doPDF:
       ### Make Latex str et/eta labels
       etbins_str = []; etabins_str=[]
-      for etBinIdx in range( len(self._etBins)-1 ):
-        etbin = (self._etBins[etBinIdx], self._etBins[etBinIdx+1])
+      for etBinIdx in range( len(etBins)-1 ):
+        etbin = (etBins[etBinIdx], etBins[etBinIdx+1])
         if etbin[1] > 100 :
           etbins_str.append( r'$E_{T}\text{[GeV]} > %d$' % etbin[0])
         else:
           etbins_str.append(  r'$%d < E_{T} \text{[Gev]}<%d$'%etbin )
  
-      for etaBinIdx in range( len(self._etaBins)-1 ):
-        etabin = (self._etaBins[etaBinIdx], self._etaBins[etaBinIdx+1])
+      for etaBinIdx in range( len(etaBins)-1 ):
+        etabin = (etaBins[etaBinIdx], etaBins[etaBinIdx+1])
         etabins_str.append( r'$%.2f<\eta<%.2f$'%etabin )
 
 
      
-      for slideIdx, feat in enumerate(self._quadrantFeatures):
+      for slideIdx, feat in enumerate(self.__quadrantFeatures):
         
         with BeamerTexReportTemplate1( theme = 'Berlin'
                                    , _toPDF = True
@@ -338,9 +388,9 @@ class QuadrantTool( Algorithm ):
                       ]):
             with BeamerSection( name = key.replace('_','\_') ):
 
-              from itertools import product
+
               figures = []; binning_name_list=[];
-              for etBinIdx, etaBinIdx in product(range(len(self._etBins)-1),range(len(self._etaBins)-1)):
+              for etBinIdx, etaBinIdx in product(range(len(etBins)-1),range(len(etaBins)-1)):
                 binning_name_list.append( ('et%d_eta%d') % (etBinIdx,etaBinIdx) )
                 
               while len(binning_name_list)>0:
@@ -380,9 +430,9 @@ class QuadrantTool( Algorithm ):
                         for _ in etbins_str]), _contextManaged = False ) ]
             lines1 += [ HLine(_contextManaged = False) ]
 
-            for etaBinIdx in range( len(self._etaBins)-1 ):
+            for etaBinIdx in range( len(etaBins)-1 ):
               str_values = []
-              for etBinIdx in range( len(self._etBins)-1 ):
+              for etBinIdx in range( len(etBins)-1 ):
                 binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
                 stats = beamer_plots[quadrant_name][binning_name]['statistics']
                 str_values += [ '%1.2f'%stats['Qij'],
@@ -405,173 +455,6 @@ class QuadrantTool( Algorithm ):
                       else:
                         TableLine(line, rounding = None)
 
-
-
-
-
-  def _plotQuantities( self,basepath, key, outname, drawopt='hist', divide='B', 
-      etidx=None, etaidx=None, xlabel='', runLabel='',addbinlines=False):
-
-    import ROOT
-    ROOT.gROOT.SetBatch(ROOT.kTRUE)
-    ROOT.gErrorIgnoreLevel=ROOT.kWarning
-    ROOT.TH1.AddDirectory(ROOT.kFALSE)
-
-    from Gaugi.monet.utilities import sumHists
-    from .utilities import AddTopLabels
-
-
-    #if (not "_et2" in outname) or (not "_eta0" in outname): return outname + '.pdf'
-
-    # get all quadrant histograms
-
-    if (etidx is not None) and (etaidx is not None):
-      hists = [
-                self.storeSvc.histogram(basepath+'/passed_passed/'+key),
-                self.storeSvc.histogram(basepath+'/passed_rejected/'+key),
-                self.storeSvc.histogram(basepath+'/rejected_passed/'+key),
-                self.storeSvc.histogram(basepath+'/rejected_rejected/'+key)
-              ]
-    else:
-      from itertools import product
-      passed_passed = []; passed_rejected = []; rejected_passed = []; rejected_rejected = []
-      for etBinIdx, etaBinIdx in product(range(len(self._etBins)-1),range(len(self._etaBins)-1)):
-        binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx) 
-        passed_passed.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/passed_passed/'+key) ) 
-        passed_rejected.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/passed_rejected/'+key) )
-        rejected_passed.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/rejected_passed/'+key) )
-        rejected_rejected.append( self.storeSvc.histogram(basepath+'/'+binning_name+'/rejected_rejected/'+key) )
-
-      hists = [
-                sumHists(passed_passed),
-                sumHists(passed_rejected),
-                sumHists(rejected_passed),
-                sumHists(rejected_rejected),
-              ]
-
-    ref_hist = sumHists( hists )
-    #ref_hist = sumHists( [hists[1],hists[2]])
-
-    from ROOT import kBlack,kRed,kGreen,kGray,kMagenta,kBlue
-    outcan = RatioCanvas( outname, outname, 500, 500)
-    pad_top = outcan.GetPrimitive('pad_top')
-    pad_bot = outcan.GetPrimitive('pad_bot')
-
-    pad_top.SetLogy()
-    collect=[]
-    divs=[]
-    #outcan.GetPrimitive('pad_bot').SetLogy()
-    these_colors = [kBlack,kRed+1, kBlue+2,kGray+1]
-    #these_colors = [kBlack,kGray+1]
-    these_transcolors=[]
-    for c in these_colors:
-      these_transcolors.append(ROOT.TColor.GetColorTransparent(c, .5))
- 
-    divs = []
-    for idx, hist in enumerate(hists):
-      
-      hist.SetMarkerSize(0.35)
-      hist.SetLineColor(these_colors[idx])
-      hist.SetMarkerColor(these_colors[idx])
-      hist.SetFillColor(these_transcolors[idx])
-      AddHistogram( pad_top, hist, 'histE2 L same', False, None, None)
-
-
-      div = hist.Clone(); div.Divide(div,ref_hist,1.,1.,'b'); div.Scale(100.); collect.append(div)
-      div.SetMarkerSize(0.5)
-      div.SetMarkerColor(these_colors[idx])
-      # TODO: Check why error bar still here. Force error bar equal zero
-      for ibin in range(div.GetNbinsX()):  div.SetBinError(ibin,0.0)
-      divs.append( div )
-      # add left axis
-      if idx == 1 or idx == 2: AddHistogram( pad_bot, div , 'p', False, None, None)
-      #if idx == 2: AddHistogram( pad_bot, div , 'p', False, None, None)
-  
-    legend = [ 'Both Approved','Ringer Rejected', 'Ringer Approved', 'Both Rejected' ]
-    AddTopLabels(outcan, legend, runLabel=runLabel, legOpt='p',
-                 logger=self._logger,etlist=self._etBins,etalist=self._etaBins,etidx=etidx,etaidx=etaidx)
-
-    SetAxisLabels(outcan,xlabel,'Count','Disagreement [%]')
-    #SetAxisLabels(outcan,xlabel,'Count','(Red or Blue)/Total [%]')
-    FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5, YTitleSize=16)
-    #FormatCanvasAxes(outcan, XLabelSize=18, YLabelSize=18, XTitleOffset=0.87, YTitleOffset=1.5)
-    AutoFixAxes(pad_top,ignoreErrors=False)
-    AutoFixAxes(pad_bot,ignoreErrors=False)
-    FixYaxisRanges(pad_bot, ignoreErrors=True, yminc=-eps )
-    
-    if addbinlines:
-      AddBinLines(pad_top,hists[0],useHistMax=True,horizotalLine=0.)
-      
-    #AddRightAxisObj(pad_bot, [divs[1]], drawopt="p,same", equate=[0., max([d.GetBinContent(h.GetMaximumBin()) for d,h in zip([divs[1]], [hists[1]])])]
-    #               , drawAxis=True, axisColor=(ROOT.kRed+1), ignorezeros=False, ignoreErrors=True, label = "Ringer Rejected [%]")
-
-    outcan.SaveAs( outname+'.C' ) 
-    outname = outname+'.pdf'
-    outcan.SaveAs( outname ) 
-    return outname
-
-
-
-
-  def _getStatistics( self,basepath, key, etidx=None, etaidx=None ):
-    sg = self.getStoreGateSvc()
-    # get all quadrant histograms
-    from Gaugi.monet.utilities import sumHists
-    if (etidx is not None) and (etaidx is not None):
-      hists = [
-                sg.histogram(basepath+'/passed_passed/'+key),
-                sg.histogram(basepath+'/passed_rejected/'+key),
-                sg.histogram(basepath+'/rejected_passed/'+key),
-                sg.histogram(basepath+'/rejected_rejected/'+key)
-              ]
-    else:
-      from itertools import product
-      passed_passed = []; passed_rejected = []; rejected_passed = []; rejected_rejected = []
-      for etBinIdx, etaBinIdx in product(range(len(self._etBins)-1),range(len(self._etaBins)-1)):
-        binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx) 
-        passed_passed.append( sg.histogram(basepath+'/'+binning_name+'/passed_passed/'+key) ) 
-        passed_rejected.append( sg.histogram(basepath+'/'+binning_name+'/passed_rejected/'+key) )
-        rejected_passed.append( sg.histogram(basepath+'/'+binning_name+'/rejected_passed/'+key) )
-        rejected_rejected.append( sg.histogram(basepath+'/'+binning_name+'/rejected_rejected/'+key) )
-
-      hists = [
-                sumHists(passed_passed),
-                sumHists(passed_rejected),
-                sumHists(rejected_passed),
-                sumHists(rejected_rejected),
-              ]
-
-    # NOTE: Follow the statistics definitions for each case.
-    # passed is 1 and rejected is zero
-    # expression A is i and expression B is j
-    # Contigency table:
-    #      | hi=0  hi=1
-    # hj=0 |  a     c
-    # hj=1 |  b     d
-    a = hists[3].GetEntries()
-    d = hists[0].GetEntries()
-    b = hists[2].GetEntries()
-    c = hists[1].GetEntries()
-    m = a+b+c+d
-    
-    Qij=0;Pij=0;Kp=0;dis_ij=0
-
-    try:
-      # Q statistics
-      Qij = (a*d-b*c) / float(a*d+b*c)
-  
-      # correlation coef
-      Pij = (a*d-b*c)/np.sqrt(( (a+b)*(a+c)*(c+d)*(b+d) ))
-
-      # kappa-statistics
-      Q1 = (a+d)/float(m)
-      Q2 = ( (a+b)*(a+c)+(c+d)*(b+d) ) / float(m*m)
-      Kp = (Q1-Q2)/ float(1-Q2)
-      
-      dis_ij = (b+c)/float(m)
-    except:
-      pass
-    return  {'Qij':Qij,'Pij':Pij,'Kp':Kp, 'dis_ij':dis_ij}
 
 
 
