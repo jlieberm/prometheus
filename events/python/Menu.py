@@ -9,7 +9,7 @@ from Gaugi import Algorithm
 from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
 from prometheus import Dataframe as DataframeEnum
-from EventAtlas import DecisionCore, AcceptType, Accept
+from EventAtlas import DecisionCore, AcceptType
 import collections
 
 
@@ -151,7 +151,7 @@ class EmulationTool( Algorithm ):
   #
   def accept( self, context, key ):
 
-    if self.isValid(key)
+    if self.isValid(key):
       return self.__tools[key].accept( context )
     else:
       MSG_FATAL( self, "The key %s is not in the emulation" , key )
@@ -181,7 +181,7 @@ class EmulationTool( Algorithm ):
 #
 # Add the emulator tool into the tool service
 #
-ToolSvc += EmulationTool( "Emulator" )
+ToolSvc += EmulationTool()
 
 
 

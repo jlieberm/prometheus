@@ -1,5 +1,5 @@
 
-__all__ = ["TDT", "DecisionCore", "AcceptType", "Accept"]
+__all__ = ["TDT", "DecisionCore", "AcceptType"]
 
 
 

@@ -68,7 +68,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
 
     l1 = context.getHandler( "HLT__EmTauRoIContainer" )
     passed = self.emulation( l1, self._l1type, self._l1item, self._l1threshold )
-    return Accept( self.name(), [ ("Pass", passed] )
+    return Accept( self.name(), [ ("Pass", passed ) ] )
 
 
   #
@@ -270,7 +270,7 @@ def configure( l1item ):
     # We need to create the hypo tool
 
     # L1 configuration parameters
-    hypo = TrigEgammaL1CaloHypoTool( name
+    hypo = TrigEgammaL1CaloHypoTool( name,
                                      WPNames        =  ['Tight','Medium','Loose'], # must be: ["T","M","L"] (Tight,Medium and Loose)
                                      HadCoreCutMin  =  [ 1.0   ,  1.0  ,  1.0  ,  1.0  ], # must be a list with for values: (default,tight,medium and loose)
                                      HadCoreCutOff  =  [-0.2   , -0,2  , -0.2  , -0.2  ],

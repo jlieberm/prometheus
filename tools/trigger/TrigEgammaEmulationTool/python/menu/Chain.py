@@ -1,12 +1,12 @@
 
 __all__ = ['Chain']
 
-from Gaugi import Algorithm, 
+from Gaugi import Algorithm 
 from Gaugi import StatusCode
 from Gaugi import GeV
 from Gaugi.messenger.macros import *
 from EventAtlas import Accept
-from TrigEgammaEmulatorTool import TriggerInfo
+from TrigEgammaEmulationTool.menu import TriggerInfo
 
 
 #
@@ -24,7 +24,6 @@ class Chain( Algorithm ):
     self.__trigInfo = TriggerInfo(chain)
     self.__l1item = L1Item
     self.__trigger = chain
-    self.__trigInfo.compile()
 
 
 

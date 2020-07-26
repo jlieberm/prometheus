@@ -63,7 +63,7 @@ class TrigEgammaElectronHypoTool( Algorithm ):
     # Decorate the HLT electron with all final decisions
     passed =  getDecision(el, self._branch)
 
-    return Accept( self.name(), [ ("Pass", passed] )
+    return Accept( self.name(), [ ("Pass", passed) ] )
 
 
   #

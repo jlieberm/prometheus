@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import TrigEgammaElectronHypoTool
+__all__.extend(TrigEgammaElectronHypoTool.__all__)
+from .TrigEgammaElectronHypoTool import *
+
 from . import TrigEgammaL1CaloHypoTool
 __all__.extend(TrigEgammaL1CaloHypoTool.__all__)
 from .TrigEgammaL1CaloHypoTool import *
@@ -20,10 +24,6 @@ from .TrigEgammaL2CaloSelectorTool import *
 from . import TrigEgammaL2ElectronHypoTool
 __all__.extend(TrigEgammaL2ElectronHypoTool.__all__)
 from .TrigEgammaL2ElectronHypoTool import *
-
-from . import TrigEgammaElectronHypoTool
-__all__.extend(TrigEgammaElectronHypoTool.__all__)
-from .TrigEgammaElectronHypoTool import *
 
 from . import install
 __all__.extend(install.__all__)

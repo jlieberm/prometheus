@@ -47,7 +47,6 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
     from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
     
-    from TrigEgammaL2Calo
     def same(value):
       return [value]*9
 

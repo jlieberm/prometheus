@@ -126,7 +126,7 @@ def configure( trigger ):
 
   if not emulator.isValid(name):
 
-    hypo = TrigEgammaL2ElectronHypoTool(name
+    hypo = TrigEgammaL2ElectronHypoTool(name,
                                         EtCut                =   (etthr - 3)*GeV, 
                                         TrackPt              =   1*GeV, 
                                         CaloTrackdETA        =   0.2  , 

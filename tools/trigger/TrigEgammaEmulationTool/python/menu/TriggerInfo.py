@@ -14,7 +14,7 @@ class TriggerInfo(Logger):
   #
   # Constructor
   #
-  def __init__(self, chain):
+  def __init__(self, trigger):
 
     Logger.__init__(self)
     # Compile all internal variables

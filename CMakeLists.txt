@@ -26,16 +26,14 @@ find_package( PythonLibs REQUIRED)
 
 
 add_subdirectory(core/prometheus)
-add_subdirectory(tools/common/CommonTools)
-add_subdirectory(tools/event/CollectorTool)
-add_subdirectory(tools/event/EmulationTools)
-add_subdirectory(tools/event/EventSelectionTool)
+add_subdirectory(tools/analysis/CollectorTool)
+add_subdirectory(tools/analysis/EventSelectionTool)
 add_subdirectory(tools/analysis/EfficiencyTools)
 add_subdirectory(tools/analysis/PileupCorrectionTools)
 add_subdirectory(tools/analysis/ProfileTools)
 add_subdirectory(tools/analysis/QuadrantTools)
-add_subdirectory(tools/selectors/RingerSelectorTools)
-add_subdirectory(tools/selectors/EgammaSelectorTools)
+add_subdirectory(tools/trigger/RingerSelectorTools)
+add_subdirectory(tools/trigger/TrigEgammaEmulationTool)
 add_subdirectory(events)
 
 

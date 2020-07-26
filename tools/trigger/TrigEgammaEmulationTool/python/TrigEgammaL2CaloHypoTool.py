@@ -61,7 +61,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
   def accept(self, context):
 
     passed = self.emulation(context)
-    return Accept( self.name(), [ ("Pass", passed] )
+    return Accept( self.name(), [ ("Pass", passed)] )
 
 
   #
