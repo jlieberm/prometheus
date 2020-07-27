@@ -33,7 +33,12 @@ class EfficiencyTool( Algorithm ):
     # declare all props here
     self.declareProperty( "Basepath", "Event/EfficiencyTool", "Histograms base path for the efficiency tool"      )
     self.declareProperty( "DoJpisee", False                 , "Use the J/psiee et bins in the eff et histograms." )
-      
+ 
+    # Set property values using the constructor args
+    for key, value in kw.items():
+      self.setProperty(key, value)
+
+     
 
 
   #

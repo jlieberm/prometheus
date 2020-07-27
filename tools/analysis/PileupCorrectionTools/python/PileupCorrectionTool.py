@@ -31,7 +31,7 @@ class PileupCorrectionTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name):
+  def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
     
@@ -44,8 +44,7 @@ class PileupCorrectionTool( Algorithm ):
 
     # Set property values using the constructor args
     for key, value in kw.items():
-      if key in self.getAllProperties():
-        self.setProperty(key, value)
+      self.setProperty(key, value)
 
     # Target objetc
     self.__targets = collections.OrderedDict()

@@ -74,7 +74,6 @@ etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
 alg.setHistogram2DRegion( -8, 4, 16.5, 40.5, 0.001, 1.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
-alg.doTrigger = True
 alg.storeSvc = sg
 ToolSvc += alg
 

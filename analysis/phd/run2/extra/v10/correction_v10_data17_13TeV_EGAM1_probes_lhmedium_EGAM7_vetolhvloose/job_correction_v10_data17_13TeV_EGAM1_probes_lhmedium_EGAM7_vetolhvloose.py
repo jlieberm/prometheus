@@ -69,9 +69,6 @@ evt.setCutValue( EtCutType.L2CaloAbove , 15)
 ToolSvc += evt
 
 
-from EmulationTools import EmulationTool
-ToolSvc += EmulationTool( "EgammaEmulation" )
-
 # Install ringer v6
 from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
 #installElectronL2CaloRingerSelector_v6() 
@@ -90,7 +87,7 @@ installTrigEgammaL2CaloSelectors()
 
 
 from PileupCorrectionTools import PileupCorrectionTool, Target
-alg = PileupCorrectionTool( 'PileupCorrection' )
+alg = PileupCorrectionTool( 'PileupCorrection' , IsBackground = True if args.doEgam7 else False)
 
 targets = [
             #Target( 'L2_Tight_v6' , 'T0HLTElectronRingerTight_v6'  , "T0HLTElectronT2CaloTight"  ) , 
@@ -133,9 +130,6 @@ etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
 alg.setHistogram2DRegion( -16, 16, 0, 70, 0.02, 0.5 )
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
-alg.doTrigger  = True
-if args.doEgam7:
-  alg.isBackground = True
 
 ToolSvc += alg
 acc.run(args.nov)

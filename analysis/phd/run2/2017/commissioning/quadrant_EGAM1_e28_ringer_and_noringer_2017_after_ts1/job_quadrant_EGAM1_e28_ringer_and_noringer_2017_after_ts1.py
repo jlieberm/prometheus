@@ -64,14 +64,9 @@ evt.setCutValue( EtCutType.L2CaloAbove , 15)
 ToolSvc += evt
 
 
-from EmulationTools import EmulationTool
-ToolSvc += EmulationTool( "EgammaEmulation" )
-
-
 
 from QuadrantTools import QuadrantTool
 alg = QuadrantTool("Quadrant")
-alg.doTrigger  = True
 alg.add_quadrant( 'HLT_e28_lhtight_nod0_noringer_ivarloose'  , "TDT__HLT__e28_lhtight_nod0_noringer_ivarloose", # T2Calo
                   'HLT_e28_lhtight_nod0_ivarloose'           , "TDT__HLT__e28_lhtight_nod0_ivarloose") # Ringer
 
@@ -82,6 +77,6 @@ alg.setEtaBinningValues(etalist)
 ToolSvc += alg
 
 
-acc.run()
+acc.run(args.nov)
 
 

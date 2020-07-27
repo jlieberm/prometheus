@@ -50,8 +50,7 @@ class QuadrantTool( Algorithm ):
 
     # Set all properties values from the contructor args
     for key, value in kw.items():
-      if key in self.getAllProperties()
-        self.setProperty( key, value )
+      self.setProperty( key, value )
 
 
     self._quadrantFeatures = list()
