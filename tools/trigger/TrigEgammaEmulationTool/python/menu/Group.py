@@ -20,19 +20,19 @@ class Group( object ):
   # Get the chain object
   #
   def chain(self):
-    return self._chain
+    return self.__chain
 
 
   #
   # Get the offline pid name
   #
   def pidname(self):
-    return self._pidname
+    return self.__pidname
 
 
   #
   # Get the offline Et thrshold
   #
   def etthr(self):
-    return self._etthr
+    return self.__etthr
 

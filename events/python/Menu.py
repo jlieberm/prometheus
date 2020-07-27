@@ -122,19 +122,28 @@ class EmulationTool( Algorithm ):
     self.__tools[tool.name()] = tool
     return self
 
+  #
+  # Get the hypo tool
+  #
+  def retrieve(self, key):
+    return self.__tools[key] if self.isValid(key) else None
+    
+
 
   #
   # Initialize method
   #
   def initialize(self):
 
-    for key, tool in self.__tools.items():
-      MSG_INFO( self, 'Initializing %s tool',key)
+    tools = [ tool for _, tool in self.__tools.items() ]
+
+    for tool in tools:
+      MSG_INFO( self, 'Initializing %s tool',tool.name())
       tool.dataframe = self.dataframe
       tool.setContext( self.getContext() )
       tool.level = self.level
       if tool.initialize().isFailure():
-        MSG_ERROR( self, 'Can not initialize %s',tool.name)
+        MSG_ERROR( self, 'Can not initialize %s',tool.name())
 
     return StatusCode.SUCCESS
 
@@ -236,6 +245,7 @@ class Accept( object ):
   # Is passed
   #
   def __bool__(self):
+    x = [v for _, v in self.__results.items()]
     return all( [value for _, value in self.__results.items()] )
 
 

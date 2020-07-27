@@ -5,10 +5,8 @@ __all__ = ['BasicInfoProfiles']
 from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
 from ProfileTools import ProfileToolBase
-from CommonTools.constants import ( basicInfoNBins, basicInfoLowerEdges, basicInfoHighEdges, 
-                                    default_etabins, coarse_etbins, nvtx_bins )
-
-
+from ProfileTools.constants import ( basicInfoNBins, basicInfoLowerEdges, basicInfoHighEdges, 
+                                     default_etabins, coarse_etbins, nvtx_bins )
 
 
 
@@ -16,7 +14,7 @@ class BasicInfoProfiles( ProfileToolBase ):
 
   def __init__(self, name, **kw):
     ProfileToolBase.__init__(self, name, **kw)
-    from CommonTools.constants import basicInfoNBins
+    from ProfileTools.constants import basicInfoNBins
     self.basicInfos = basicInfoNBins.keys()
 
   def initialize(self):

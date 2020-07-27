@@ -11,7 +11,7 @@ from Gaugi.messenger.macros import *
 # External
 from ROOT import TH1F, TH2F, TProfile, TProfile2D
 from ProfileTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
-from TrigEgammaEmulationTools import Chain, Group
+from TrigEgammaEmulationTool import Chain, Group
 import numpy as np
 
 
@@ -64,7 +64,7 @@ class EfficiencyTool( Algorithm ):
     #eta_bins = [0,0.6,0.8,1.15,1.37,1.52,1.81,2.01,2.37,2.47]
     et_bins = jpsiee_etbins if doJpsiee else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
 
-    for group in self._groups:
+    for group in self.__groups:
       # Get the chain object
       chain = group.chain()
       for dirname in ( self.__triggerLevels if type(chain) is Chain else ['Selector'] ):
@@ -98,17 +98,18 @@ class EfficiencyTool( Algorithm ):
   def execute(self, context):
   
 
+    basepath = self.getProperty( "Basepath" )
     # Retrieve Electron container
     elCont = context.getHandler( "ElectronContainer" )
     dec = context.getHandler( "MenuContainer" )
 
-    for group in self._groups:
+    for group in self.__groups:
       chain = group.chain()
       if type(chain) is Chain:
         for el in elCont:
           if el.et()  < (group.etthr()- 5)*GeV:  continue 
           if abs(el.eta())>2.47: continue
-          dirname = self._basepath+'/'+chain.name()+'/Efficiency'
+          dirname = basepath+'/'+chain.name()+'/Efficiency'
           accept = dec.accept( chain.name() )
           self.fillEfficiency(dirname+'/'+'L1Calo', el, group.etthr(), group.pidname(), accept.getCutResult("L1Calo") )
           self.fillEfficiency(dirname+'/'+'L2Calo', el, group.etthr(), group.pidname(), accept.getCutResult("L2Calo") )
@@ -182,7 +183,7 @@ class EfficiencyTool( Algorithm ):
     
     basepath = self.getProperty( "Basepath" )
     sg = self.getStoreGateSvc()
-    for group in self._groups:
+    for group in self.__groups:
       chain = group.chain()
       MSG_INFO( self, '{:-^78}'.format((' %s ')%(chain.name())))
       if type(chain) is Chain:

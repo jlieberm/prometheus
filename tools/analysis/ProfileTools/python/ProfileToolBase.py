@@ -1,16 +1,16 @@
 __all__ = ['ProfileToolBase']
 
-from CommonTools  import AlgBase
+from Gaugi import Algorithm
 from Gaugi import StatusCode
 from Gaugi import retrieve_kw
  
 
 
-class ProfileToolBase( AlgBase ):
+class ProfileToolBase( Algorithm ):
 
   def __init__(self, name, **kw):
-    AlgorithmTool.__init__(self, name)
-    from CommonTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
+    Algorithm.__init__(self, name)
+    from ProfileTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
     self._etBins   = ringer_tuning_etbins
     self._etaBins  = ringer_tuning_etabins
 

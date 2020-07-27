@@ -4,6 +4,7 @@ __all__ = ['TrigEgammaL2CaloHypoTool']
 from Gaugi import GeV
 from Gaugi import StatusCode
 from Gaugi import Algorithm
+from Gaugi.messenger.macros import *
 from EventAtlas import Accept
 import numpy as np
 import math
@@ -15,8 +16,8 @@ import math
 class TrigEgammaL2CaloHypoTool( Algorithm ):
 
   __property = [
-                "HadETthr",
-                "RCoreThr"
+                "HADETthr",
+                "RCoreThr",
                 "CARCOREthr",
                 "CAERATIOthr",
                 "EtaBins",
@@ -36,7 +37,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
   #
   def __init__(self, name, **kw):
 
-    Algorithm.__init__(self, self.__property)
+    Algorithm.__init__(self, name)
 
     # Set all properties
     for key, value in kw.items():
@@ -202,7 +203,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
     hadET_cut = 0.0;
     # find which ET_had to apply : this depends on the ET_em and the eta bin
-    if ( eT_T2Calo >  self._eT2thr[etaBin] ):
+    if ( eT_T2Calo >  eT2thr[etaBin] ):
       hadET_cut = hadeT2thr[etaBin]
     else:
       hadET_cut = hadeTthr[etaBin]
@@ -240,20 +241,20 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 #
 def configure( trigger ):
 
-  from TrigEgammaEmulatorTool import TrigInfo
-  info = TrigInfo( trigger )
+  from TrigEgammaEmulationTool import TriggerInfo
+  info = TriggerInfo( trigger )
   etthr = info.etthr()
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
   pidname = info.pidname()
-  name = 'Hypo__L2Calo__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+  name = 'Hypo__L2Calo__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
 
   if not emulator.isValid(name):
 
     def same(value):
       return [value]*9
-
+    from .TrigEgammaL2CaloHypoCuts import L2CaloCutMaps
     cuts = L2CaloCutMaps(etthr)
     hypo  = TrigEgammaL2CaloHypoTool(name,
                                      dETACLUSTERthr = 0.1,

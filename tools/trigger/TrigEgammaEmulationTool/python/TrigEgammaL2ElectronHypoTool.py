@@ -29,7 +29,7 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
   #
   def __init__(self, name, **kw):
     
-    Algorithm.__init__(self, name, self.__property)
+    Algorithm.__init__(self, name)
 
     # Set all properties
     for key, value in kw.items():
@@ -115,14 +115,14 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
 #
 def configure( trigger ):
 
-  from TrigEgammaEmulationTool import TrigInfo
-  info = TrigInfo( trigger )
+  from TrigEgammaEmulationTool import TriggerInfo
+  info = TriggerInfo( trigger )
   etthr = info.etthr()
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
 
-  name = 'Hypo__L2Electron__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+  name = 'Hypo__L2Electron__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
 
   if not emulator.isValid(name):
 
@@ -133,7 +133,7 @@ def configure( trigger ):
                                         CaloTrackdPHI        =   0.3  , 
                                         CaloTrackdEoverPLow  =   0    , 
                                         CaloTrackdEoverPHigh =   999  , 
-                                        TRTRatio             =   -999 ),
+                                        TRTRatio             =   -999 )
 
     if etthr < 15:
       hypo.TrackPt = 1*GeV

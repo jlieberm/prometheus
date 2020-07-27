@@ -27,17 +27,16 @@ class Chain( Algorithm ):
 
 
 
-
-
-
   #
   # Initialize method
   #
   def initialize(self):
     
-     
+
+    self.__signature = self.__trigInfo.signature()
+
     # Configure the L2Calo hypo step
-    from TrigEgammaEmulatorTool.TrigEgammaL1CaloHypoTool import configure
+    from TrigEgammaEmulationTool.TrigEgammaL1CaloHypoTool import configure
     self.__l1caloItem = configure( self.__l1item )
 
 
@@ -65,24 +64,50 @@ class Chain( Algorithm ):
 
     else:
       # Configure the L2Calo hypo step
-      from TrigEgammaEmulatorTool.TrigEgammaL2CaloHypoTool import configure
+      from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
       self.__l2caloItem = configure( self.__trigger )
     
      
     # Configure the EFCalo hypo step
-    from TrigEgammaEmulatorTool.TrigEgammaL2ElectronHypoTool import configure
+    from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
     self.__l2Item = configure( self.__trigger )
     
 
     # Configure the HLT hypo step
-    from TrigEgammaEmulatorTool.TrigEgammaEFElectronHypoTool import configure
+    from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
     self.__hltItem = configure( self.__trigger )
     
 
     # configure et cuts
-    self.__l2caloEtCuts = (self.__trigInfo.etthr() - 3 ) * GeV
-    self.__efcaloEtCuts = (self.__trigInfo.etthr()) * GeV
-    self.__hltEtCuts = (self.__trigInfo.etthr()) * GeV
+    self.__l2caloEtCut = (self.__trigInfo.etthr() - 3 ) * GeV
+    self.__efcaloEtCut = (self.__trigInfo.etthr()) * GeV
+    self.__hltEtCut = (self.__trigInfo.etthr()) * GeV
+
+    from Gaugi import ToolSvc
+    emulator = ToolSvc.retrieve("Emulator")
+
+    if emulator.retrieve( self.__l1caloItem ).initialize().isFailure():
+      MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__l1caloItem )
+    if emulator.retrieve( self.__l2caloItem ).initialize().isFailure():
+      MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__l2caloItem )
+    if emulator.retrieve( self.__l2Item ).initialize().isFailure():
+      MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__l2Item )
+    if emulator.retrieve( self.__hltItem ).initialize().isFailure():
+      MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__hltItem )
+ 
+
+    # Print chain info steps
+    MSG_INFO( self, "")
+    MSG_INFO( self, "+ Chain with name   : %s", self.name() )
+    MSG_INFO( self, "|--> L1Calo       : %s", self.__l1caloItem)
+    MSG_INFO( self, "|--> L2Calo EtCur : %d", self.__l2caloEtCut)
+    MSG_INFO( self, "|--> L2Calo       : %s", self.__l2caloItem)
+    MSG_INFO( self, "|--> L2           : %s", self.__l2Item)
+    MSG_INFO( self, "|--> EFCalo EtCur : %d", self.__efcaloEtCut)
+    MSG_INFO( self, "|--> HLT EtCur    : %d", self.__hltEtCut)
+    MSG_INFO( self, "|--> HLT          : %s", self.__hltItem)
+
+
 
     self.init_lock()
     return StatusCode.SUCCESS
@@ -106,7 +131,8 @@ class Chain( Algorithm ):
 
     accept = self.getAcceptInfo()
 
-    passedL1 = bool(dec.accept( self.L1Item ))
+    passedL1 = bool(dec.accept( self.__l1caloItem ))
+
 
     # Is passed by L1?
     if not passedL1:
@@ -116,14 +142,15 @@ class Chain( Algorithm ):
 
     # Is passed by L2Calo et cut? AND hypo cut
     em = context.getHandler("HLT__FastCaloContainer")
-    if  not ( ( em.et() > self._l2caloEtCut*GeV ) and bool(dec.accept( self._l2caloItem )) ):
+
+    if  not ( ( em.et() > self.__l2caloEtCut ) and bool(dec.accept( self.__l2caloItem )) ):
       return accept
 
     accept.setCutResult( 'L2Calo' , True )
   
     
     # Is passed by L2 electron/photon
-    passedL2 = bool(dec.accept( self._l2Item ))
+    passedL2 = bool(dec.accept( self.__l2Item ))
 
     if not passedL2:
       return accept
@@ -136,7 +163,7 @@ class Chain( Algorithm ):
     current = clCont.getPos()
     passedEFCalo = False
     for cl in clCont:
-      if cl.et() > self._efcaloEtCut * GeV:
+      if cl.et() > self.__efcaloEtCut:
         passedEFCalo=True
         break
 
@@ -151,16 +178,16 @@ class Chain( Algorithm ):
     # Is passed by HLT electron/photon et cut
     passedHLT_etcut = False
 
-    if self._signature == 'electron':
+    if self.__signature == 'electron':
       cont = context.getHandler("HLT__ElectronContainer")
       for el in cont:
-        if el.et() > self._hltEtCut*GeV:
+        if el.et() > self.__hltEtCut:
           passedHLT_etcut = True; break
 
-    elif self._signature == 'photon':
+    elif self.__signature == 'photon':
       cont = context.getHandler("HLT__PhotonContainer")
       for ph in cont:
-        if ph.et() > self._hltEtCut*GeV:
+        if ph.et() > self.__hltEtCut:
           passedHLT_etcut = True; break
 
     else:
@@ -172,7 +199,7 @@ class Chain( Algorithm ):
 
 
     # check the HLT decision
-    passedHLT = bool( dec.accept( self._hltItem ) )
+    passedHLT = bool( dec.accept( self.__hltItem ) )
 
     accept.setCutResult( 'HLT', passedHLT )
     accept.setCutResult( 'Pass', passedHLT )
@@ -184,12 +211,12 @@ class Chain( Algorithm ):
   def getAcceptInfo(self):
 
     accept = Accept( self.name() )
-    accept.setCutResult( 'L1Calo' , False )
-    accept.setCutResult( 'L2Calo' , False )
-    accept.setCutResult( 'L2'     , False )
-    accept.setCutResult( 'EFCalo' , False )
-    accept.setCutResult( 'HLT'    , False )
-    accept.setCutResult( 'Pass'   , False )
+    accept.addCut( 'L1Calo' )
+    accept.addCut( 'L2Calo' )
+    accept.addCut( 'L2'     )
+    accept.addCut( 'EFCalo' )
+    accept.addCut( 'HLT'    )
+    accept.addCut( 'Pass'   )
     return accept
 
 

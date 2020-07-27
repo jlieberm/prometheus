@@ -36,11 +36,6 @@ class TrigEgammaElectronHypoTool( Algorithm ):
   # Initialize method
   #
   def initialize(self):
-   
-    elCont = self.getContext().getHandler("HLT__ElectronContainer")
-    if not elCont.checkBody( self._branch ):
-      MSG_FATAL( self, "The branch %s is not found into the HLT electron body.", self._branch )
-
     self.init_lock()
     return StatusCode.SUCCESS
 
@@ -51,6 +46,13 @@ class TrigEgammaElectronHypoTool( Algorithm ):
   def accept(self, context):
 
     el= context.getHandler("HLT__ElectronContainer")
+  
+    branch = self.getProperty("Branch")
+
+    if not el.checkBody( branch ):
+      MSG_FATAL( self, "The branch %s is not found into the HLT electron body.", branch )
+
+
     # helper accessor function
     def getDecision( container, branch ):
       passed=False
@@ -61,7 +63,7 @@ class TrigEgammaElectronHypoTool( Algorithm ):
       return passed
 
     # Decorate the HLT electron with all final decisions
-    passed =  getDecision(el, self._branch)
+    passed =  getDecision(el, branch)
 
     return Accept( self.name(), [ ("Pass", passed) ] )
 
@@ -81,17 +83,17 @@ class TrigEgammaElectronHypoTool( Algorithm ):
 #
 def configure( trigger ):
 
-  from TrigEgammaEmulatorTool import TrigInfo
-  info = TrigInfo( trigger )
+  from TrigEgammaEmulationTool import TriggerInfo
+  info = TriggerInfo( trigger )
   etthr = info.etthr()
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
   pidname = info.pidname()
-  name = 'Hypo__HLT__' + info.signature()[0]+str(etthr) + '_' + info.pidname()
+  name = 'Hypo__HLT__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
 
   if not emulator.isValid(name):
-    hypo  = TrigEgammaElectronHypoTool(name, Branch = 'el_'+info.pidname() )
+    hypo  = TrigEgammaElectronHypoTool(name, Branch = 'trig_EF_el_'+info.pidname() )
     emulator+=hypo
 
   return name

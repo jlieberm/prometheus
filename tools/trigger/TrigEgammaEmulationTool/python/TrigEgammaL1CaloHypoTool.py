@@ -3,6 +3,7 @@ __all__ = ['TrigEgammaL1CaloHypoTool']
 
 from Gaugi import Algorithm, StatusCode
 from Gaugi.messenger.macros import *
+from EventAtlas import Accept
 import math
 import re
 
@@ -44,10 +45,11 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   #
   def initialize(self):
     
-    l1type = self.getProperty("L1Item")
-    self._isolMaxCut = self.getProperty( 'IsolCutMax' )
-    self._l1type = l1type.replace('L1_','')
-    self._l1threshold = float(re.findall('\d+', self._l1type)[0])
+    l1item = self.getProperty("L1Item")
+    self.__isolMaxCut = self.getProperty( 'IsolCutMax' )
+    self.__l1item = l1item
+    self.__l1type = l1item.replace('L1_','')
+    self.__l1threshold = float(re.findall('\d+', self.__l1type)[0])
 
     self.init_lock()
     return StatusCode.SUCCESS
@@ -67,7 +69,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   def accept( self, context ):
 
     l1 = context.getHandler( "HLT__EmTauRoIContainer" )
-    passed = self.emulation( l1, self._l1type, self._l1item, self._l1threshold )
+    passed = self.emulation( l1, self.__l1type, self.__l1item, self.__l1threshold )
     return Accept( self.name(), [ ("Pass", passed ) ] )
 
 
@@ -76,8 +78,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   #
   def emulation(self, l1, l1type, L1Item, l1threshold):
    
-
-    workingPoint = getProperty( "WPNames" )
+    workingPoint = self.getProperty( "WPNames" )
 
     c=0
     if(workingPoint[0] in l1type):  c=1 # Tight
@@ -88,7 +89,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
     hadCoreSlope   = self.getProperty("HadCoreSlope")[c]
     emIsolCutMin   = self.getProperty("EmIsolCutMin")[c]
     emIsolCutOff   = self.getProperty("EmIsolCutOff")[c]
-    emIsolCutSlope = self.getProperty("EmIsolCutSlope")[c]
+    emIsolCutSlope = self.getProperty("EmIsolSlope")[c]
     
     emE = 0.0
     emIsol = 0.0
@@ -134,7 +135,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   #// (H) and (I) Hadronic core and electromagnetic isolation
   def isolationL1(self, min_, offset, slope, energy, emE):
   	
-    if (emE > self._isolMaxCut):
+    if (emE > self.__isolMaxCut):
       MSG_DEBUG(self, "L1 Isolation skipped, ET > Maximum isolation")
       return True
     

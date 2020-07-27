@@ -17,7 +17,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
   from RingerSelectorTools import norm1 as norm
-  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20170505_v6'
+  calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/TrigL2_20170505_v6'
 
 
   hypos = [
@@ -28,7 +28,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "Emulator" ):
     ]
 
   from Gaugi import ToolSvc
-  emulator = toolSvc.retrieve( "Emulator" )
+  emulator = ToolSvc.retrieve( "Emulator" )
   names = []
   for hypo in hypos:
     names.append( hypo.name() )
@@ -46,7 +46,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
   from RingerSelectorTools import norm1 as norm
-  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20180125_v8'
+  calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/TrigL2_20180125_v8'
 
   hypos = [
       RingerSelectorTool( "T0HLTElectronRingerTight_v8"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , Preproc = norm), 
@@ -56,7 +56,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
     ]
 
   from Gaugi import ToolSvc
-  emulator = toolSvc.retrieve( "Emulator" )
+  emulator = ToolSvc.retrieve( "Emulator" )
   names = []
   for hypo in hypos:
     names.append( hypo.name() )
@@ -75,7 +75,7 @@ def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
   from RingerSelectorTools import RingerSelectorTool
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
-  calibpath = os.environ['PRT_PATH'] + '/tools/selectors/RingerSelectorTools/data/TrigL2_20200715_v10'
+  calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/TrigL2_20200715_v10'
 
   # specif normalization procedure  
   def norm( data ):
@@ -90,7 +90,7 @@ def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
 
 
   from Gaugi import ToolSvc
-  emulator = toolSvc.retrieve( "Emulator" )
+  emulator = ToolSvc.retrieve( "Emulator" )
   names = []
   for hypo in hypos:
     names.append( hypo.name() )

@@ -1,5 +1,5 @@
 
-__all__ = ["TriggerInfo", "GetHistogramFromMany","GetProfile",
+__all__ = [ "GetHistogramFromMany","GetProfile",
             "GetMaxNonLinearityValue","is_high_et", "GetHistogramRootPaths"]
 
 from Gaugi.messenger import Logger

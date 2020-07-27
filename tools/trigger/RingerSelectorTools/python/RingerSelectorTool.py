@@ -26,9 +26,7 @@ class RingerSelectorTool(Algorithm):
   def __init__(self, name, **kw  ):
 
     Algorithm.__init__(self, name)
-    self._models = []
-    self._thresholds = []
-    
+   
     # Set all properties
     for key, value in kw.items():
       if key in self.__property:
@@ -36,11 +34,15 @@ class RingerSelectorTool(Algorithm):
       else:
         MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
+    self.__models = []
+    self.__thresholds = []
+ 
 
   #
   # Inialize the selector
   #
   def initialize(self):
+
 
     #
     # Onnx model inference
@@ -92,14 +94,15 @@ class RingerSelectorTool(Algorithm):
     def treat_string( env, key ):
       return [str(value) for value in  env.GetValue(key, '').split('; ')]
 
+    configPath = self.getProperty( "ConfigFile" )
 
-    MSG_INFO( self, "Reading tuning from: %s", self._configPath )
-    basepath = '/'.join(self._configPath.split('/')[:-1])
+    MSG_INFO( self, "Reading tuning from: %s", configPath )
+    basepath = '/'.join(configPath.split('/')[:-1])
 
     from ROOT import TEnv
 
 
-    configPath = self.getProperty( "ConfigPath" )
+
     env = TEnv( configPath )
 
     version = env.GetValue("__version__", '')
@@ -112,10 +115,10 @@ class RingerSelectorTool(Algorithm):
     
     for idx, path in enumerate( paths ):
       model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
-      self._models.append(model)
+      self.__models.append(model)
 
     number_of_thresholds = env.GetValue("Threshold__size", 0)
-    self._maxAverageMu = env.GetValue("Threshold__MaxAverageMu", 0)
+    self.__maxAverageMu = env.GetValue("Threshold__MaxAverageMu", 0)
     etmin_list = treat_float( env, 'Threshold__etmin' )
     etmax_list = treat_float( env, 'Threshold__etmax' )
     etamin_list = treat_float( env, 'Threshold__etamin' )
@@ -125,12 +128,12 @@ class RingerSelectorTool(Algorithm):
  
     for idx, slope in enumerate(slopes):
       threshold = Threshold( slope, offsets[idx], etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
-      self._thresholds.append(threshold)
+      self.__thresholds.append(threshold)
 
     MSG_INFO( self, "Tuning version: %s" , version )
     MSG_INFO( self, "Loaded %d models using onnx runtime for inference." , number_of_models)
     MSG_INFO( self, "Loaded %d threshold for decision" , number_of_thresholds)
-    MSG_INFO( self, "Max Average mu equal %1.2f", self._maxAverageMu )
+    MSG_INFO( self, "Max Average mu equal %1.2f", self.__maxAverageMu )
 
 
     return StatusCode.SUCCESS
@@ -139,7 +142,7 @@ class RingerSelectorTool(Algorithm):
 
   def accept( self, context):
 
-    accept = self.getAcceptInfo()
+    accept = self.__getAcceptInfo()
     fc = context.getHandler("HLT__FastCaloContainer")
     eventInfo = context.getHandler( "EventInfoContainer" )
     avgmu = eventInfo.avgmu()
@@ -147,7 +150,7 @@ class RingerSelectorTool(Algorithm):
     eta = abs(fc.eta())
     if eta>2.5: eta=2.5
     et = fc.et()*1e-3 # in GeV
-    if avgmu > self._maxAverageMu: avgmu = self._maxAverageMu
+    if avgmu > self.__maxAverageMu: avgmu = self.__maxAverageMu
 
     # get the model for inference
     model = self.__getModel(et,eta)
@@ -158,7 +161,7 @@ class RingerSelectorTool(Algorithm):
     
     
     # get the threshold 
-    threshold = self.getThreshold( et, eta )
+    threshold = self.__getThreshold( et, eta )
 
     # If not fount, return false
     if not threshold:
@@ -190,7 +193,7 @@ class RingerSelectorTool(Algorithm):
   #
   def __getModel( self, et, eta ):
     model = None
-    for obj in self._models:
+    for obj in self.__models:
       if et > obj.etmin() and et <= obj.etmax():
         if eta > obj.etamin() and eta <= obj.etamax():
           model=obj; break
@@ -202,7 +205,7 @@ class RingerSelectorTool(Algorithm):
   #
   def __getThreshold( self, et, eta ):
     threshold = None
-    for obj in self._thresholds:
+    for obj in self.__thresholds:
       if et > obj.etmin() and et <= obj.etmax():
         if eta > obj.etamin() and eta <= obj.etamax():
           threshold=obj; break

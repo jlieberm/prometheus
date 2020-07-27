@@ -3,9 +3,9 @@ __all__ = ['StandardQuantityProfiles']
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
 from ProfileTools  import ProfileToolBase
-from CommonTools.constants import ( standardQuantitiesEtaEdge, standardQuantitiesHighEdges, standardQuantitiesLowerEdges
-                                  , standardQuantitiesSpecialBins, standardQuantitiesNBins, standardQuantitiesPDFsHighEdges
-                                  , standardQuantitiesPDFsLowerEdges, standardQuantitiesPDFsNBins )
+from ProfileTools.constants import ( standardQuantitiesEtaEdge, standardQuantitiesHighEdges, standardQuantitiesLowerEdges
+                                   , standardQuantitiesSpecialBins, standardQuantitiesNBins, standardQuantitiesPDFsHighEdges
+                                   , standardQuantitiesPDFsLowerEdges, standardQuantitiesPDFsNBins )
 
 
 
@@ -38,7 +38,7 @@ class StandardQuantityProfiles( ProfileToolBase ):
     sg = selg.getStoreGateSvc()
     from ROOT import TH1F, TH1I
     # Fill all histograms needed
-    from CommonTools.constants import electronLatexStr
+    from ProfileTools.constants import electronLatexStr
     def createHist(var, binLabel):
       latexvar = electronLatexStr( var )
       nBins = standardQuantitiesNBins[var]
@@ -67,7 +67,7 @@ class StandardQuantityProfiles( ProfileToolBase ):
 
     # If is trigger, the position must use the trigger et/eta positions.
     from Gaugi.constants import GeV 
-    from CommonTools.constants import specialElectronBins
+    from ProfileTools.constants import specialElectronBins
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )
     if etBinIdx is None or etaBinIdx is None:
       MSG_WARNING( self,"Ignoring event with none index. Its et[GeV]/eta is: %f/%f", obj.et()/GeV, obj.eta())
