@@ -6,8 +6,6 @@ ENV LC_ALL C.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV TERM screen
-RUN mkdir /eos
-RUN mkdir /afs
 USER root
 SHELL [ "/bin/bash", "-c" ]
 #RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -62,13 +60,15 @@ RUN ln -sf /usr/bin/python3.6 /usr/bin/python
 # Install ROOT
 RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://github.com/root-project/root.git && \
 cd root && git checkout v6-16-00 && mkdir buildthis && cd buildthis && cmake  --Dpython_version=3 .. && make -j$CPU_N
-ENV ROOTSYS "/opt/root/buildthis/"
-ENV PATH "$ROOTSYS/bin:$PATH"
-ENV LD_LIBRARY_PATH "$ROOTSYS/lib:$LD_LIBRARY_PATH"
-ENV PYTHONPATH "/opt/root_cern/build/lib:$PYTHONPATH"
+
+
+# remove weight from root
+#RUN cd /opt && mkdir buildthis && cd buildthis && mv ../root/buildthis/lib . && mv ../root/buildthis/include . && mv ../root/buildthis/bin . && mv ../root/buildthis/etc .
+#RUN cd /opt && rm -rf root && mkdir root && cd root && mv ../buildthis .
 
 
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip
+
 
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh

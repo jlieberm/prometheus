@@ -12,6 +12,8 @@ ENV TERM screen
 RUN pip install tensorflow==2.0.0b1
 RUN pip install gaugi saphyra future numpy onnxruntime
 
+# Make images Grid / Singularity compatible
+RUN mkdir -p /alrb /cvmfs /afs /eos /code /data
 
 
 
@@ -24,8 +26,12 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && rm -rf /var/lib/apt/lists/*
 
 
+RUN source /opt/root/buildthis/bin/thisroot.sh && cd /code && git clone https://gitlab.cern.ch/jodafons/prometheus.git && cd prometheus && \
+ls -ls  && git pull && mkdir build && cd build && cmake .. && make
 
 
 
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh
+
+
