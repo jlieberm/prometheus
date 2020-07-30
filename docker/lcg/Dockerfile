@@ -13,7 +13,7 @@ RUN pip install tensorflow==2.0.0b1
 RUN pip install gaugi saphyra future numpy onnxruntime
 
 # Make images Grid / Singularity compatible
-RUN mkdir -p /alrb /cvmfs /afs /eos /code /data
+RUN mkdir -p /alrb /cvmfs /afs /eos /data
 
 
 
@@ -24,10 +24,6 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && apt-get upgrade -y \
     && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
     && rm -rf /var/lib/apt/lists/*
-
-
-RUN source /opt/root/buildthis/bin/thisroot.sh && cd /code && git clone https://gitlab.cern.ch/jodafons/prometheus.git && cd prometheus && \
-ls -ls  && git pull && mkdir build && cd build && cmake .. && make
 
 
 
