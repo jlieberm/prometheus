@@ -1,5 +1,8 @@
 
 __all__ = []
+from . import schema
+__all__.extend(schema.__all__)
+from .schema import *
 
 from . import TrackParticle
 __all__.extend(TrackParticle.__all__)
