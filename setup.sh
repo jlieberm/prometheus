@@ -7,6 +7,7 @@ export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
 
 export PYTHONPATH=`pwd`/build/python:$PYTHONPATH
 export PATH=`pwd`/tools/EfficiencyTools/scripts:$PATH
+export PRT_PATH=`pwd`
 
 
 

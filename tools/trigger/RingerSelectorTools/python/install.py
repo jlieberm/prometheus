@@ -73,19 +73,17 @@ def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
 def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
+  from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/TrigL2_20200715_v10'
 
-  # specif normalization procedure  
-  #def norm( data ):
-  #    return (data/abs(sum(data))).reshape((1,100, 1))
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm), 
     ]
 
 
