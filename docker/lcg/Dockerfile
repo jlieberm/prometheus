@@ -26,6 +26,11 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && rm -rf /var/lib/apt/lists/*
 
 
+RUN ls
+RUN mkdir /code && cd /code && git clone https://github.com/jodafons/prometheus.git && cd prometheus && mkdir build \
+    && cd build && cmake .. && make
+
+
 
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh

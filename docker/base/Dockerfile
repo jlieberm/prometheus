@@ -43,7 +43,6 @@ RUN apt-get install -y git \
                        libavahi-compat-libdnssd-dev \
                        libboost-all-dev \
                        vim \
-                       qt4-default \
                        librange-v3-dev \
                        libboost-python-dev
 
@@ -63,8 +62,8 @@ cd root && git checkout v6-16-00 && mkdir buildthis && cd buildthis && cmake  --
 
 
 # remove weight from root
-#RUN cd /opt && mkdir buildthis && cd buildthis && mv ../root/buildthis/lib . && mv ../root/buildthis/include . && mv ../root/buildthis/bin . && mv ../root/buildthis/etc .
-#RUN cd /opt && rm -rf root && mkdir root && cd root && mv ../buildthis .
+RUN cd /opt && mkdir buildthis && cd buildthis && mv ../root/buildthis/lib . && mv ../root/buildthis/include . && mv ../root/buildthis/bin . && mv ../root/buildthis/etc .
+RUN cd /opt && rm -rf root && mkdir root && cd root && mv ../buildthis .
 
 
 RUN ln -sf /usr/bin/pip3 /usr/bin/pip
