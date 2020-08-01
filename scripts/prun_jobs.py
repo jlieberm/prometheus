@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi.messenger.macros import *
@@ -21,8 +21,8 @@ class Parallel( Logger ):
     import random
     import time
     random.seed(time.time())
-    #self._base_id = random.randrange(100000)
-    self._base_id = 46723
+    self._base_id = random.randrange(100000)
+    #self._base_id = 46723
 
   def launch( self, _command, maxJobs ):
     import os

@@ -13,6 +13,10 @@ from . import Chain
 __all__.extend(Chain.__all__)
 from .Chain import *
 
+from . import TDT
+__all__.extend(TDT.__all__)
+from .TDT import *
+
 
 
 

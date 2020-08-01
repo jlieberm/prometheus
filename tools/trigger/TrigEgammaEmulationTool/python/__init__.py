@@ -5,6 +5,10 @@ from . import TrigEgammaElectronHypoTool
 __all__.extend(TrigEgammaElectronHypoTool.__all__)
 from .TrigEgammaElectronHypoTool import *
 
+from . import TrigEgammaElectronIsolationHypoTool
+__all__.extend(TrigEgammaElectronIsolationHypoTool.__all__)
+from .TrigEgammaElectronIsolationHypoTool import *
+
 from . import TrigEgammaL1CaloHypoTool
 __all__.extend(TrigEgammaL1CaloHypoTool.__all__)
 from .TrigEgammaL1CaloHypoTool import *

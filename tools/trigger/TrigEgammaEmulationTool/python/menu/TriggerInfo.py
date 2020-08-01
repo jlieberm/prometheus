@@ -78,6 +78,18 @@ class TriggerInfo(Logger):
       else:
         self.__ringerVersion = 8
 
+
+    
+    isolationTypes = ['ivarloose', 'ivarmedium', 'ivartight', 'iloose', 'icaloloose', 'icalomedium', 'icalotight' ]
+    self.__isolated = False
+    self.__isolationType = None
+    for isoInfo in isolationTypes:
+      if isoInfo in self.__trigger:
+        self.__isolationType = isoInfo
+        self.__isolated = True
+        break
+
+
   
   #
   # Get the signature
@@ -117,6 +129,20 @@ class TriggerInfo(Logger):
 
 
   #
+  # This trigger is isolated
+  #
+  def isolated(self):
+    return self.__isolated
+
+
+  #
+  # Get the isolation pid name
+  #
+  def isolationType( self ):
+    return self.__isolationType
+      
+
+  #
   # Get the pid index 
   #
   def pidnameIdx(self):
@@ -133,6 +159,8 @@ class TriggerInfo(Logger):
       return 0
 
 
+
+ 
 
 
 

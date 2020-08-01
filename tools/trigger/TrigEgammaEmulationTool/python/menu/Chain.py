@@ -76,6 +76,15 @@ class Chain( Algorithm ):
     # Configure the HLT hypo step
     from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
     self.__hltItem = configure( self.__trigger )
+   
+
+    if self.__trigInfo.isolated():
+      self.__applyIsolation=True
+      from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
+      self.__hltIsoItem = configure( self.__trigger )
+    else:
+      self.__applyIsolation=False
+
     
 
     # configure et cuts
@@ -94,7 +103,14 @@ class Chain( Algorithm ):
       MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__l2Item )
     if emulator.retrieve( self.__hltItem ).initialize().isFailure():
       MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__hltItem )
- 
+
+
+    if self.__applyIsolation:
+      if emulator.retrieve( self.__hltIsoItem ).initialize().isFailure():
+        MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__hltItem )
+
+   
+
 
     # Print chain info steps
     MSG_INFO( self, "")
@@ -106,6 +122,8 @@ class Chain( Algorithm ):
     MSG_INFO( self, "|--> EFCalo EtCur : %d", self.__efcaloEtCut)
     MSG_INFO( self, "|--> HLT EtCur    : %d", self.__hltEtCut)
     MSG_INFO( self, "|--> HLT          : %s", self.__hltItem)
+    if self.__applyIsolation:
+      MSG_INFO( self, "|--> HLTIso       : %s", self.__hltIsoItem)
 
 
 
@@ -200,6 +218,11 @@ class Chain( Algorithm ):
 
     # check the HLT decision
     passedHLT = bool( dec.accept( self.__hltItem ) )
+
+    if passedHLT and self.__applyIsolation: 
+      # Apply the isolation cut and overwrite the HLT previus decision
+      passedHLT = bool( dec.accept( self.__hltIsoItem ) )
+
 
     accept.setCutResult( 'HLT', passedHLT )
     accept.setCutResult( 'Pass', passedHLT )

@@ -11,7 +11,7 @@ from Gaugi.messenger.macros import *
 # External
 from ROOT import TH1F, TH2F, TProfile, TProfile2D
 from ProfileTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
-from TrigEgammaEmulationTool import Chain, Group
+from TrigEgammaEmulationTool import Chain, Group, TDT
 import numpy as np
 
 
@@ -72,10 +72,9 @@ class EfficiencyTool( Algorithm ):
     for group in self.__groups:
       # Get the chain object
       chain = group.chain()
-      for dirname in ( self.__triggerLevels if type(chain) is Chain else ['Selector'] ):
+      for dirname in ( self.__triggerLevels if (type(chain) is Chain or type(chain) is TDT) else ['Selector'] ):
 
         sg.mkdir( basepath+'/'+chain.name()+'/Efficiency/'+dirname )
-        
         sg.addHistogram(TH1F('et','E_{T} distribution;E_{T};Count', len(et_bins)-1, np.array(et_bins)))
         sg.addHistogram(TH1F('eta','#eta distribution;#eta;Count', len(eta_bins)-1, np.array(eta_bins)))
         sg.addHistogram(TH1F("phi", "#phi distribution; #phi ; Count", 20, -3.2, 3.2));
@@ -108,9 +107,10 @@ class EfficiencyTool( Algorithm ):
     elCont = context.getHandler( "ElectronContainer" )
     dec = context.getHandler( "MenuContainer" )
 
+
     for group in self.__groups:
       chain = group.chain()
-      if type(chain) is Chain:
+      if type(chain) is Chain or type(chain) is TDT:
         for el in elCont:
           if el.et()  < (group.etthr()- 5)*GeV:  continue 
           if abs(el.eta())>2.47: continue
@@ -191,7 +191,7 @@ class EfficiencyTool( Algorithm ):
     for group in self.__groups:
       chain = group.chain()
       MSG_INFO( self, '{:-^78}'.format((' %s ')%(chain.name())))
-      if type(chain) is Chain:
+      if type(chain) is Chain or type(chain) is TDT:
         for trigLevel in self.__triggerLevels:
           dirname = basepath+'/'+chain.name()+'/Efficiency/'+trigLevel
           total  = sg.histogram( dirname+'/eta' ).GetEntries()
