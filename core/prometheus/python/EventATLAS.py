@@ -16,8 +16,8 @@ class EventATLAS( TEventLoop ):
   def __init__(self, name , **kw):
     # Retrieve all information needed
     TEventLoop.__init__(self, name, **kw)
-    import ROOT
-    ROOT.gSystem.Load('libprometheus')
+    #import ROOT
+    #ROOT.gSystem.Load('libprometheus')
 
 
 
@@ -30,16 +30,9 @@ class EventATLAS( TEventLoop ):
       MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
 
 
-
-    from ROOT import edm
-    # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      self._event = edm.SkimmedNtuple()
-    elif self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._event = edm.SkimmedNtuple_v2()
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
-      #self._event = ROOT.RingerPhysVal()
-      self._event = edm.RingerPhysVal_v2()
+    if self._dataframe is DataframeEnum.PhysVal_v2:
+      from EventAtlas import PhysVal_v2
+      self._event = PhysVal_v2()
     else:
       return StatusCode.FATAL
 

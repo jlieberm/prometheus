@@ -17,7 +17,7 @@ class RingerSelectorTool(Algorithm):
 
   __property = [
                 "ConfigFile",
-                "Preproc"
+                "Preproc",
                 ]
 
   #
@@ -33,6 +33,7 @@ class RingerSelectorTool(Algorithm):
         self.declareProperty( key, value )
       else:
         MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
 
     self.__models = []
     self.__thresholds = []
@@ -173,9 +174,10 @@ class RingerSelectorTool(Algorithm):
     preproc = self.getProperty("Preproc")
     # normalize the inpur data
     data = preproc( fc.ringsE() )
+    
     # compute the output
     output = model.predict( data )[0][0][0]
-    
+
     accept.setDecor("discriminant", output)
 
     # If the output is below of the cut, reprove it
