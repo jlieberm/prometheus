@@ -25,8 +25,7 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
     && rm -rf /var/lib/apt/lists/*
 
-
-RUN ls
+RUN ls -lisah
 RUN mkdir /code && cd /code && git clone https://github.com/jodafons/prometheus.git && cd prometheus && mkdir build \
     && cd build && cmake .. && make
 
