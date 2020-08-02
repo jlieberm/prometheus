@@ -6,7 +6,7 @@ from pprint import pprint
 import argparse
 
 
-logger = Logger.getModuleLogger("prometheus.job")
+logger = Logger.getModuleLogger("prometheus.prun.lcg")
 parser = argparse.ArgumentParser(description = '', add_help = False)
 parser = argparse.ArgumentParser()
 
@@ -36,6 +36,11 @@ parser.add_argument('--dry_run', action='store_true' ,
     dest='dry_run', required = False,
     help = "Dry run")
 
+parser.add_argument('--outputs', action='store' ,
+    dest='outputs', required = True,
+    help = "Something like 'output:output.root'")
+
+
 
 
 
@@ -55,8 +60,6 @@ if not '%IN' in job_command:
   logger.fatal( "You must include the %IN in the job command to reference it as input (e.g -i %IN)." )
 
 
-# add default output name
-job_command += ' -o output.root'
 
 
 command = """ prun --exec \
@@ -67,21 +70,24 @@ command = """ prun --exec \
      --inDS={INDS} \
      --outDS={OUTDS} \
      --disableAutoRetry \
-     --outputs="output:output.root" \
+     --outputs="{OUTPUTS}" \
      --nFilesPerJob={N_FILES_PER_JOB} \
      --forceStaged \
      --site {SITE} \
      --mergeOutput \
     """
 
-command = lcommand.format( CONTAINER = args.containerImage,
+command = command.format( CONTAINER = args.containerImage,
                             INDS      = args.inDS,
                             OUTDS     = args.outDS,
                             COMMAND   = job_command,
                             N_FILES_PER_JOB = args.nFilesPerJob,
-                            SITE      = args.site)
+                            SITE      = args.site,
+                            OUTPUTS   = args.outputs,
+                            )
 
 logger.info(command)
+print(command)
 
 
 if not args.dry_run:

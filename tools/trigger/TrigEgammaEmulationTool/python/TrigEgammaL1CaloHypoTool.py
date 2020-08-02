@@ -77,7 +77,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   # L1 emulation
   #
   def emulation(self, l1, l1type, L1Item, l1threshold):
-   
+  
     workingPoint = self.getProperty( "WPNames" )
 
     c=0
@@ -90,7 +90,8 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
     emIsolCutMin   = self.getProperty("EmIsolCutMin")[c]
     emIsolCutOff   = self.getProperty("EmIsolCutOff")[c]
     emIsolCutSlope = self.getProperty("EmIsolSlope")[c]
-    
+   
+
     emE = 0.0
     emIsol = 0.0
     hadCore = 0.0
@@ -124,7 +125,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
       MSG_DEBUG(self, "accepted")
     
     # add new method for this also
-    elif  (emE <= l1threshold): # // this cut is confirmed to be <=
+    if  (emE <= l1threshold): # // this cut is confirmed to be <=
       return False
 
     return True
@@ -138,7 +139,7 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
     if (emE > self.__isolMaxCut):
       MSG_DEBUG(self, "L1 Isolation skipped, ET > Maximum isolation")
       return True
-    
+        
     isolation = offset + emE*slope
     if (isolation < min_): isolation = min_;
     
@@ -149,11 +150,11 @@ class TrigEgammaL1CaloHypoTool( Algorithm ):
   #//!==========================================================================
   #// (V) Variable Et cut
   def variableEtL1(self, L1item, l1energy, l1eta):
-  	cut = self.emulationL1V(L1item,l1eta)
-  	energy = l1energy
-  	# if (energy <= cut) return false;
-  	value = False if (energy <= cut) else True
-  	return value
+    cut = self.emulationL1V(L1item,l1eta)
+    energy = l1energy
+    # if (energy <= cut) return false;
+    value = False if (energy <= cut) else True
+    return value
   
   
   #//!==========================================================================

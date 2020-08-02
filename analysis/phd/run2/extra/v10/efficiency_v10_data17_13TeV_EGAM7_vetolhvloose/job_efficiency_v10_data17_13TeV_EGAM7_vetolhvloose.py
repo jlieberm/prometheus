@@ -33,8 +33,7 @@ args = parser.parse_args()
 
 acc = EventATLAS( "EventATLASLoop",
                   inputFiles = args.inputFiles, 
-                  #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                  treePath= '*/HLT/Physval/Egamma/probes',
+                  treePath= '*/HLT/Physval/Egamma/fakes' ,#if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
                   #treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
                   dataframe = DataframeEnum.PhysVal_v2, 
                   outputFile = args.outputFile,
@@ -47,11 +46,11 @@ from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
 evt = EventSelection('EventSelection')
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
-#pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
-pidname = 'el_lhmedium'
+
+pidname = '!el_lhvloose'
+
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
 evt.setCutValue( EtCutType.L2CaloAbove , 15)
-
 ToolSvc += evt
 
 
@@ -85,9 +84,6 @@ for group in triggerList:
 ToolSvc += alg
 
 acc.run(args.nov)
-
-
-
 
 
 
