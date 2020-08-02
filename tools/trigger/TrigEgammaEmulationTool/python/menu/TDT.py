@@ -34,7 +34,7 @@ class TDT( Algorithm ):
   def initialize(self):
 
     tdt = self.getContext().getHandler("HLT__TDT")    
-    print(tdt.getTriggerList())
+    #print(tdt.getTriggerList())
     self.init_lock()
     return StatusCode.SUCCESS
 
