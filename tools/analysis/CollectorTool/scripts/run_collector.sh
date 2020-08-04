@@ -18,6 +18,8 @@ BASEPATH_EGAM7_2017=/volume/Physval/data17_13TeV/EGAM7/user.*
 BASEPATH_EGAM2_2017=/volume/Physval/data18_13TeV/EGAM2/user.*
 BASEPATH_EGAM7_2018=/volume/Physval/data18_13TeV/EGAM7/user.*
 
+BASEPATH_BOOSTED=/mnt/user.*
+
 command_1="python job_collector.py --Zee"
 command_2="python job_collector.py --egam7"
 
@@ -31,11 +33,16 @@ command_4="python job_collector.py --Jpsi --egam7"
 #mkdir EGAM7
 #mv output* EGAM7
 
+#####
+#####
+#prun_jobs.py -i $BASEPATH_EGAM1  -c 'python3 job_collector.py --Zee' -mt 30 --base_id 23401 --skip_to 280
+#mkdir EGAM1
+#mv output* EGAM1
 
-prun_jobs.py -i $BASEPATH_EGAM1  -c 'python3 job_collector.py --Zee' -mt 30 --base_id 23401 --skip_to 280
-mkdir EGAM1
-mv output* EGAM1
 
+prun_jobs.py -i $BASEPATH_BOOSTED  -c 'python3 job_collector.py --Zee' -mt 30
+mkdir BOOSTED
+mv output* BOOSTED
 
 
 

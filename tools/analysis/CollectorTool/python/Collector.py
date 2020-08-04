@@ -2,7 +2,6 @@
 __all__ = ["Collector"]
 
 
-from CommonTools import AlgBase
 from prometheus import Dataframe as DataframeEnum
 from Gaugi import StatusCode, NotSet, retrieve_kw, progressbar
 from Gaugi import csvStr2List, expandFolders, save, load
@@ -14,8 +13,7 @@ from Gaugi import Algorithm
 import numpy as np
 
 
-
-class Collector( AlgBase ):
+class Collector( Algorithm ):
 
   def __init__(self, name, **kw):
     Algorithm.__init__(self, name)
@@ -43,7 +41,7 @@ class Collector( AlgBase ):
 
 
   def initialize(self):
-    AlgorithmTool.initialize(self) 
+    Algorithm.initialize(self)
     for etBinIdx in range(len(self._etbins)-1):
       for etaBinIdx in range(len(self._etabins)-1):
         self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = None
@@ -53,7 +51,7 @@ class Collector( AlgBase ):
 
     # Add fast calo ringsE
     self._event_label.extend( [ 'L2Calo_ring_%d'%r for r in range(100) ] )
-    
+
     self._event_label.extend( [ 'L2Calo_et',
                                 'L2Calo_eta',
                                 'L2Calo_phi',
@@ -109,19 +107,19 @@ class Collector( AlgBase ):
       self._event[key] = [event]
 
   def execute(self, context):
-    
+
     elCont    = context.getHandler( "ElectronContainer" )
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
     trk       = context.getHandler( "HLT__FastElectronContainer" )
 
     if self._doTrack and not (trk.size()>0):
-      # skip if the event does not fast electron feature in the 
+      # skip if the event does not fast electron feature in the
       # trigger element.
       return StatusCode.SUCCESS
 
 
-    from CommonTools.utilities import RetrieveBinningIdx
+    from PileupCorrectionTools import RetrieveBinningIdx
     etBinIdx, etaBinIdx = RetrieveBinningIdx( fc.et()/1000., abs(fc.eta()), self._etbins, self._etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
       #MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
@@ -130,7 +128,7 @@ class Collector( AlgBase ):
     key = ('et%d_eta%d') % (etBinIdx, etaBinIdx)
     if (len(self._save_these_bins) > 0) and (not key in self._save_these_bins):
         return StatusCode.SUCCESS
-    
+
 
     event_row = list()
     # event info
@@ -162,7 +160,7 @@ class Collector( AlgBase ):
     event_row.append( elCont.accept( "el_lhmedium" ) )
     event_row.append( elCont.accept( "el_lhloose"  ) )
     event_row.append( elCont.accept( "el_lhvloose" ) )
-    
+
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
     event_row.append( elCont.phi() )
@@ -178,35 +176,31 @@ class Collector( AlgBase ):
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
-  
+
+    dec = context.getHandler("MenuContainer")
 
     for feature in self._extra_features:
-      if self.doTrigger:
-        # Get the decoration from HLT electron or fast calo (only for skimmed)
-        passed = self.accept(feature)
-      else:
-        # Get de decision from Offline electron
-        passed = elCont.accept(feature)
+      passed = dec.accept(feature)
       event_row.append( passed )
 
     self.fill(key , event_row)
 
 
     return StatusCode.SUCCESS
-  
+
 
   def finalize( self ):
-    
+
     from Gaugi import save, mkdir_p
     for etBinIdx in range(len(self._etbins)-1):
       for etaBinIdx in range(len(self._etabins)-1):
-       
-        key =  'et%d_eta%d' % (etBinIdx,etaBinIdx)         
-        mkdir_p( self._outputname ) 
-        if self._event[key] is None: 
+
+        key =  'et%d_eta%d' % (etBinIdx,etaBinIdx)
+        mkdir_p( self._outputname )
+        if self._event[key] is None:
           continue
 
-        d = { 
+        d = {
             "features"  : self._event_label,
             "etBins"    : self._etbins,
             "etaBins"   : self._etabins,

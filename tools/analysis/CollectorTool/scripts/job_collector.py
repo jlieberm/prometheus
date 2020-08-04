@@ -86,18 +86,13 @@ else:
     evt.setCutValue( EtCutType.L2CaloAbove , 15)
     ToolSvc += evt
 
-
-from EmulationTools import EmulationTool
-ToolSvc += EmulationTool( "EgammaEmulation" )
-
-#if args.doZee:
+if args.doZee:
 #    from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
 #    installElectronL2CaloRingerSelector_v6()
+    from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
+    installElectronL2CaloRingerSelector_v8()
 
-#    from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
-#    installElectronL2CaloRingerSelector_v8()
-
-from TrigEgammaL2CaloSelectorTool import installTrigEgammaL2CaloSelectors
+from TrigEgammaEmulationTool import installTrigEgammaL2CaloSelectors
 installTrigEgammaL2CaloSelectors()
 
 
@@ -121,19 +116,19 @@ alg.AddFeature( "T0HLTElectronT2CaloTight"        )
 alg.AddFeature( "T0HLTElectronT2CaloMedium"       )
 alg.AddFeature( "T0HLTElectronT2CaloLoose"        )
 alg.AddFeature( "T0HLTElectronT2CaloVLoose"       )
-#if args.doZee:
+if args.doZee:
 #    alg.AddFeature( "T0HLTElectronRingerTight_v6"     )
 #    alg.AddFeature( "T0HLTElectronRingerMedium_v6"    )
 #    alg.AddFeature( "T0HLTElectronRingerLoose_v6"     )
 #    alg.AddFeature( "T0HLTElectronRingerVeryLoose_v6" )
-#    alg.AddFeature( "T0HLTElectronRingerTight_v8"     )
-#    alg.AddFeature( "T0HLTElectronRingerMedium_v8"    )
-#    alg.AddFeature( "T0HLTElectronRingerLoose_v8"     )
-#    alg.AddFeature( "T0HLTElectronRingerVeryLoose_v8" )
-alg.AddFeature( "HLT__isLHTight"                  )
-alg.AddFeature( "HLT__isLHMedium"                 )
-alg.AddFeature( "HLT__isLHLoose"                  )
-alg.AddFeature( "HLT__isLHVLoose"                 )
+    alg.AddFeature( "T0HLTElectronRingerTight_v8"     )
+    alg.AddFeature( "T0HLTElectronRingerMedium_v8"    )
+    alg.AddFeature( "T0HLTElectronRingerLoose_v8"     )
+    alg.AddFeature( "T0HLTElectronRingerVeryLoose_v8" )
+#alg.AddFeature( "HLT__isLHTight"                  )
+#alg.AddFeature( "HLT__isLHMedium"                 )
+#alg.AddFeature( "HLT__isLHLoose"                  )
+#alg.AddFeature( "HLT__isLHVLoose"                 )
 ToolSvc += alg
 
 acc.run(args.nov)
