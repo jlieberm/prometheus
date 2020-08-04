@@ -8,8 +8,8 @@ __all__ = [
 # Install the LH HLT selector
 def installTrigEgammaL2CaloSelectors( toolname = "Emulator" ):
 
-  from TrigEgammaEmulatorTool import TrigEgammaL2CaloSelectorTool
-  
+  from TrigEgammaEmulationTool import TrigEgammaL2CaloSelectorTool
+
   selectors = [
         # L2Calo selector only (backward)
         TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloTight"   , OperationPoint ='lhtight'  ) ,

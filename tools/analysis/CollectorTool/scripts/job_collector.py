@@ -48,8 +48,8 @@ args = parser.parse_args()
 
 acc = EventATLAS(  "EventATLASLoop",
                   inputFiles = args.inputFiles,
-                  treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                  # treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                  #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
+                  treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
                   dataframe = DataframeEnum.PhysVal_v2,
                   #outputFile = args.outputFile,
                   outputFile = 'dummy.root',

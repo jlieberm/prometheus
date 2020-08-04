@@ -22,7 +22,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   # Contructor
   #
   def __init__(self, name, **kw):
-    
+
     Algorithm.__init__(self, name)
 
     # List of hypos in this selector
@@ -46,7 +46,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
     # take from hypo config
     from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
-    
+
     def same(value):
       return [value]*9
 
@@ -72,7 +72,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
       if hypo.initialize().isFailure():
         return StatusCode.FAILURE
 
-      self._hypos.append(hypo)
+      self.__hypos.append(hypo)
 
 
     self.init_lock()
@@ -87,14 +87,14 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
     fc = context.getHandler( "HLT__FastCaloContainer" )
     et = fc.et()
     passed = False
-    
+
     if et < 12*GeV:
       passed = self.__hypos[0].accept(context)
     elif et>=12*GeV and et < 22*GeV:
       passed = self.__hypos[1].accept(context)
     else:
       passed =  self.__hypos[2].accept(context)
-    
+
     return Accept( self.name(), [("Pass", passed)] )
 
 

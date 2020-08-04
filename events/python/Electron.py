@@ -280,6 +280,10 @@ class Electron(EDM):
                           'el_etCone',
                           'el_ptCone',
 
+                          # Extra for boosted
+                          'el_DeltaR',
+                          'el_eeMass',
+
                         ],
                         'HLT__Electron':[
 
@@ -786,6 +790,37 @@ class Electron(EDM):
       self._logger.warning("Impossible to retrieve the value of dphi2. Unknow dataframe.")
       return -999
 
+  # Boosted
+  def eeMass (self):
+    """
+      Adds DeltaR and eeMass information
+    """
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      return -999
+    elif self._dataframe is DataframeEnum.PhysVal_v2:
+      if self._is_hlt:
+        return -999
+      else:
+        return self._event.el_eeMass
+    else:
+      self._logger.warning("Impossible to retrieve the value of eeMass. Unknow dataframe.")
+      return -999
+
+  # Boosted
+  def deltaR (self):
+    """
+      Adds DeltaR and eeMass information
+    """
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      return -999
+    elif self._dataframe is DataframeEnum.PhysVal_v2:
+      if self._is_hlt:
+        return -999
+      else:
+        return self._event.el_DeltaR
+    else:
+      self._logger.warning("Impossible to retrieve the value of deltaR. Unknow dataframe.")
+      return -999
 
   # trackCaloMatchValue
   def deltaPhiRescaled0(self):
@@ -1015,7 +1050,7 @@ class Electron(EDM):
       return None
 
 
-  
+
   def isolationValue( self, isolationType ):
 
     if self._dataframe is DataframeEnum.PhysVal_v2:
@@ -1023,7 +1058,7 @@ class Electron(EDM):
       def get_value( event, branch, isolationtype, size, pos, logger ):
         offset = (getattr(event, branch).size()/float(size)) * pos
         if offset+isolationtype > getattr(event,branch).size():
-          logger.error( "IsoType outside of range. Can not retrieve %s from the PhysVal", IsolationTupe.tostring(isolationtype) ) 
+          logger.error( "IsoType outside of range. Can not retrieve %s from the PhysVal", IsolationTupe.tostring(isolationtype) )
           return -999
         else:
           return getattr(event,branch).at( int(offset+isolationtype) )
@@ -1032,9 +1067,9 @@ class Electron(EDM):
         # get from et cone branch
         return get_value( self._event, "trig_EF_el_etCone", isolationType, self.size(), self.getPos(), self._logger ) if self._is_hlt else \
                get_value( self._event, "el_etCone", isolationType, self.size(), self.getPos(), self._logger )
-    
+
       else:
-        # get from pt cone branch 
+        # get from pt cone branch
         return get_value( self._event, "trig_EF_el_ptCone", isolationType-3, self.size(), self.getPos(), self._logger ) if self._is_hlt else \
                get_value( self._event, "el_ptCone", isolationType-3, self.size(), self.getPos(), self._logger )
 

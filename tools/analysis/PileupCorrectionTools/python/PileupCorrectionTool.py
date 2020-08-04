@@ -10,7 +10,7 @@ from Gaugi.messenger.macros import *
 from Gaugi.tex.TexAPI       import Table, ResizeBox, Tabular, HLine, TableLine
 from Gaugi.tex.BeamerAPI    import BeamerTexReportTemplate1, BeamerSection, BeamerSubSection, BeamerMultiFigureSlide, BeamerSlide
 from Gaugi.monet.AtlasStyle import SetAtlasStyle
-from PileupCorrectionTool   import RetrieveBinningIdx
+from PileupCorrectionTools.utilities  import RetrieveBinningIdx
 from ProfileTools.constants import zee_etbins, default_etabins, nvtx_bins
 
 from ROOT import TH2F, TH1F, TProfile
@@ -32,9 +32,9 @@ class PileupCorrectionTool( Algorithm ):
   # Constructor
   #
   def __init__(self, name, **kw):
-    
+
     Algorithm.__init__(self, name)
-    
+
     # Declate all properties
     self.declareProperty( "Basepath"        , "Event/PileupCorrection"  )
     self.declareProperty( "IsBackground"    , False                     )
@@ -193,7 +193,7 @@ class PileupCorrectionTool( Algorithm ):
     for name , target in self._targets.items():
 
       algname = target.algname(); refname = target.refname()
-      
+
       # Get the decision from the menu assitent
       passed = bool(dec.accept(refname))
       accept = self.accept( algname )
@@ -232,7 +232,7 @@ class PileupCorrectionTool( Algorithm ):
 
     return StatusCode.SUCCESS
 
-  
+
   #
   # Finalize method
   #
@@ -255,13 +255,13 @@ class PileupCorrectionTool( Algorithm ):
     if export:
       from ROOT import TEnv
       for _, target in self._targets.items():
- 
+
         etmin_list = []; etmax_list = []; etamin_list = []; etamax_list = []; slopes = []; offsets = []
-        
+
         for threshold in summary[target.name()]['thresholds']:
-          etmin_list.append( threshold['etBin'][0] ) 
+          etmin_list.append( threshold['etBin'][0] )
           etmax_list.append( threshold['etBin'][1] )
-          etamin_list.append( threshold['etaBin'][0] ) 
+          etamin_list.append( threshold['etaBin'][0] )
           etamax_list.append( threshold['etaBin'][1] )
           slopes.append( threshold['threshold'][0] )
           offsets.append( threshold['threshold'][1] )
@@ -282,7 +282,7 @@ class PileupCorrectionTool( Algorithm ):
         env.SetValue("Threshold__offset", list_to_str( offsets ) )
         MSG_INFO( self, "Export %s...", target.name() )
         env.WriteFile( target.name() +'.conf' )
-          
+
 
     MSG_INFO( self, 'Do pdf maker...')
     # Slide maker
@@ -416,7 +416,7 @@ class PileupCorrectionTool( Algorithm ):
             else:
               extra_legend = ''
 
-            
+
             with BeamerSlide( title = "Efficiency Values After Correction"  ):
               with Table( caption = '$P_{d}$ and $F_{a}$ for all phase space regions.'+extra_legend) as table:
                 with ResizeBox( size = 1 ) as rb:
@@ -494,8 +494,8 @@ class PileupCorrectionTool( Algorithm ):
             ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
         bkg_hist2D = sg.histogram(basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+
             ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
-        
-        
+
+
         # apply the threshold linear correction follow the last strategy using the root linear fitting
         # This functions was implemented taken some functions from the tag and probe offline framework.
         # If the false alarm is higher than an threshold (default is 0.5) than we will reduce the
@@ -539,7 +539,7 @@ class PileupCorrectionTool( Algorithm ):
         UpdateCounters( summary[target.name()]['signal_reference']      , sgn_counters                      )
         UpdateCounters( summary[target.name()]['background_reference']  , bkg_counters                      )
 
-        
+
         # Plot signal efficicency w.r.t the pileup
         outname = localpath+'/eff_signal_corr_'+target.name()+'_'+binningname
         plotname = PlotEff( self.__histConfig, objects['signal_hists']['eff'], objects['signal_corr_hists']['eff'],

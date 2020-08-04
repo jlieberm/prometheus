@@ -92,6 +92,8 @@ class Collector( Algorithm ):
                                 'weta2',
                                 'e277',
                                 'deltaE',
+                                'deltaR',
+                                'eeMass',
                                 ] )
 
 
@@ -119,7 +121,7 @@ class Collector( Algorithm ):
       return StatusCode.SUCCESS
 
 
-    from PileupCorrectionTools import RetrieveBinningIdx
+    from PileupCorrectionTools.utilities import RetrieveBinningIdx
     etBinIdx, etaBinIdx = RetrieveBinningIdx( fc.et()/1000., abs(fc.eta()), self._etbins, self._etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
       #MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
@@ -176,6 +178,8 @@ class Collector( Algorithm ):
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
+    event_row.append( elCont.deltaR() )
+    event_row.append( elCont.eeMass() )
 
     dec = context.getHandler("MenuContainer")
 
