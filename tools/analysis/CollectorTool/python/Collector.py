@@ -185,6 +185,11 @@ class Collector( Algorithm ):
 
     for feature in self._extra_features:
       passed = dec.accept(feature)
+      while True:
+        try:
+          passed = passed.getCutResult('Pass')
+        except AttributeError:
+          break
       event_row.append( passed )
 
     self.fill(key , event_row)
