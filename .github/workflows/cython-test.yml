@@ -20,6 +20,7 @@ jobs:
       run: |
         python3 -m pip install cython
         python  -m pip install cython
+        export PATH=$PATH:$HOME/.local/bin
         cython --help
         
     - name: Run CI script
