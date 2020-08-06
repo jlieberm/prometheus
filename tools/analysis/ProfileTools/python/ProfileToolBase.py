@@ -30,14 +30,14 @@ class ProfileToolBase( Algorithm ):
     self._discrList = d
 
   def initialize(self):
-    AlgorithmTool.initialize()
+    Algorithm.initialize()
     return StatusCode.SUCCESS
 
   def execute(self, context):
     return StatusCode.SUCCESS
 
   def finalize(self):
-    AlgorithmTool.finalize()
+    Algorithm.finalize()
     return StatusCode.SUCCESS
 
   def binStr(self, etBinIdx = None, etaBinIdx = None):

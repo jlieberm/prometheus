@@ -1,7 +1,7 @@
 
 import argparse
 from prometheus import EventATLAS
-from Gaugi.enumerations import Dataframe as DataframeEnum
+from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi import ToolSvc, ToolMgr
 
@@ -41,7 +41,7 @@ args = parser.parse_args()
 
 acc = EventATLAS( inputFiles = args.inputFiles, 
                   treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                  dataframe = Dataframe.PhysVal_v2, 
+                  dataframe = DataframeEnum.PhysVal_v2, 
                   outputFile=args.outputFile,
                   nov = args.nov,
                   level = LoggingLevel.INFO)

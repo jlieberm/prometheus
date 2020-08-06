@@ -4,6 +4,7 @@ __all__ = ['TrigEgammaL2CaloSelectorTool']
 from Gaugi import GeV
 from Gaugi import StatusCode
 from Gaugi import Algorithm
+from Gaugi.messenger.macros import *
 from EventAtlas import Accept
 
 

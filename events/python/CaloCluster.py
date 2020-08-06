@@ -190,7 +190,7 @@ class CaloCluster(EDM):
     	Retrieve the TrackParticle container size
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple:
-    	return 1
+      return 1
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self.event.trig_EF_el_calo_eta.size()

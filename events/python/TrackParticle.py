@@ -485,7 +485,7 @@ class TrackParticle(EDM):
     return self.summaryValue( SummaryType.numberOfBLayerHits )
 
   def numberOfBLayerOutliers(self):
-    return self.summaryValue( SummmaryType.numberOfBLayerOutliers )
+    return self.summaryValue( SummaryType.numberOfBLayerOutliers )
 
   def numberOfPixelHits(self):
     return self.summaryValue( SummaryType.numberOfPixelHits )
@@ -543,7 +543,7 @@ class TrackParticle(EDM):
     	Retrieve the TrackParticle container size
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-    	return 1
+      return 1
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self.event.trig_EF_el_trk_eta.size()

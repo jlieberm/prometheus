@@ -120,7 +120,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     # get the corrct eta bin range
     for idx, value in enumerate(etabins):
       if ( absEta > etabins[idx] and absEta < etabins[idx+1] ):
-      	etaBin = idx;
+        etaBin = idx
 
     # Is in crack region?
     inCrack = True if (absEta > 2.37 or (absEta > 1.37 and absEta < 1.52)) else False
@@ -132,11 +132,11 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
     # calculate cluster quantities // definition taken from TrigElectron constructor
     if ( pClus.emaxs1() + pClus.e2tsts1() ) > 0 :
-    	energyRatio = ( pClus.emaxs1() - pClus.e2tsts1() ) / float( pClus.emaxs1() + pClus.e2tsts1() )
+      energyRatio = ( pClus.emaxs1() - pClus.e2tsts1() ) / float( pClus.emaxs1() + pClus.e2tsts1() )
 
     # (VD) here the definition is a bit different to account for the cut of e277 @ EF
     if ( pClus.e277()!= 0.):
-    	rCore = pClus.e237() / float(pClus.e277())
+      rCore = pClus.e237() / float(pClus.e277())
 
     # fraction of energy deposited in 1st sampling
     #if ( math.fabs(pClus.energy()) > 0.00001) :
@@ -146,7 +146,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     eT_T2Calo  = float(pClus.et());
 
     if ( eT_T2Calo!=0 and pClus.eta()!=0 ):
-    	 hadET_T2Calo = pClus.ehad1()/math.cosh(math.fabs(pClus.eta()))/eT_T2Calo
+      hadET_T2Calo = pClus.ehad1()/math.cosh(math.fabs(pClus.eta()))/eT_T2Calo
 
     # extract Weta2 varable
     Weta2 = pClus.weta2()
@@ -170,8 +170,8 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
 
     # DeltaPhi(clus-ROI)
     if ( dPhi > dphicluster ):
-    	self._logger.debug('dphi > dphicluster')
-    	return False
+      self._logger.debug('dphi > dphicluster')
+      return False
 
     PassedCuts+=1 #DPhi
 

@@ -29,7 +29,7 @@ def convert_to_onnx_with_dummy_thresholds( models, name, version, signature, mod
   for model in models:
 
     model_etmin_vec.append( model['etBin'][0] )
-    model_emax_vec.append( model['etBin'][1] )
+    model_etmax_vec.append( model['etBin'][1] )
     model_etamin_vec.append( model['etaBin'][0] )
     model_etamax_vec.append( model['etaBin'][1] )
 
@@ -62,7 +62,7 @@ def convert_to_onnx_with_dummy_thresholds( models, name, version, signature, mod
   file = TEnv( 'ringer' )
   file.SetValue( "__name__", name )
   file.SetValue( "__version__", version )
-  file.SetValue( "__operation__", operation )
+  #file.SetValue( "__operation__", operation )
   file.SetValue( "__signature__", signature )
   file.SetValue( "Model__size"  , str(len(models)) )
   file.SetValue( "Model__etmin" , list_to_str(model_etmin_vec) )
@@ -77,8 +77,9 @@ def convert_to_onnx_with_dummy_thresholds( models, name, version, signature, mod
   file.SetValue( "Threshold__etamax", list_to_str(model_etamax_vec) )
   file.SetValue( "Threshold__slope" , list_to_str(slopes) )
   file.SetValue( "Threshold__offset", list_to_str(offsets) )
-  file.SetValue( "Threshold__MaxAverageMu", 100)  
-  file.WriteFile(output)
+  file.SetValue( "Threshold__MaxAverageMu", 100)
+  # TODO: 'output': variable not declared  
+  #file.WriteFile(output)
 
 
 

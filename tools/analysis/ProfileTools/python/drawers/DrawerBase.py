@@ -36,7 +36,7 @@ def colorGradient(color1, color2, nSteps, smoothThres=None):
   deltas = color2 - color1
   deltaSum = sum(abs(deltas))
   if smoothThres is not None and deltaSum/nSteps>smoothThres:
-    color2 = color1 + deltas*smoothThres*nSteps/deltasSum
+    color2 = color1 + deltas*smoothThres*nSteps/deltaSum
   outColors = [np.linspace(pcolor1,pcolor2,nSteps) for pcolor1, pcolor2 in zip(color1,color2)]
   outColors = getColors(outColors)
   return outColors

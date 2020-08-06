@@ -971,7 +971,7 @@ class Electron(EDM):
     	Retrieve the electro container size
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-    	return 1
+      return 1
     elif self._dataframe is DataframeEnum.PhysVal_v2:
       if self._is_hlt:
         return self.event.trig_EF_el_et.size()
@@ -1058,7 +1058,7 @@ class Electron(EDM):
       def get_value( event, branch, isolationtype, size, pos, logger ):
         offset = (getattr(event, branch).size()/float(size)) * pos
         if offset+isolationtype > getattr(event,branch).size():
-          logger.error( "IsoType outside of range. Can not retrieve %s from the PhysVal", IsolationTupe.tostring(isolationtype) )
+          logger.error( "IsoType outside of range. Can not retrieve %s from the PhysVal", IsolationType.tostring(isolationtype) )
           return -999
         else:
           return getattr(event,branch).at( int(offset+isolationtype) )

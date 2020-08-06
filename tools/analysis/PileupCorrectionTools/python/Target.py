@@ -66,6 +66,10 @@ class Target( Logger ):
 
   # Retrive the reference value from the target
   def reference( self, storegate, basepath, etbinidx=None, etabinidx=None, mumin=0.0, mumax=100.0, useFalseAlarm=False ):
+
+    # TODO: Change this later. Adding total=0 in order to prevent
+    # "local variable 'total' referenced before assignment" exception
+    total = 0
     
     # The refrence is a str and need to access the histogram directory
     if type(self._refname) is str:
