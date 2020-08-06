@@ -1,5 +1,6 @@
 
 
+
 from prometheus import EventATLAS
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
@@ -24,7 +25,7 @@ parser.add_argument('-n','--nov', action='store',
 
 parser.add_argument('--egam7', action='store_true', 
     dest='doEgam7', required = False, 
-    help = "The colelcted sample came from EGAM7 skemma.")
+    help = "Only for EGAM7/background samples..")
 
 import sys,os
 if len(sys.argv)==1:
@@ -37,8 +38,8 @@ args = parser.parse_args()
 
 acc = EventATLAS( "EventATLASLoop",
                   inputFiles = args.inputFiles, 
-                  treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  #treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                  #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                  treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
                   dataframe = DataframeEnum.PhysVal_v2, 
                   outputFile = args.outputFile,
                   level = LoggingLevel.INFO
@@ -61,8 +62,12 @@ else:
 
 
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
-evt.setCutValue( EtCutType.L2CaloAbove , 3)
-evt.setCutValue( EtCutType.L2CaloBelow , 15)
+evt.setCutValue( EtCutType.L2CaloAbove, 3.)
+evt.setCutValue( EtCutType.L2CaloBelow, 15.)
+evt.setCutValue( EtCutType.OfflineAbove, 2.)
+
+
+
 ToolSvc += evt
 
 
@@ -90,9 +95,7 @@ for t in targets:
   alg.addTarget( t )
 
 
-#if args.doEgam7:
 etbins  = [3.0, 7.0, 10.0, 15.0]
-
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
 
 
