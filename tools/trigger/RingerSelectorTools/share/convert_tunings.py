@@ -223,9 +223,18 @@ def convert_to_onnx( cpath, tpath, version, name, operation_point, maxAvgmu, tna
 
     onnx_model_name = tname%( et, eta )
     onnx_model = keras2onnx.convert_keras(model['model'], model['model'].name)
-    onnx.save_model(onnx_model, 'models/'+onnx_model_name)
+    onnx.save_model(onnx_model, 'models/'+onnx_model_name+'.onnx')
 
     model_paths.append( onnx_model_name )
+
+
+    # serialize model to JSON
+    model_json = model['model'].to_json()
+    with open("models/%s.json"%onnx_model_name, "w") as json_file:
+      json_file.write(model_json)
+    # serialize weights to HDF5
+    model['model'].save_weights("models/%s.h5"%onnx_model_name)
+
 
     eta+=1
     if eta==netas:
@@ -296,7 +305,7 @@ for op in ['Tight','Medium','Loose','VeryLoose']:
   cpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Constants.root"
   tpath = "TrigL2_20180125_v8/TrigL2CaloRingerElectron"+op+"Thresholds.root"
   convert_to_onnx( cpath, tpath , 'v8', 'TrigL2_20180125_v8', op, 100, 
-      'data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.model_v8.electron'+op+'.et%d_eta%d.onnx',
+      'data17_13TeV_EGAM1_probes_lhmedium_EGAM7_vetolhvloose.model_v8.electron'+op+'.et%d_eta%d',
       "ElectronRinger%sTriggerConfig.conf"%op, 5)
 
 
@@ -306,7 +315,7 @@ for op in ['Tight','Medium','Loose','VeryLoose']:
 #  cpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Constants.root"
 #  tpath = "TrigL2_20170505_v6/TrigL2CaloRingerElectron"+op+"Thresholds.root"
 #  convert_to_onnx( cpath, tpath , 'v6', 'TrigL2_20170505_v6', op, 40, 
-#      'mc15_13TeV.423300.Zee_probes_lhmedium.423300.JF17_Truth.model_v6.electron'+op+'.et%d_eta%d.onnx',
+#      'mc15_13TeV.423300.Zee_probes_lhmedium.423300.JF17_Truth.model_v6.electron'+op+'.et%d_eta%d',
 #      "ElectronRinger%sTriggerConfig.conf"%op, 4)
 
 
