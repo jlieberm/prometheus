@@ -225,7 +225,7 @@ def convert_to_onnx( cpath, tpath, version, name, operation_point, maxAvgmu, tna
     onnx_model = keras2onnx.convert_keras(model['model'], model['model'].name)
     onnx.save_model(onnx_model, 'models/'+onnx_model_name+'.onnx')
 
-    model_paths.append( onnx_model_name )
+    model_paths.append( onnx_model_name + '.onnx')
 
 
     # serialize model to JSON

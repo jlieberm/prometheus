@@ -50,26 +50,41 @@ class RingerSelectorTool(Algorithm):
     #
     class OnnxModel(object):
 
-      def __init__( self, modelPath, etmin, etmax, etamin, etamax):
+      def __init__( self, modelPath, etmin, etmax, etamin, etamax, usekeras=False):
         self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
-        import onnxruntime as rt
-        self._session = rt.InferenceSession(modelPath)
-        self._input_name = self._session.get_inputs()[0].name
-        self._input_shape = self._session.get_inputs()[0].shape
-        self._input_type = self._session.get_inputs()[0].type
-        self._output_name = self._session.get_outputs()[0].name
+
+        self.__useKeras=useKeras
+
+        if useKeras:
+          path = modelPath.replace('.onnx','')
+          from tensorflow.keras.models import model_from_json
+          with open(path+'.json', 'r') as json_file:
+            self.__model = model_from_json(json_file.read())
+            # load weights into new model
+            self.__model.load_weights(path+".h5")        
+
+        else:
+          import onnxruntime as rt
+          self.__session = rt.InferenceSession(modelPath)
+          self.__input_name = self._session.get_inputs()[0].name
+          self.__input_shape = self._session.get_inputs()[0].shape
+          self.__input_type = self._session.get_inputs()[0].type
+          self.__output_name = self._session.get_outputs()[0].name
 
       def predict( self, input ):
-        return self._session.run([self._output_name], {self._input_name: input})
+        if self.__useKeras:
+          self.__model.predict(input)[0][0]
+        else: 
+          return self.__session.run([self.__output_name], {self.__input_name: input})[0][0][0]
 
       def etmin(self):
-        return self._etmin
+        return self.__etmin
       def etmax(self):
-        return self._etmax
+        return self.__etmax
       def etamin(self):
-        return self._etamin
+        return self.__etamin
       def etamax(self):
-        return self._etamax
+        return self.__etamax
 
     # 
     # Threshold model class
@@ -176,7 +191,7 @@ class RingerSelectorTool(Algorithm):
     data = preproc( fc.ringsE() )
     
     # compute the output
-    output = model.predict( data )[0][0][0]
+    output = model.predict( data )
 
     accept.setDecor("discriminant", output)
 
