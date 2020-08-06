@@ -50,8 +50,8 @@ class RingerSelectorTool(Algorithm):
     #
     class OnnxModel(object):
 
-      def __init__( self, modelPath, etmin, etmax, etamin, etamax, usekeras=False):
-        self._etmin=etmin; self._etmax=etmax; self._etamin=etamin; self._etamax=etamax
+      def __init__( self, modelPath, etmin, etmax, etamin, etamax, useKeras=False):
+        self.__etmin=etmin; self.__etmax=etmax; self.__etamin=etamin; self.__etamax=etamax
 
         self.__useKeras=useKeras
 
@@ -73,7 +73,7 @@ class RingerSelectorTool(Algorithm):
 
       def predict( self, input ):
         if self.__useKeras:
-          self.__model.predict(input)[0][0]
+          return self.__model.predict(input)[0][0]
         else: 
           return self.__session.run([self.__output_name], {self.__input_name: input})[0][0][0]
 
@@ -130,7 +130,7 @@ class RingerSelectorTool(Algorithm):
     paths = treat_string( env, 'Model__path' )
     
     for idx, path in enumerate( paths ):
-      model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
+      model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx], True) 
       self.__models.append(model)
 
     number_of_thresholds = env.GetValue("Threshold__size", 0)
