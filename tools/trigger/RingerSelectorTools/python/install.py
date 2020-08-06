@@ -6,7 +6,7 @@ __all__ =  [
             "installElectronL2CaloRingerSelector_v8",
             "installElectronL2CaloRingerSelector_v10",
             #jpsiee
-            'installElectronL2CaloRingerSelector_v1'
+            'installLowEnergyElectronL2CaloRingerSelector_v1'
            ]
 import os
 
