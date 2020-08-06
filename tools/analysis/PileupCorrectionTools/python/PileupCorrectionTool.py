@@ -92,7 +92,7 @@ class PileupCorrectionTool( Algorithm ):
     sg = self.getStoreGateSvc()
 
     for dx, dirname in enumerate(keyWanted):
-      for name, target in self._targets.items():
+      for name, target in self.__targets.items():
         for etBinIdx, etaBinIdx in product(range(len(etBins)-1),range(len(etaBins)-1)):
 
           binningname = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
@@ -147,21 +147,22 @@ class PileupCorrectionTool( Algorithm ):
     etBins = self.getProperty( "EtBinningValues")
     etaBins = self.getProperty( "EtaBinningValues")
 
+    isBackground = self.getProperty("IsBackground")
+
     # offline electron
     el = context.getHandler( "ElectronContainer" )
     dec = context.getHandler( "MenuContainer" )
     sg = self.getStoreGateSvc()
 
     # retrive the correct et/eta information
-    if self._doTrigger: # Online
-      fc = context.getHandler( "HLT__FastCaloContainer" ); et = fc.et()/GeV; eta = fc.eta(); phi = fc.phi()
-    else: # Offline
-      phi = el.phi()
-      eta = el.caloCluster().etaBE2()
-      if el.trackParticle().eta() != 0:
-        et = (el.caloCluster().energy()/math.cosh(el.trackParticle().eta()))/GeV
-      else:
-        et = (el.caloCluster().energy()/math.cosh(eta))/GeV
+    #  phi = el.phi()
+    #  eta = el.caloCluster().etaBE2()
+    #  if el.trackParticle().eta() != 0:
+    #    et = (el.caloCluster().energy()/math.cosh(el.trackParticle().eta()))/GeV
+    #  else:
+    #    et = (el.caloCluster().energy()/math.cosh(eta))/GeV
+    
+    fc = context.getHandler( "HLT__FastCaloContainer" ); et = fc.et()/GeV; eta = fc.eta(); phi = fc.phi()
 
     # TODO: This should be a property for future?
     # Remove events after 2.47 in eta. This region its not good for calo cells. (Fat cells)
@@ -177,7 +178,7 @@ class PileupCorrectionTool( Algorithm ):
     # check if the current event looper contains the list
     # if id to fill all histograms.
     #dirname = 'probes' if eventInfo.id() in self._probesId else 'fakes'
-    dirname = 'fakes' if self._is_background  else 'probes'
+    dirname = 'fakes' if isBackground  else 'probes'
 
     # Get the correct binning to fill the histogram later...
 
@@ -190,13 +191,13 @@ class PileupCorrectionTool( Algorithm ):
     binningname = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
     # Loop over pid names
-    for name , target in self._targets.items():
+    for name , target in self.__targets.items():
 
       algname = target.algname(); refname = target.refname()
 
       # Get the decision from the menu assitent
       passed = bool(dec.accept(refname))
-      accept = self.accept( algname )
+      accept = dec.accept( algname )
       discriminant = accept.getDecor( "discriminant" )
 
       path = basepath+'/'+dirname+'/'+name+'/'+refname+'/'+binningname

@@ -14,13 +14,16 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Ensure pip is installed
-      run: apt-get install -y python-pip python3-pip
+      run: sudo apt-get install -y python-pip python3-pip
 
     - name: Ensure Cython is installed and available
       run: |
         python3 -m pip install cython
         python  -m pip install cython
+        export PATH=$PATH:$HOME/.local/bin
         cython --help
         
     - name: Run CI script
-      run: ci/ci.sh
+      run: |
+        export PATH=$PATH:$HOME/.local/bin
+        ci/ci.sh
