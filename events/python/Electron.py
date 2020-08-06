@@ -1,5 +1,5 @@
 
-__all__ = ['Electron', 'ElectronPid', 'EgammaParameters']
+__all__ = ['Electron', 'ElectronPid', 'EgammaParameters', 'IsolationType']
 
 from Gaugi import EDM
 from Gaugi  import StatusCode, EnumStringification
@@ -124,6 +124,28 @@ class EgammaParameters(EnumStringification):
       Rhad1 = 42
       # brief e2tsts1-emins1
       DeltaE =43
+
+
+class IsolationType(EnumStringification):
+
+      # brief etcone20
+      etcone20 = 0
+      # brief etcone30
+      etcone30 = 1
+      # brief etcone40
+      etcone40 = 2
+      # brief ptcone20
+      ptcone20 = 3 # 0
+      # brief ptcone30
+      ptcone30 = 4 # 1
+      # brief ptcone40
+      ptcone40 = 5 # 2
+      # brief ptvarcone20
+      ptvarcone20 = 6 # 3
+      # brief ptvatcone30
+      ptvarcone30 = 7 # 4
+      # brief ptvarcone240
+      ptvarcone40 = 8 # 5
 
 
 
@@ -255,6 +277,13 @@ class Electron(EDM):
                           'el_nGoodVtx',
                           'el_nPileupPrimaryVtx',
 
+                          'el_etCone',
+                          'el_ptCone',
+
+                          # Extra for boosted
+                          'el_DeltaR',
+                          'el_eeMass',
+
                         ],
                         'HLT__Electron':[
 
@@ -316,6 +345,9 @@ class Electron(EDM):
                           'trig_EF_calo_lhloose',
                           'trig_EF_calo_lhmedium',
                           'trig_EF_calo_lhtight',
+
+                          'trig_EF_el_etCone',
+                          'trig_EF_el_ptCone',
                           ]
                           }
                 }
@@ -758,6 +790,37 @@ class Electron(EDM):
       self._logger.warning("Impossible to retrieve the value of dphi2. Unknow dataframe.")
       return -999
 
+  # Boosted
+  def eeMass (self):
+    """
+      Adds DeltaR and eeMass information
+    """
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      return -999
+    elif self._dataframe is DataframeEnum.PhysVal_v2:
+      if self._is_hlt:
+        return -999
+      else:
+        return self._event.el_eeMass
+    else:
+      self._logger.warning("Impossible to retrieve the value of eeMass. Unknow dataframe.")
+      return -999
+
+  # Boosted
+  def deltaR (self):
+    """
+      Adds DeltaR and eeMass information
+    """
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      return -999
+    elif self._dataframe is DataframeEnum.PhysVal_v2:
+      if self._is_hlt:
+        return -999
+      else:
+        return self._event.el_DeltaR
+    else:
+      self._logger.warning("Impossible to retrieve the value of deltaR. Unknow dataframe.")
+      return -999
 
   # trackCaloMatchValue
   def deltaPhiRescaled0(self):
@@ -988,6 +1051,37 @@ class Electron(EDM):
 
 
 
+  def isolationValue( self, isolationType ):
+
+    if self._dataframe is DataframeEnum.PhysVal_v2:
+
+      def get_value( event, branch, isolationtype, size, pos, logger ):
+        offset = (getattr(event, branch).size()/float(size)) * pos
+        if offset+isolationtype > getattr(event,branch).size():
+          logger.error( "IsoType outside of range. Can not retrieve %s from the PhysVal", IsolationTupe.tostring(isolationtype) )
+          return -999
+        else:
+          return getattr(event,branch).at( int(offset+isolationtype) )
+
+      if isolationType < 3:
+        # get from et cone branch
+        return get_value( self._event, "trig_EF_el_etCone", isolationType, self.size(), self.getPos(), self._logger ) if self._is_hlt else \
+               get_value( self._event, "el_etCone", isolationType, self.size(), self.getPos(), self._logger )
+
+      else:
+        # get from pt cone branch
+        return get_value( self._event, "trig_EF_el_ptCone", isolationType-3, self.size(), self.getPos(), self._logger ) if self._is_hlt else \
+               get_value( self._event, "el_ptCone", isolationType-3, self.size(), self.getPos(), self._logger )
+
+    else:
+      self._logger.warning("Impossible to retrieve the isolation value. Unknow dataframe")
+      return -999
+
+
+
+  #
+  # Get accept answer
+  #
   def accept( self,  pidname ):
 
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:

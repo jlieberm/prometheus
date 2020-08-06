@@ -5,7 +5,7 @@ __all__ = ['EventATLAS']
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
-from Gaugi import StatusCode
+from Gaugi import StatusCode, StatusTool
 from Gaugi.gtypes import NotSet
 from Gaugi import TEventLoop
 
@@ -15,9 +15,9 @@ class EventATLAS( TEventLoop ):
 
   def __init__(self, name , **kw):
     # Retrieve all information needed
-    TEventLoop.__init__(self, name,**kw)
-    import ROOT
-    ROOT.gSystem.Load('libprometheus')
+    TEventLoop.__init__(self, name, **kw)
+    #import ROOT
+    #ROOT.gSystem.Load('libprometheus')
 
 
 
@@ -26,20 +26,13 @@ class EventATLAS( TEventLoop ):
   def initialize( self ):
 
     MSG_INFO( self, 'Initializing EventATLAS...')
-
     if super(EventATLAS,self).initialize().isFailure():
       MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
 
 
-    from ROOT import edm
-    # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      self._event = edm.SkimmedNtuple()
-    elif self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._event = edm.SkimmedNtuple_v2()
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
-      #self._event = ROOT.RingerPhysVal()
-      self._event = edm.RingerPhysVal_v2()
+    if self._dataframe is DataframeEnum.PhysVal_v2:
+      from EventAtlas import PhysVal_v2
+      self._event = PhysVal_v2()
     else:
       return StatusCode.FATAL
 
@@ -54,6 +47,7 @@ class EventATLAS( TEventLoop ):
     from EventAtlas import EventInfo
     from EventAtlas import MonteCarlo
     from EventAtlas import TDT
+    from EventAtlas import Menu
    
     
     # Initialize the base of this container.
@@ -65,6 +59,7 @@ class EventATLAS( TEventLoop ):
                             'ElectronContainer'          : Electron(),
                             'CaloClusterContainer'       : CaloCluster(),
                             'TrackParticleContainer'     : TrackParticle(),
+                            'MenuContainer'              : Menu(),
                            }
 
     self._containersSvc.update({
@@ -115,7 +110,28 @@ class EventATLAS( TEventLoop ):
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
 
+
     self.getContext().initialize()
+
+
+
+    MSG_INFO( self, 'Initializing all tools...')
+    from Gaugi import ToolSvc as toolSvc
+    self._alg_tools = toolSvc.getTools()
+    for alg in self._alg_tools:
+      if alg.status is StatusTool.DISABLE:
+        continue
+      # Retrieve all services
+      alg.level = self._level
+      alg.setContext( self.getContext() )
+      alg.setStoreGateSvc( self.getStoreGateSvc() )
+      alg.dataframe = self._dataframe
+      if alg.isInitialized():
+        continue
+      if alg.initialize().isFailure():
+        MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
+
+
     return StatusCode.SUCCESS
 
 

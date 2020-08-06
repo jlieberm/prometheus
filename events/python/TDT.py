@@ -28,6 +28,8 @@ class DecisionCore(EnumStringification):
 
 
 
+
+
 class TDT(EDM):
     # define all skimmed branches here.
     __eventBranches = {
@@ -124,6 +126,11 @@ class TDT(EDM):
         else:
             return False
 
+
+    def getTriggerList(self):
+      return self._triggerList
+
+
     def ancestorPassed( self, trigItem, acceptType ):
         """
         Method to retireve the bool accept for a trigger. To use this:
@@ -151,7 +158,7 @@ class TDT(EDM):
         else:
             MSG_WARNING( self, 'Trigger %s not storage in TDT metadata.',trigItem)
 
-
+    
 
 
 
