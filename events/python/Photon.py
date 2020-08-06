@@ -6,6 +6,7 @@ from Gaugi import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from Gaugi  import stdvector_to_list
+import math
 
 class EgammaParameters(EnumStringification):
 
@@ -304,7 +305,7 @@ class Photon(EDM):
       self._logger.warning("Impossible to retrieve the value of Phi. Unknow dataframe.")
       return -999
 
-def reta(self):
+  def reta(self):
     """
       Retrieve the Reta information from Physval or SkimmedNtuple
     """
@@ -552,7 +553,7 @@ def reta(self):
 
 
 
-def getAvgmu(self):
+  def getAvgmu(self):
     """
       Retrieve the rphi information from Physval or SkimmedNtuple
     """
