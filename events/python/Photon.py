@@ -552,7 +552,7 @@ class Photon(EDM):
 
 
 
-def getAvgmu(self):
+  def getAvgmu(self):
     """
       Retrieve the rphi information from Physval or SkimmedNtuple
     """
