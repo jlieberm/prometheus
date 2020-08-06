@@ -68,7 +68,14 @@ res_ybins[2][1] = longbarrelhigherE
 res_ybins[2][3] = endcaphigherE
 res_ybins[2][2] = crack
 
-alg.setHistogram2DRegion( -6, 6, 0, 70, res_xbins, res_ybins )
+print ("#"*50)
+print ("#"*50)
+print ("If you're running this, please review code.")
+#####
+# TODO: Uncomment the following line, fixing `res_xbins` as it's undeclared before using
+# alg.setHistogram2DRegion( -6, 6, 0, 70, res_xbins, res_ybins )
+print ("#"*50)
+print ("#"*50)
 
 etbins = [3.0, 7.0, 10.0, 15.0]
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.5]
