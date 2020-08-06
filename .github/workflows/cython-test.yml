@@ -24,4 +24,6 @@ jobs:
         cython --help
         
     - name: Run CI script
-      run: ci/ci.sh
+      run: |
+        export PATH=$PATH:$HOME/.local/bin
+        ci/ci.sh
