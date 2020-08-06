@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  cython-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Ensure pip is installed
+      run: apt-get install -y python-pip python3-pip
+
+    - name: Ensure Cython is installed and available
+      run: |
+        python3 -m pip install cython
+        python  -m pip install cython
+        cython --help
+        
+    - name: Run CI script
+      run: ci/ci.sh
