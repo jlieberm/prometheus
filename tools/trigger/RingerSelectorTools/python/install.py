@@ -5,6 +5,8 @@ __all__ =  [
             "installElectronL2CaloRingerSelector_v6",
             "installElectronL2CaloRingerSelector_v8",
             "installElectronL2CaloRingerSelector_v10",
+            #jpsiee
+            'installElectronL2CaloRingerSelector_v1'
            ]
 import os
 
@@ -97,4 +99,31 @@ def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
   return names
 
 
+###########################################################
+################### jpsiee v1 tuning  #####################
+###########################################################
+def installElectronL2CaloRingerSelector_v1( toolname = "Emulator" ):
+
+  from RingerSelectorTools import RingerSelectorTool
+  from RingerSelectorTools import norm1 as norm
+  # do not change this paths...
+  calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/TrigL2_20200805_mlp2.v1'
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v1"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v1"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v1", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm), 
+    ]
+
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve( "Emulator" )
+  names = []
+  for hypo in hypos:
+    names.append( hypo.name() )
+    if not emulator.isValid( hypo.name() ):
+      emulator+=hypo
+  return names
 

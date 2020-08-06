@@ -57,7 +57,7 @@ class PileupCorrectionTool( Algorithm ):
     if target.name() in self.__targets.keys():
       MSG_ERROR( self, "Can not include %s as target. This target already exist into the target list", target.name())
     else:
-      self._targets[ target.name() ] = target
+      self.__targets[ target.name() ] = target
 
 
   def setEtBinningValues( self, etbins ):
