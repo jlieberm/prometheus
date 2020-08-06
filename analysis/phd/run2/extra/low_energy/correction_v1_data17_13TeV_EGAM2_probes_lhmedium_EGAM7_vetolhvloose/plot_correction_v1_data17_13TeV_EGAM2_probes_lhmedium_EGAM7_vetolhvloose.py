@@ -1,5 +1,6 @@
 
 import argparse
+import numpy as np
 from prometheus.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi import ToolSvc, ToolMgr
