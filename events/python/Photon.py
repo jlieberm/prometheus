@@ -304,7 +304,7 @@ class Photon(EDM):
       self._logger.warning("Impossible to retrieve the value of Phi. Unknow dataframe.")
       return -999
 
-def reta(self):
+  def reta(self):
     """
       Retrieve the Reta information from Physval or SkimmedNtuple
     """
