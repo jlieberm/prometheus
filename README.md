@@ -1,7 +1,7 @@
 
 # Prometheus 
 
-
+![CI](https://github.com/jodafons/prometheus/workflows/CI/badge.svg)
 
 ## Installation:
 
