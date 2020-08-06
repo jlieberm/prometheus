@@ -254,6 +254,24 @@ class Photon(EDM):
 
     return StatusCode.SUCCESS
 
+
+  def et(self):
+    """
+      Retrieve the Et information from Physval or SkimmedNtuple
+    """
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
+      return -999
+    elif self._dataframe is DataframeEnum.PhysVal_v2:
+      eta = self.caloCluster().etaBE2()
+      if self.trackParticle() and  self.trackParticle().eta() != 0:
+          return (self.caloCluster().energy()/math.cosh(self.trackParticle().eta()))
+      else:
+        return (self.caloCluster().energy()/math.cosh(eta))
+    else:
+      self._logger.warning("Impossible to retrieve the value of Et.")
+      return -999
+
   def eta(self):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
