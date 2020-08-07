@@ -135,6 +135,7 @@ class EfficiencyTool( Algorithm ):
   def fillEfficiency( self, dirname, el, etthr, pidword, isPassed ):
   
     sg = self.getStoreGateSvc()
+    
     pid = el.accept(pidword) if pidword else True
 
     eta = el.caloCluster().etaBE2()

@@ -85,7 +85,7 @@ alg = PileupCorrectionTool( 'PileupCorrection' , IsBackground = True if args.doE
 
 targets = [
             Target( 'L2_Tight_v1' , 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloTight"  ) , 
-            Target( 'L2_Mediun_v1', 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloMedium"  ) , 
+            Target( 'L2_Medium_v1', 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloMedium"  ) , 
             Target( 'L2_Loose_v1' , 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloLoose"  ) , 
             Target( 'L2_VLoose_v1', 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloVLoose" ) ,
 
