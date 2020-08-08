@@ -247,15 +247,20 @@ class PileupCorrectionTool( Algorithm ):
   #
   def plot(self, dirname, pdftitle, pdfoutput,  export=True ):
 
-
+    from ROOT import gROOT, kTRUE
+    gROOT.SetBatch(kTRUE)
     SetAtlasStyle()
     # generate all plots and the summary
     summary = self.generate_plots(dirname)
 
+    etBins = self.getProperty( "EtBinningValues")
+    etaBins = self.getProperty( "EtaBinningValues")
+
+
 
     if export:
       from ROOT import TEnv
-      for _, target in self._targets.items():
+      for _, target in self.__targets.items():
 
         etmin_list = []; etmax_list = []; etamin_list = []; etamax_list = []; slopes = []; offsets = []
 
@@ -284,7 +289,6 @@ class PileupCorrectionTool( Algorithm ):
         MSG_INFO( self, "Export %s...", target.name() )
         env.WriteFile( target.name() +'.conf' )
 
-
     MSG_INFO( self, 'Do pdf maker...')
     # Slide maker
     with BeamerTexReportTemplate1( theme = 'Berlin'
@@ -302,12 +306,12 @@ class PileupCorrectionTool( Algorithm ):
         else:
           etbins_str.append(  r'$%d < E_{T} \text{[Gev]}<%d$'%etbin )
 
-      for etaBinIdx in range( len(etBins)-1 ):
+      for etaBinIdx in range( len(etaBins)-1 ):
         etabin = (etaBins[etaBinIdx], etaBins[etaBinIdx+1])
         etabins_str.append( r'$%.2f<\eta<%.2f$'%etabin )
 
 
-      for _, target in self._targets.items():
+      for _, target in self.__targets.items():
 
         with BeamerSection( name = target.name().replace('_','\_') ):
 
@@ -451,6 +455,10 @@ class PileupCorrectionTool( Algorithm ):
     from .functions import ApplyThresholdLinearCorrection
     from .drawers import PlotEff, Plot2DHist
 
+    basepath = self.getProperty( "Basepath" )
+    etBins = self.getProperty( "EtBinningValues")
+    etaBins = self.getProperty( "EtaBinningValues")
+
 
     ROOT.gErrorIgnoreLevel=ROOT.kFatal
 
@@ -465,7 +473,7 @@ class PileupCorrectionTool( Algorithm ):
     summary = {}
     sg = self.getStoreGateSvc()
 
-    for _, target in self._targets.items():
+    for _, target in self.__targets.items():
 
       # build the efficiency table
       summary[target.name()] = {
@@ -491,10 +499,8 @@ class PileupCorrectionTool( Algorithm ):
         doLinearCorrection=True
         MSG_INFO( self, 'Applying correction in <et=%d, eta=%d> ? %s', etBinIdx,etaBinIdx, doLinearCorrection)
 
-        sgn_hist2D = sg.histogram(basepath+'/probes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+
-            ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
-        bkg_hist2D = sg.histogram(basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+
-            ('discriminantVsMu' if self.doTrigger else 'discriminantVsNvtx') )
+        sgn_hist2D = sg.histogram(basepath+'/probes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+ 'discriminantVsMu' )
+        bkg_hist2D = sg.histogram(basepath+'/fakes/'+target.name()+'/'+target.algname()+'/'+binningname+'/'+ 'discriminantVsMu' )
 
 
         # apply the threshold linear correction follow the last strategy using the root linear fitting
@@ -545,21 +551,21 @@ class PileupCorrectionTool( Algorithm ):
         outname = localpath+'/eff_signal_corr_'+target.name()+'_'+binningname
         plotname = PlotEff( self.__histConfig, objects['signal_hists']['eff'], objects['signal_corr_hists']['eff'],
                            sgn_eff, outname, runLabel=None,  etBinIdx=etBinIdx, etaBinIdx=etaBinIdx, etBins=etBins,
-                           etaBins=etaBins, xlabel='<#mu>' if self.doTrigger else 'N_{vtx}' )
+                           etaBins=etaBins, xlabel='<#mu>' )
         summary[target.name()]['plotnames'][etBinIdx][etaBinIdx]['signal_corr_eff'] = plotname
 
         # Plot background efficicency w.r.t the pileup
         outname = localpath+'/eff_background_corr_'+target.name()+'_'+binningname
         plotname = PlotEff( self.__histConfig, objects['background_hists']['eff'], objects['background_corr_hists']['eff'],
                            sgn_eff, outname, runLabel=None,  etBinIdx=etBinIdx, etaBinIdx=etaBinIdx, etBins=etBins,
-                           etaBins=etaBins, xlabel='<#mu>' if self.doTrigger else 'N_{vtx}' )
+                           etaBins=etaBins, xlabel='<#mu>' )
         summary[target.name()]['plotnames'][etBinIdx][etaBinIdx]['background_corr_eff'] = plotname
 
 
         outname = localpath+'/hist2D_signal_corr_'+target.name()+'_'+binningname
         plotname = Plot2DHist( self.__histConfig, objects['signal_corr_hists']['hist2D'], objects['correction']['angular'], objects['correction']['offset'],
                                objects['correction']['discr_points'], objects['correction']['nvtx_points'], objects['correction']['error_points'], outname,
-                               xlabel='<#mu>' if self.doTrigger else 'N_{vtx}' ,
+                               xlabel='<#mu>' ,
                                etBinIdx=etBinIdx, etaBinIdx=etaBinIdx, etBins=etBins, etaBins=etaBins)
         summary[target.name()]['plotnames'][etBinIdx][etaBinIdx]['hist2D_signal_corr'] = plotname
 
@@ -567,7 +573,7 @@ class PileupCorrectionTool( Algorithm ):
         outname = localpath+'/hist2D_background_corr_'+target.name()+'_'+binningname
         plotname = Plot2DHist( self.__histConfig, objects['background_corr_hists']['hist2D'], objects['correction']['angular'], objects['correction']['offset'],
                                objects['correction']['discr_points'], objects['correction']['nvtx_points'], objects['correction']['error_points'], outname,
-                               xlabel= '<#mu>' if self.doTrigger else 'N_{vtx}',
+                               xlabel= '<#mu>',
                                etBinIdx=etBinIdx, etaBinIdx=etaBinIdx, etBins=etBins, etaBins=etaBins)
         summary[target.name()]['plotnames'][etBinIdx][etaBinIdx]['hist2D_background_corr'] = plotname
 
