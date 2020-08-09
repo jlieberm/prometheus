@@ -47,7 +47,8 @@ class Chain( Algorithm ):
 
       if version < 0:
         MSG_FATAL( self, "The trigger %s is ringer chain but you don't specifie a correct tuning version.", self.__trigger)
-    
+
+      MSG_INFO( self, "Version is %d", version )
       if self.__trigInfo.signature() == 'electron':
 
         if self.__trigInfo.etthr() > 15 :

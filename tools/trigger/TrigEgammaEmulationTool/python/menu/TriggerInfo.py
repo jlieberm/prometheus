@@ -67,9 +67,7 @@ class TriggerInfo(Logger):
 
     self.__ringerVersion = -1
     if self.__ringer:
-      if 'v1' in trigger:
-        self.__ringerVersion = 1
-      elif 'v6' in trigger:
+      if 'v6' in trigger:
         self.__ringerVersion = 6
       elif 'v7' in trigger:
         self.__ringerVersion = 7
@@ -77,6 +75,8 @@ class TriggerInfo(Logger):
         self.__ringerVersion = 8
       elif 'v10' in trigger:
         self.__ringerVersion = 10
+      elif 'v1' in trigger:
+        self.__ringerVersion = 1
       else:
         self.__ringerVersion = 8
 

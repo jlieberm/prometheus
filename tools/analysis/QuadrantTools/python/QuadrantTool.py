@@ -14,7 +14,7 @@ from Gaugi.monet.AtlasStyle import SetAtlasStyle
 # tool includes
 from PileupCorrectionTools.utilities import RetrieveBinningIdx
 from ProfileTools.constants import *
-from QuadrantTool import *
+from QuadrantTools import *
 from ROOT import TH1F
 from functools import reduce
 from itertools import product
@@ -53,14 +53,14 @@ class QuadrantTool( Algorithm ):
       self.setProperty( key, value )
 
 
-    self._quadrantFeatures = list()
+    self.__quadrantFeatures = list()
    
 
   #
   # Add quadrant configuration
   #
   def add_quadrant( self, name_a, expression_a, name_b, expression_b):
-
+    from . import QuadrantConfig
     self.__quadrantFeatures.append( QuadrantConfig(name_a,expression_a,name_b,expression_b) )
 
 
