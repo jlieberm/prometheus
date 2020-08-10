@@ -4,6 +4,7 @@ __all__ = ["PlotQuantities", "GetStatistics","QuadrantConfig" ]
 from Gaugi.monet.PlotFunctions import *
 from Gaugi.monet.TAxisFunctions import *
 from copy import copy
+from itertools import product
 import ROOT
 
 
@@ -69,7 +70,7 @@ class QuadrantConfig(object):
 #
 # Plot quadrant 
 #
-def PlotQuantities( sg, basepath, key, outname, drawopt='hist', divide='B', etidx=None, etaidx=None, xlabel='', runLabel='',addbinlines=False, etBins=[], etaBins=[]):
+def PlotQuantities( sg, basepath, key, outname, legends, drawopt='hist', divide='B', etidx=None, etaidx=None, xlabel='', runLabel='',addbinlines=False, etBins=[], etaBins=[]):
 
 
   import ROOT
@@ -78,7 +79,6 @@ def PlotQuantities( sg, basepath, key, outname, drawopt='hist', divide='B', etid
   ROOT.TH1.AddDirectory(ROOT.kFALSE)
 
   from Gaugi.monet.utilities import sumHists
-  from .utilities import AddTopLabels
 
 
   if (etidx is not None) and (etaidx is not None):
@@ -125,6 +125,7 @@ def PlotQuantities( sg, basepath, key, outname, drawopt='hist', divide='B', etid
   divs = []
   for idx, hist in enumerate(hists):
     
+    hist.SetMarkerStyle(20)
     hist.SetMarkerSize(0.35)
     hist.SetLineColor(these_colors[idx])
     hist.SetMarkerColor(these_colors[idx])
@@ -142,9 +143,9 @@ def PlotQuantities( sg, basepath, key, outname, drawopt='hist', divide='B', etid
     if idx == 1 or idx == 2: AddHistogram( pad_bot, div , 'p', False, None, None)
     #if idx == 2: AddHistogram( pad_bot, div , 'p', False, None, None)
 
-  legend = [ 'Both Approved','Ringer Rejected', 'Ringer Approved', 'Both Rejected' ]
-  AddTopLabels(outcan, legend, runLabel=runLabel, legOpt='p',
-               logger=self._logger,etlist=etBins,etalist=etaBins,etidx=etidx,etaidx=etaidx)
+
+  AddTopLabels(outcan, legends, runLabel=runLabel, legOpt='p',
+               etlist=etBins,etalist=etaBins,etidx=etidx,etaidx=etaidx)
 
   SetAxisLabels(outcan,xlabel,'Count','Disagreement [%]')
   #SetAxisLabels(outcan,xlabel,'Count','(Red or Blue)/Total [%]')

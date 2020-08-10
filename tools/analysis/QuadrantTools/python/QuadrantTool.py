@@ -14,7 +14,7 @@ from Gaugi.monet.AtlasStyle import SetAtlasStyle
 # tool includes
 from PileupCorrectionTools.utilities import RetrieveBinningIdx
 from ProfileTools.constants import *
-from QuadrantTools import *
+from QuadrantTools.drawers import *
 from ROOT import TH1F
 from functools import reduce
 from itertools import product
@@ -215,9 +215,9 @@ class QuadrantTool( Algorithm ):
   #
   # Standalone plot method
   #
-  def plot(self, dirnames, pdfoutputs, pdftitles, runLabel='' ,doPDF=True):
+  def plot(self, dirnames, pdfoutputs, pdftitles, runLabel='' ,doPDF=True, legends=None):
     
-
+    legends = [ 'Both Approved','Ringer Rejected', 'Ringer Approved', 'Both Rejected' ] if legends is None else legends
 
     SetAtlasStyle()
     beamer_plots = {}
@@ -228,7 +228,7 @@ class QuadrantTool( Algorithm ):
     etaBins = self.getProperty( "EtaBinningValues" )
 
 
-
+    sg = self.getStoreGateSvc()
 
     for idx, feat in enumerate(self.__quadrantFeatures):
       
@@ -255,45 +255,44 @@ class QuadrantTool( Algorithm ):
           ### loop over standard quantities
           for key in standardQuantitiesNBins.keys(): 
             outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-            out = PlotQuantities(basepath+'/'+quadrant_name+'/'+binning_name, key, 
-                outname,etidx=etBinIdx,etaidx=etaBinIdx,xlabel=electronQuantities[key],divide='b',runLabel=runLabel)
+            out = PlotQuantities(sg, basepath+'/'+quadrant_name+'/'+binning_name, key, outname, legends, etBins=etBins, etaBins=etaBins,
+                etidx=etBinIdx,etaidx=etaBinIdx,xlabel=electronQuantities[key],divide='b',runLabel=runLabel)
             beamer_plots[quadrant_name][binning_name][key] = out
             #del tobject_collector[:]
         
           ### loop over info quantities
           for key in basicInfoQuantities.keys():
             outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-            out = PlotQuantities(basepath+'/'+quadrant_name+'/'+binning_name, key, 
-                outname, etidx=etBinIdx,etaidx=etaBinIdx,xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel)
+            out = PlotQuantities(sg, basepath+'/'+quadrant_name+'/'+binning_name, key, outname, legends, etBins=etBins, etaBins=etaBins,
+                etidx=etBinIdx,etaidx=etaBinIdx,xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel)
             beamer_plots[quadrant_name][binning_name][key] = out
             #del tobject_collector[:]
 
           
-          beamer_plots[quadrant_name][binning_name]['statistics'] = GetStatistics(basepath+'/'+quadrant_name+'/'+binning_name, \
-                                                                                        'avgmu',etidx=etBinIdx,etaidx=etaBinIdx)
+          beamer_plots[quadrant_name][binning_name]['statistics'] = GetStatistics(sg, basepath+'/'+quadrant_name+'/'+binning_name, \
+                                                                                        'avgmu',etidx=etBinIdx,etaidx=etaBinIdx,
+                                                                                        etBins=etBins, etaBins=etaBins)
       
 
       #### Plot integrated histograms
       ### loop over standard quantities
       for key in standardQuantitiesNBins.keys(): 
         outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key
-        out = PlotQuantities(basepath+'/'+quadrant_name, key, 
-              outname,xlabel=electronQuantities[key],divide='b',runLabel=runLabel,
-              addbinlines=True)
+        out = PlotQuantities(sg, basepath+'/'+quadrant_name, key, outname, legends, xlabel=electronQuantities[key],divide='b',runLabel=runLabel,
+              addbinlines=True, etBins=etBins, etaBins=etaBins)
         beamer_plots[quadrant_name]['integrated'][key] = out
         tobject_collector = []
         gc.collect()
       ### loop over info quantities
       for key in basicInfoQuantities.keys():
         outname = dirname+'/'+quadrant_name.replace('_Vs_','_')+'_'+ key + '_' + binning_name
-        out = PlotQuantities(basepath+'/'+quadrant_name, key, 
-            outname,xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel,
-            addbinlines=True)
+        out = PlotQuantities(sg, basepath+'/'+quadrant_name, key, outname, legends, xlabel=basicInfoQuantities[key],divide='b', runLabel=runLabel,
+            addbinlines=True, etBins=etBins , etaBins=etaBins)
         beamer_plots[quadrant_name]['integrated'][key] = out
         tobject_collector = []
         gc.collect()
       
-      beamer_plots[quadrant_name]['integrated']['statistics'] = GetStatistics(basepath+'/'+quadrant_name, 'avgmu')
+      beamer_plots[quadrant_name]['integrated']['statistics'] = GetStatistics(sg, basepath+'/'+quadrant_name, 'avgmu', etBins=etBins, etaBins=etaBins)
 
 
 
