@@ -33,8 +33,8 @@ from Gaugi  import restoreStoreGate
 sg =  restoreStoreGate( args.inputFile )
 alg.setStoreGateSvc(sg)
 
-alg.add_quadrant( 'HLT_e28_lhtight_nod0_ringer_v8_ivarloose'  , "EMU_e28_lhtight_nod0_ringer_v8_ivarloose", # Ringer v8
-                  'HLT_e28_lhtight_nod0_ringer_v10_ivarloose' , "EMU_e28_lhtight_nod0_ringer_v10_ivarloose") # Ringer v10
+alg.add_quadrant( 'HLT_e28_lhtight_nod0_ringer_v6_ivarloose' , "EMU_e28_lhtight_nod0_ringer_v6_ivarloose", # Ringer v6
+                  'HLT_e28_lhtight_nod0_ringer_v8_ivarloose' , "EMU_e28_lhtight_nod0_ringer_v8_ivarloose") # Ringer v8
 
 
 
@@ -46,12 +46,12 @@ alg.setEtaBinningValues(etalist)
 ToolSvc += alg
 
 outputs = [
-            'plot_quadrant_EGAM1_e28_ringer_v8_and_v10_2018',
+            'plot_quadrant_EGAM1_e28_ringer_v6_and_v8_2018',
             ]
 
-legends = ['Both Approved', 'Ringer v10 Rejected', 'Ringer v10 Approved', 'Both Rejected']
+legends = ['Both Approved', 'Ringer v8 Rejected', 'Ringer v8 Approved', 'Both Rejected']
 
-alg.plot(outputs, outputs, ['Quadrant Analysis e28 lhtight ringer v8/v10 (data18)'] ,legends=legends, doPDF=True)
+alg.plot(outputs, outputs, ['Quadrant Analysis e28 lhtight ringer v6/v8 (data18)'] ,legends=legends, doPDF=True)
 
 
 
