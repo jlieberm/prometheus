@@ -163,6 +163,10 @@ class QuadrantTool( Algorithm ):
       return StatusCode.SUCCESS
 
     etBinIdx, etaBinIdx = RetrieveBinningIdx(et,eta,etBins, etaBins, logger=self._logger )
+    
+    if etBinIdx==-1 and etaBinIdx==-1:
+      return StatusCode.SUCCESS
+    
     binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
     for feat in self.__quadrantFeatures:
