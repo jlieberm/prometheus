@@ -1,5 +1,5 @@
 
-__all__ = ["PlotQuantities", "GetStatistics","QuadrantConfig" ]
+__all__ = ["PlotQuantities", "GetStatistics","SelectionConfig" ]
 
 from Gaugi.monet.PlotFunctions import *
 from Gaugi.monet.TAxisFunctions import *
@@ -45,24 +45,46 @@ def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', etlist = None
           logger.warning("Couldn't print test due to error: %s", e)
         pass
 
-
-class QuadrantConfig(object):
+# Impact only need the selector
+class SelectionConfig(object):
+  '''
+  This class will hold the selection names and the selection expressions. 
+  Using their methods is posible to access the name and expression of a given selection 
+  '''
   def __init__(self, name_a, expression_a, name_b, expression_b):
-    self._name_a=name_a; self._name_b=name_b
-    self._expression_a=expression_a; self._expression_b=expression_b
+    '''
+    Arguments:
+    name_a (b): selection name.
+    expression_a (b): the expression which represents the name.
+    '''
+    self._name_a = name_a
+    self._expression_a = expression_a
+    self._name_b = name_b
+    self._expression_b = expression_b
   
   def name_a(self):
+    '''
+    Return the selection name_a
+    '''
     return self._name_a
 
-  def expression_a(self):
-    return self._expression_a
-
   def name_b(self):
+    '''
+    Return the selection name_b
+    '''
     return self._name_b
 
-  def expression_b(self):
-    return self._expression_b
+  def expression_a(self):
+    '''
+    Return the expression_a
+    '''
+    return self._expression_a
 
+  def expression_b(self):
+    '''
+    Return the expression_b
+    '''
+    return self._expression_b
 
 
 

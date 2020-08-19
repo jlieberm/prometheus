@@ -20,11 +20,12 @@ from itertools import product
 import os, gc, time, math
 import numpy as np
 
+from ImpactTools.drawers import *
 
 #
 # Analysis tool
 #
-class impactTool( Algorithm ):
+class ImpactTool( Algorithm ):
 
   # selection names definition
   __selections = [
@@ -50,7 +51,7 @@ class impactTool( Algorithm ):
       self.setProperty( key, value )
 
 
-    self._selectionFeatures = list()
+    self.__selectionFeatures = list()
    
 
   #
@@ -58,7 +59,7 @@ class impactTool( Algorithm ):
   #
   def add_selection( self, name_a, expression_a, name_b, expression_b):
 
-    self.__selectionFeatures.append( QuadrantConfig(name_a,expression_a,name_b,expression_b) )
+    self.__selectionFeatures.append( SelectionConfig(name_a, expression_a, name_b, expression_b) )
 
 
   #
@@ -89,8 +90,8 @@ class impactTool( Algorithm ):
     etabins = default_etabins
 
     for feat in self.__selectionFeatures:
-      # hold quadrant name
-      quadrant_name = feat.name_a()+'_Vs_'+feat.name_b()
+      # hold selection name
+      selection_name = feat.name_a()+'_VS_'+feat.name_b()
 
       ### loopover ets...
       for etBinIdx in range(len(etBins)-1):
@@ -163,40 +164,49 @@ class impactTool( Algorithm ):
     binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
     for feat in self.__selectionFeatures:
+      # create a list of histogram paths
+      dir_list       = []
+      selection_name = feat.name_a()+'_VS_'+feat.name_b()
+      # check the decision for this expression
+      passed_a       = bool(dec.accept( feat.expression_a() ))
+      if passed_a: # check if passed for expression_a
+        # if passed then append the path in dir_list
+        dir_list.append(basepath+'/'+selection_name+'/'+binning_name+'/ringer')
+      # now do the same for expression_b
+      passed_b       = bool(dec.accept( feat.expression_b() ))
+      if passed_b:
+        dir_list.append(basepath+'/'+selection_name+'/'+binning_name+'/no_ringer')
       
-      name     = feat.name_a()+'_Vs_'+feat.name_b()
-      passed_x = bool(dec.accept( feat.expression_a() ))
-      passed_y = bool(dec.accept( feat.expression_b() ))
-      # PAREI AQUI PRECISO DESCOBRIR COMO FILAR OS CARINHAS
-      passed_x = 'ringer' if passed_x else 'rejected'
-      passed_y = 'no_ringer' if passed_y else 'rejected'
-      dirname  = basepath+'/'+name+'/'+binning_name+'/'+passed_x +'_'+ passed_y
+      # now loop over the dir_list to fill all histograms
+      for ipath in dir_list:
+        # getting the path to fill.
+        dirname  = ipath
 
-      pw=1
-      # Fill basic infos
-      sg.histogram(dirname+'/et').Fill(et,pw)
-      sg.histogram(dirname+'/eta').Fill(el.eta(),pw)
-      sg.histogram(dirname+'/phi').Fill(el.phi(),pw)
-      sg.histogram(dirname+'/avgmu').Fill(evt.avgmu(),pw)
-      sg.histogram(dirname+'/nvtx').Fill(evt.nvtx(),pw)
-      # Fill shower shapes
-      sg.histogram(dirname+'/f1').Fill(el.f1(),pw)
-      sg.histogram(dirname+'/f3').Fill(el.f3(),pw)
-      sg.histogram(dirname+'/weta2').Fill(el.weta2(),pw)
-      sg.histogram(dirname+'/wtots1').Fill(el.wtots1(),pw)
-      sg.histogram(dirname+'/reta').Fill(el.reta(),pw)
-      sg.histogram(dirname+'/rhad').Fill(el.rhad(),pw)
-      sg.histogram(dirname+'/rphi').Fill(el.rphi(),pw)
-      sg.histogram(dirname+'/eratio').Fill(el.eratio(),pw)
-      sg.histogram(dirname+'/deltaEta1').Fill(el.deltaEta1(),pw)
-      sg.histogram(dirname+'/deltaPhiRescaled2').Fill(el.deltaPhiRescaled2(),pw)
-      # Fill track variables
-      if track:
-        sg.histogram(dirname+'/trackd0pvunbiased').Fill(track.d0(),pw)
-        sg.histogram(dirname+'/d0significance').Fill(track.d0significance(),pw)
-        sg.histogram(dirname+'/eProbabilityHT').Fill(track.eProbabilityHT(),pw)
-        sg.histogram(dirname+'/TRT_PID').Fill(track.trans_TRT_PID(),pw)
-        sg.histogram(dirname+'/DeltaPOverP').Fill(track.DeltaPOverP(),pw)
+        pw=1
+        # Fill basic infos
+        sg.histogram(dirname+'/et').Fill(et,pw)
+        sg.histogram(dirname+'/eta').Fill(el.eta(),pw)
+        sg.histogram(dirname+'/phi').Fill(el.phi(),pw)
+        sg.histogram(dirname+'/avgmu').Fill(evt.avgmu(),pw)
+        sg.histogram(dirname+'/nvtx').Fill(evt.nvtx(),pw)
+        # Fill shower shapes
+        sg.histogram(dirname+'/f1').Fill(el.f1(),pw)
+        sg.histogram(dirname+'/f3').Fill(el.f3(),pw)
+        sg.histogram(dirname+'/weta2').Fill(el.weta2(),pw)
+        sg.histogram(dirname+'/wtots1').Fill(el.wtots1(),pw)
+        sg.histogram(dirname+'/reta').Fill(el.reta(),pw)
+        sg.histogram(dirname+'/rhad').Fill(el.rhad(),pw)
+        sg.histogram(dirname+'/rphi').Fill(el.rphi(),pw)
+        sg.histogram(dirname+'/eratio').Fill(el.eratio(),pw)
+        sg.histogram(dirname+'/deltaEta1').Fill(el.deltaEta1(),pw)
+        sg.histogram(dirname+'/deltaPhiRescaled2').Fill(el.deltaPhiRescaled2(),pw)
+        # Fill track variables
+        if track:
+          sg.histogram(dirname+'/trackd0pvunbiased').Fill(track.d0(),pw)
+          sg.histogram(dirname+'/d0significance').Fill(track.d0significance(),pw)
+          sg.histogram(dirname+'/eProbabilityHT').Fill(track.eProbabilityHT(),pw)
+          sg.histogram(dirname+'/TRT_PID').Fill(track.trans_TRT_PID(),pw)
+          sg.histogram(dirname+'/DeltaPOverP').Fill(track.DeltaPOverP(),pw)
      
 
     return StatusCode.SUCCESS
