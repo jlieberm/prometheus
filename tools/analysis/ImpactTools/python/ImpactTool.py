@@ -27,18 +27,12 @@ from ImpactTools.drawers import *
 #
 class ImpactTool( Algorithm ):
 
-  # selection names definition
-  __selections = [
-                  'ringer',
-                  'no_ringer',
-                  ]
-
   #
   # Constructor
   #
   def __init__(self, name, **kw):
     
-    Algorithm.__init__(self, name)
+    Algorithm.__init__(self, name, selection_list_labels=None)
 
     # declare all properties with default values  
     self.declareProperty( "Basepath", "Event/ImpactTool", "Impact base path histogram." )
@@ -50,6 +44,14 @@ class ImpactTool( Algorithm ):
     for key, value in kw.items():
       self.setProperty( key, value )
 
+    if selection_list_labels is None:
+      # default selection names definition
+      __selections = [
+                      'ringer',
+                      'no_ringer',
+                    ]
+    else:
+      __selections = selection_list_labels
 
     self.__selectionFeatures = list()
    
