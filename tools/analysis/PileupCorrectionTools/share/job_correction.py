@@ -8,6 +8,10 @@ from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel
 from Gaugi import ToolSvc, ToolMgr
 
+import argparse
+parser = argparse.ArgumentParser(description = '', add_help = False)
+parser = argparse.ArgumentParser()
+
 parser.add_argument('--Zee', action='store_true',
     dest='doZee', required = False,
     help = "Do Zee collection.")
