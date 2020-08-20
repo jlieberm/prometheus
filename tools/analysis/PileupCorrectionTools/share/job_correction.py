@@ -24,6 +24,13 @@ parser.add_argument('--Zrad', action='store_true',
     dest='doZrad', required = False,
     help = "Do Zrad collection.")
 
+import sys,os
+if len(sys.argv)==1:
+  parser.print_help()
+  sys.exit(1)
+
+args = parser.parse_args()
+
 if args.doZee or args.doJpsi:
   signature = 'electron'
 elif args.doZrad:
