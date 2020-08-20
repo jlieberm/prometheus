@@ -14,7 +14,7 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
                             inputFiles = datapath, 
                             treePath = '*/HLT/Physval/Egamma/probes', 
                             nov = 1000,
-                            dataframe = DataframeEnum.PhysVal_v2, 
+                            dataframe = DataframeEnum.Electron_v1, 
                             outputFile = 'test_output.root',
                             level = LoggingLevel.INFO
                           )
@@ -23,7 +23,7 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 evt.setCutValue( SelectionType.SelectionPID, "el_lhtight" ) 
 evt.setCutValue( EtCutType.L2CaloAbove , 15)
@@ -35,7 +35,7 @@ ToolSvc += EmulationTool( "EgammaEmulation" )
 
 from QuadrantTools import QuadrantTool
 
-alg = QuadrantTool("Quadrant")
+alg = QuadrantTool("Quadrant", dataframe = DataframeEnum.Electron_v1)
 alg.doTrigger  = True
 alg.add_quadrant( 'HLT_e28_lhtight_nod0_noringer_ivarloose'  , "TDT__HLT__e28_lhtight_nod0_noringer_ivarloose", # T2Calo
                   'HLT_e28_lhtight_nod0_ivarloose'           , "TDT__HLT__e28_lhtight_nod0_ivarloose") # Ringer

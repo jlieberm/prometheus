@@ -109,8 +109,11 @@ class Collector( Algorithm ):
       self._event[key] = [event]
 
   def execute(self, context):
-
-    elCont    = context.getHandler( "ElectronContainer" )
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
     trk       = context.getHandler( "HLT__FastElectronContainer" )
@@ -158,10 +161,7 @@ class Collector( Algorithm ):
 
     from EventAtlas import EgammaParameters
     # Offline Shower shapes
-    event_row.append( elCont.accept( "el_lhtight"  ) )
-    event_row.append( elCont.accept( "el_lhmedium" ) )
-    event_row.append( elCont.accept( "el_lhloose"  ) )
-    event_row.append( elCont.accept( "el_lhvloose" ) )
+
 
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
@@ -178,9 +178,18 @@ class Collector( Algorithm ):
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
-    event_row.append( elCont.deltaR() )
-    event_row.append( elCont.eeMass() )
-
+    if self._dataframe is DataframeEnum.Electron_v1:
+      event_row.append( elCont.accept( "el_lhtight"  ) )
+      event_row.append( elCont.accept( "el_lhmedium" ) )
+      event_row.append( elCont.accept( "el_lhloose"  ) )
+      event_row.append( elCont.accept( "el_lhvloose" ) )
+      event_row.append( elCont.deltaR() )
+      event_row.append( elCont.eeMass() )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      event_row.append( elCont.accept( "ph_tight"  ) )
+      event_row.append( elCont.accept( "ph_medium" ) )
+      event_row.append( elCont.accept( "ph_loose"  ) )
+      
     dec = context.getHandler("MenuContainer")
 
     for feature in self._extra_features:

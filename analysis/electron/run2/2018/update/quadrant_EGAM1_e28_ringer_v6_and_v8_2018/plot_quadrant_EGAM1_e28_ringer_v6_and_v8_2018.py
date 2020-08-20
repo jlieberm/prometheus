@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 
 from QuadrantTools import QuadrantTool
-alg = QuadrantTool("Quadrant")
+alg = QuadrantTool("Quadrant",  dataframe = DataframeEnum.Electron_v1)
 from Gaugi  import restoreStoreGate
 sg =  restoreStoreGate( args.inputFile )
 alg.setStoreGateSvc(sg)

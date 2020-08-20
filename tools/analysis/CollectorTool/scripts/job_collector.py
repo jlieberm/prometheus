@@ -33,6 +33,10 @@ parser.add_argument('--Jpsi', action='store_true',
     dest='doJpsi', required = False,
     help = "Do Jpsi collection.")
 
+parser.add_argument('--Zrad', action='store_true',
+    dest='doZrad', required = False,
+    help = "Do Zrad collection.")
+
 parser.add_argument('--egam7', action='store_true',
     dest='doEgam7', required = False,
     help = "The colelcted sample came from EGAM7 skemma.")
@@ -45,30 +49,43 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
+if args.doZee or args.doJpsi:
+  signature = 'electron'
+elif args.doZrad:
+  signature = 'photon'
+else:
+  signature = 'electron'
 
 acc = EventATLAS(  "EventATLASLoop",
                   inputFiles = args.inputFiles,
-                  #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
-                  treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  dataframe = DataframeEnum.PhysVal_v2,
-                  #outputFile = args.outputFile,
-                  outputFile = 'dummy.root',
-                  level = LoggingLevel.INFO
+                  treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/PhysVal/Egamma/photons',
+                  # treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
+                  # dataframe = DataframeEnum.PhysVal_v2,
+                  dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1,
+                  outputFile = args.outputFile,
+                  # outputFile = 'dummy.root',
+                  level = LoggingLevel.INFO,
                 )
 
 
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', 
+                      dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1,
+                    )
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 
 # Do not change this!
 if args.doEgam7:
   #pidname = '!VeryLooseLLH_DataDriven_Rel21_Run2_2018'
   pidname = '!el_lhvloose'
-else:
+elif args.doZee or args.doJpsi:
   #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
+  pidname = 'el_lhmedium'
+elif args.doZrad:
+  pidname = 'ph_medium'
+else:
   pidname = 'el_lhmedium'
 
 if args.doZee:
@@ -80,6 +97,10 @@ elif args.doJpsi:
     evt.setCutValue( EtCutType.L2CaloAbove, 4 )
     evt.setCutValue( EtCutType.L2CaloBelow, 15 )
     evt.setCutValue( EtCutType.OfflineAbove, 2 )
+    ToolSvc += evt
+elif args.doZrad:
+    evt.setCutValue( SelectionType.SelectionPID, pidname )
+    evt.setCutValue( EtCutType.L2CaloAbove , 15)
     ToolSvc += evt
 else:
     evt.setCutValue( SelectionType.SelectionPID, pidname )
@@ -97,7 +118,10 @@ installTrigEgammaL2CaloSelectors()
 
 
 from CollectorTool import Collector
-alg = Collector( 'Collector' , outputname = args.outputFile.replace('.root',''), doTrack =False )
+alg = Collector( 'Collector' , outputname = args.outputFile.replace('.root',''), 
+                  doTrack =False,
+                  dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1
+                )
 
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
 if args.doZee:
@@ -109,7 +133,6 @@ else:
 alg.setEtBinningValues( etbins   )
 alg.setEtaBinningValues( etabins )
 alg.doTrigger  = True
-
 
 
 alg.AddFeature( "T0HLTElectronT2CaloTight"        )

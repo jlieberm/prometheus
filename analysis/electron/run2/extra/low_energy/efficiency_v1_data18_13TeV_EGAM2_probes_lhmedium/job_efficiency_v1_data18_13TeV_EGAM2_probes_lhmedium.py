@@ -36,7 +36,7 @@ acc = EventATLAS( "EventATLASLoop",
                   treePath= '*/HLT/Physval/Egamma/fakes',
                   #treePath= '*/HLT/Egamma/Egamma/probes',
                   #treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  dataframe = DataframeEnum.PhysVal_v2, 
+                  dataframe = DataframeEnum.Electron_v1, 
                   outputFile = args.outputFile,
                   level = LoggingLevel.INFO
                   )
@@ -45,7 +45,7 @@ acc = EventATLAS( "EventATLASLoop",
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
 #pidname = 'el_lhmedium'
@@ -75,7 +75,7 @@ triggerList = [
 
 
 from EfficiencyTools import EfficiencyTool
-alg = EfficiencyTool( "Efficiency" )
+alg = EfficiencyTool( "Efficiency", dataframe = DataframeEnum.Electron_v1 )
 
 
 for group in triggerList:

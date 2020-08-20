@@ -40,7 +40,7 @@ acc = EventATLAS( "EventATLASLoop",
                   inputFiles = args.inputFiles, 
                   #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
                   treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  dataframe = DataframeEnum.PhysVal_v2, 
+                  dataframe = DataframeEnum.Electron_v1, 
                   outputFile = args.outputFile,
                   level = LoggingLevel.INFO
                   )
@@ -49,7 +49,7 @@ acc = EventATLAS( "EventATLASLoop",
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 
 # Do not change this!
@@ -81,7 +81,7 @@ installTrigEgammaL2CaloSelectors()
 
 
 from PileupCorrectionTools import PileupCorrectionTool, Target
-alg = PileupCorrectionTool( 'PileupCorrection' , IsBackground = True if args.doEgam7 else False)
+alg = PileupCorrectionTool( 'PileupCorrection' , IsBackground = True if args.doEgam7 else False,  dataframe = DataframeEnum.Electron_v1)
 
 targets = [
             Target( 'L2_Tight_v1' , 'T0HLTLowEnergyElectronRingerTight_v1'  , "T0HLTElectronT2CaloTight"  ) , 

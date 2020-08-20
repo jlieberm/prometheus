@@ -43,14 +43,14 @@ acc = EventATLAS( "EventATLASLoop",
                   inputFiles = args.inputFiles, 
                   #treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes',
                   treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  dataframe = DataframeEnum.PhysVal_v2, 
+                  dataframe = DataframeEnum.Electron_v1, 
                   outputFile=args.outputFile,
                   nov = args.nov,
                   level = LoggingLevel.INFO)
 
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 
 # Do not change this!
@@ -92,7 +92,7 @@ for chain in triggerList:
 
 
 from QuadrantTools import QuadrantTool
-alg = QuadrantTool("Quadrant")
+alg = QuadrantTool("Quadrant",  dataframe = DataframeEnum.Electron_v1)
 alg.add_quadrant( 'HLT_e5_lhtight_nod0_noringer'  , "EMU_e5_lhtight_nod0_noringer", # T2Calo
                   'HLT_e5_lhtight_nod0_ringer_v1' , "EMU_e5_lhtight_nod0_ringer_v1") # Ringer v1
 

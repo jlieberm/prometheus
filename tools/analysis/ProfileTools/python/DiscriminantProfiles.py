@@ -2,9 +2,11 @@ __all__ = ['DiscriminantProfiles']
 from ProfileTools  import ProfileToolBase
 from Gaugi.messenger.macros import *
 from Gaugi import StatusCode
+from prometheus import Dataframe as DataframeEnum
+
 
 class DiscriminantProfiles( ProfileToolBase ):
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe,**kw):
     ProfileToolBase.__init__(self, name, **kw)
 
   def initialize(self):
@@ -35,8 +37,12 @@ class DiscriminantProfiles( ProfileToolBase ):
     sg = selg.getStoreGateSvc()
     if self._doTrigger: # Online
       obj = context.getHandler( "HLT__FastCaloContainer" )
-    else: # Offline
-      obj = context.getHandler('ElectronContainer')
+    elif self._dataframe is DataframeEnum.Electron_v1:
+      obj   = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      obj    = context.getHandler( "PhotonContainer" )
+    else:
+      obj    = context.getHandler( "ElectronContainer" )
 
     from Gaugi.constants import GeV
     etBinIdx, etaBinIdx = self._retrieveBinIdx( obj.et()/GeV, abs(obj.eta()) )

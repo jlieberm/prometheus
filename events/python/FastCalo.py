@@ -106,7 +106,7 @@ class FastCalo(EDM):
                         self._branches.append(branch) # hold all branches from the body class
                     except Exception as e:
                         self._logger.warning('Exception when try to setBranchAddress for %s with error: %s',branch,str(e))
-            elif self._dataframe is DataframeEnum.PhysVal_v2:
+            elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
                 for branch in self.__eventBranches["PhysVal"]:
                     try:
                         self.setBranchAddress( self._tree, branch , self._event)
@@ -128,7 +128,7 @@ class FastCalo(EDM):
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             rings = stdvector_to_list( getattr(self._event, ('elCand%d_trig_L2_calo_ringsE')%(self._elCand)) )
             return np.array(rings, dtype=np.float32)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             rings = stdvector_to_list(self._event.trig_L2_calo_rings)
             return np.array(rings, dtype=np.float32)
         else:
@@ -140,7 +140,7 @@ class FastCalo(EDM):
     def isGoodRinger(self):
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return True if getattr(self._event,'elCand%d_trig_L2_calo_rings_match'%(self._elCand)) > 0 else False
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             rings = stdvector_to_list(self._event.trig_L2_calo_rings)
             return True if len(rings)!=0 else False
         else:
@@ -153,7 +153,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_et')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_et
         else:
             self._logger.warning("Impossible to retrieve the value of et. Unknow dataframe")
@@ -165,7 +165,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_eta')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_eta
         else:
             self._logger.warning("Impossible to retrieve the value of eta. Unknow dataframe")
@@ -177,7 +177,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_phi')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_phi
         else:
             self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")
@@ -197,7 +197,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_e237')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_e237
         else:
             self._logger.warning("Impossible to retrieve the value of e237. Unknow dataframe")
@@ -209,7 +209,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_e277')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_e277
         else:
             self._logger.warning("Impossible to retrieve the value of e277. Unknow dataframe")
@@ -221,7 +221,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_fracs1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_fracs1
         else:
             self._logger.warning("Impossible to retrieve the value of fracs1. Unknow dataframe")
@@ -233,7 +233,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_emaxs1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_emaxs1
         else:
             self._logger.warning("Impossible to retrieve the value of emaxs1. Unknow dataframe")
@@ -244,7 +244,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_weta2')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_weta2
         else:
             self._logger.warning("Impossible to retrieve the value of weta2. Unknow dataframe")
@@ -257,7 +257,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_wtots1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_wstot
         else:
             self._logger.warning("Impossible to retrieve the value of wstot. Unknow dataframe")
@@ -269,7 +269,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_rhad1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_ehad1
         else:
             self._logger.warning("Impossible to retrieve the value of ehad1. Unknow dataframe")
@@ -281,7 +281,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_e2tsts1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L2_calo_e2tsts1
         else:
             self._logger.warning("Impossible to retrieve the value of e2tsts1. Unknow dataframe")
@@ -294,7 +294,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_f1')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             if ( math.fabs(self.energy()) > 0.00001) :
                 F1 = (self.energy(CaloSampling.EMB1)+self.energy(CaloSampling.EME1))/float(self.energy())
                 return F1
@@ -311,7 +311,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, ('elCand%d_trig_L2_calo_f3')%(self._elCand))
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             # extract F3 (backenergy i EM calorimeter
             e0 = self.energy(CaloSampling.PreSamplerB)  + self.energy(CaloSampling.PreSamplerE)
             e1 = self.energy(CaloSampling.EMB1) 				+ self.energy(CaloSampling.EME1)
@@ -331,7 +331,7 @@ class FastCalo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self.getContext().getHandler('HLT__EmTauRoIContainer')
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self.getContext().getHandler('HLT__EmTauRoIContainer')
         else:
             self._logger.warning("Impossible to retrieve the EmTauRoI object. Unknow dataframe")
@@ -341,7 +341,7 @@ class FastCalo(EDM):
     def energy( self, idx=None ):
         if self._dataframe is DataframeEnum.SkimmedNtuple:
             return -999
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             if idx:
                 return self._event.trig_L2_calo_energySample[idx]
             else:
@@ -355,7 +355,7 @@ class FastCalo(EDM):
         eventInfo  = self.getContext().getHandler('EventInfoContainer')
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return eventInfo.nvtx()
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return eventInfo.avgmu()
         else:
             self._logger.warning("Impossible to retrieve the value of pileup. Unknow dataframe")
@@ -369,7 +369,7 @@ class FastCalo(EDM):
                 return bool(self.getDecor(pidname))
             else:
                 return False
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             # Dictionary to acess the physval dataframe
             if pidname in self.__eventBranches['PhysVal']:
                 # the default selector branches is a vector

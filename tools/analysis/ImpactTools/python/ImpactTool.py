@@ -10,6 +10,8 @@ from Gaugi import progressbar
 from Gaugi.tex.TexAPI       import *
 from Gaugi.tex.BeamerAPI    import *
 from Gaugi.monet.AtlasStyle import SetAtlasStyle
+from prometheus import Dataframe as DataframeEnum
+
 
 # tool includes
 from PileupCorrectionTools.utilities import RetrieveBinningIdx
@@ -37,7 +39,7 @@ class impactTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
     
     Algorithm.__init__(self, name)
 
@@ -143,8 +145,14 @@ class impactTool( Algorithm ):
     etaBins = self.getProperty( "EtaBinningValues" )
 
 
-    # Retrieve Electron container
-    el = context.getHandler( "ElectronContainer" )
+    # Retrieve container
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    else:
+      elCont    = context.getHandler( "ElectronContainer" )
+    
     evt = context.getHandler( "EventInfoContainer" )
     eta = math.fabs(el.eta())
     et = el.et()/GeV

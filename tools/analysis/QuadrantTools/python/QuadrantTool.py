@@ -20,6 +20,8 @@ from functools import reduce
 from itertools import product
 import os, gc, time, math
 import numpy as np
+from prometheus import Dataframe as DataframeEnum
+
 
 
 #
@@ -38,7 +40,7 @@ class QuadrantTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
     
     Algorithm.__init__(self, name)
 
@@ -144,8 +146,14 @@ class QuadrantTool( Algorithm ):
     etaBins = self.getProperty( "EtaBinningValues" )
 
 
-    # Retrieve Electron container
-    el = context.getHandler( "ElectronContainer" )
+    # Retrieve container
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    else:
+      elCont    = context.getHandler( "ElectronContainer" )
+    
     evt = context.getHandler( "EventInfoContainer" )
     eta = math.fabs(el.eta())
     et = el.et()/GeV

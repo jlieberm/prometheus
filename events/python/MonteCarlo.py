@@ -39,7 +39,7 @@ class MonteCarlo(EDM):
         self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
         #self._branches.append(branch) # hold all branches from the body class
     
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       for branch in self.__eventBranches["PhysVal"]:
         self.setBranchAddress( self._tree, ('%s')%(branch)  , self._event)
         #self._branches.append(branch) # hold all branches from the body class
@@ -54,7 +54,7 @@ class MonteCarlo(EDM):
     
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return getattr(self._event, 'elCand%d_isTruthElectronFromZ'%self._elCand)
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return self._event.mc_isTruthElectronFromZ
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
@@ -63,7 +63,7 @@ class MonteCarlo(EDM):
     
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return getattr(self._event, 'elCand%d_isTruthElectronFromW'%self._elCand)
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return self._event.mc_isTruthElectronFromW
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
@@ -72,7 +72,7 @@ class MonteCarlo(EDM):
     
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return getattr(self._event, 'elCand%d_isTruthElectronFromJpsiPromt'%self._elCand)
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return self._event.mc_isTruthElectronFromJpsi
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
@@ -81,7 +81,7 @@ class MonteCarlo(EDM):
     
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return getattr(self._event, 'elCand%d_isTruthElectronFromAny'%self._elCand)
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return self._event.mc_isTruthElectronFromAny
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
@@ -92,7 +92,7 @@ class MonteCarlo(EDM):
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return True if getattr(self._event, ('elCand%d_type')%(self._elCand)) != -999 else False
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return bool(self._event.mc_hasMC)
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
