@@ -95,11 +95,11 @@ class EventATLAS( TEventLoop ):
       return StatusCode.FATAL
 
 
-    # if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
-    #   self._containersSvc.update({
-    #                         # metadata containers
-    #                         'HLT__TDT'                   : TDT(),
-    #                         })
+    if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
+      self._containersSvc.update({
+                            # metadata containers
+                            'HLT__TDT'                   : TDT(),
+                            })
 
 
     # force the event id number for this event looper
@@ -111,7 +111,6 @@ class EventATLAS( TEventLoop ):
 
     # configure all EDMs needed
     for key, edm  in self._containersSvc.items():
-
       self.getContext().setHandler(key,edm)
       # add properties
       edm.dataframe = self._dataframe
@@ -130,9 +129,9 @@ class EventATLAS( TEventLoop ):
                                  'file':self._metadataInputFile[0]} ) # remove the last name after '/' (tree name)
       # If initializations is failed, we must remove this from the container
       # service
+
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
-
 
     self.getContext().initialize()
 

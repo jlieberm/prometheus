@@ -42,7 +42,6 @@ class TriggerInfo(Logger):
       self.__signature = None
 
     self.__etthr = float( part[1::] )
-
     # Get the operation point
     pidword = 'lhvloose'
     if 'lhtight' in trigParts[1]:
@@ -53,6 +52,15 @@ class TriggerInfo(Logger):
       pidword = 'lhloose'
     elif 'lhvloose' in trigParts[1]:
       pidword = 'lhvloose'
+    elif 'loose' in trigParts[1]:
+      pidword = 'loose'
+    elif 'medium' in trigParts[1]:
+      pidword = 'medium'
+    elif 'tight' in trigParts[1]:
+      pidword = 'tight'
+    elif 'etcut' in trigParts[1]:
+      pidword = 'etcut'
+
     else: 
       MSG_WARNING( self, "No Pid name was fount in the expression (%s) with path (%s)", self.expression(), trigParts[-1])
  

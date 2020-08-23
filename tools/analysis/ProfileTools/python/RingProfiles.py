@@ -6,7 +6,7 @@ from prometheus import Dataframe as DataframeEnum
 
 class RingProfiles( ProfileToolBase ):
 
-  def __init__(self, name, dataframe**kw):
+  def __init__(self, name, dataframe, **kw):
     ProfileToolBase.__init__(self, name, **kw)
 
   @property

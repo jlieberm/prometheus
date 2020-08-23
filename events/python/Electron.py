@@ -1053,7 +1053,7 @@ class Electron(EDM):
 
   def isolationValue( self, isolationType ):
 
-    if self._dataframe is DataframeEnum.PhysVal_v2:
+    if self._dataframe is DataframeEnum.Electron_v1:
 
       def get_value( event, branch, isolationtype, size, pos, logger ):
         offset = (getattr(event, branch).size()/float(size)) * pos

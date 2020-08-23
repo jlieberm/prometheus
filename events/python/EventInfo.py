@@ -76,8 +76,11 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self._event.Nvtx
-        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
+        elif self._dataframe is DataframeEnum.Electron_v1:
             return self._event.el_nPileupPrimaryVtx
+        elif self._dataframe is DataframeEnum.Photon_v1:
+            return self._event.ph_nPileupPrimaryVtx
+            
         else:
             self._logger.warning("Impossible to retrieve the value of nvtx. Unknow dataframe.")
 

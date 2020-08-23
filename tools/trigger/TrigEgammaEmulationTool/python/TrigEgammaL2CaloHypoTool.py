@@ -254,8 +254,12 @@ def configure( trigger ):
 
     def same(value):
       return [value]*9
-    from .TrigEgammaL2CaloHypoCuts import L2CaloCutMaps
-    cuts = L2CaloCutMaps(etthr)
+    if info.signature() == 'electron':
+      from .TrigEgammaL2CaloHypoCuts import L2CaloCutMaps
+      cuts = L2CaloCutMaps(etthr)
+    elif info.signature() == 'photon':
+      from .TrigEgammaL2CaloHypoCuts import L2CaloPhotonCutMaps
+      cuts = L2CaloPhotonCutMaps(etthr)
     hypo  = TrigEgammaL2CaloHypoTool(name,
                                      dETACLUSTERthr = 0.1,
                                      dPHICLUSTERthr = 0.1,

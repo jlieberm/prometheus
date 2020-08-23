@@ -71,36 +71,53 @@ class Chain( Algorithm ):
             names = installLowEnergyElectronL2CaloRingerSelector_v1()
           else:
             MSG_FATAL(self, "Ringer vesion not supported for Jpsiee tunings")
+        # define like tight, medium, loose and vloose
 
-        
-      # define like tight, medium, loose and vloose
       self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
 
+      if self.__trigInfo.signature() == 'photon':
+        print('selecionou ringer de photon')
 
     else:
       # Configure the L2Calo hypo step
       from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
       self.__l2caloItem = configure( self.__trigger )
     
-     
+    if self.__trigInfo.signature() == 'electron':
+
     # Configure the EFCalo hypo step
-    from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
-    self.__l2Item = configure( self.__trigger )
-    
+      from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
+      self.__l2Item = configure( self.__trigger )
+      
 
-    # Configure the HLT hypo step
-    from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
-    self.__hltItem = configure( self.__trigger )
-   
+      # Configure the HLT hypo step
+      from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
+      self.__hltItem = configure( self.__trigger )
+     
 
-    if self.__trigInfo.isolated():
-      self.__applyIsolation=True
-      from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
-      self.__hltIsoItem = configure( self.__trigger )
-    else:
-      self.__applyIsolation=False
+      if self.__trigInfo.isolated():
+        self.__applyIsolation=True
+        from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
+        self.__hltIsoItem = configure( self.__trigger )
+      else:
+        self.__applyIsolation=False
 
-    
+    elif self.__trigInfo.signature() == 'photon':
+      # Configure the EFCalo hypo step
+      from TrigEgammaEmulationTool.TrigEgammaL2PhotonHypoTool import configure
+      self.__l2Item = configure( self.__trigger )
+      
+      # Configure the HLT hypo step
+      from TrigEgammaEmulationTool.TrigEgammaPhotonHypoTool import configure
+      self.__hltItem = configure( self.__trigger )
+
+      if self.__trigInfo.isolated():
+        self.__applyIsolation=True
+        from TrigEgammaEmulationTool.TrigEgammaPhotonIsolationHypoTool import configure
+        self.__hltIsoItem = configure( self.__trigger )
+      else:
+        self.__applyIsolation=False
+
 
     # configure et cuts
     self.__l2caloEtCut = (self.__trigInfo.etthr() - 3 ) * GeV
