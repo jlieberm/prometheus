@@ -5,6 +5,7 @@ __all__ = ["TriggerInfo"]
 from Gaugi.messenger import Logger
 from Gaugi.messenger.macros import *
 
+import re 
 
 #
 # Trigger info
@@ -67,20 +68,9 @@ class TriggerInfo(Logger):
 
     self.__ringerVersion = -1
     if self.__ringer:
-      if 'v6' in trigger:
-        self.__ringerVersion = 6
-      elif 'v7' in trigger:
-        self.__ringerVersion = 7
-      elif 'v8' in trigger:
-        self.__ringerVersion = 8
-      elif 'v10' in trigger:
-        self.__ringerVersion = 10
-      elif 'v1' in trigger:
-        self.__ringerVersion = 1
-      else:
-        self.__ringerVersion = 8
-
-
+      # use a regex to extract from the trigger the ringer version information.
+      self.__ringerVersion = re.findall(r'(?<=_)(?P<rabeira>v[0-9]+.*)', trigger)[0]
+      
     
     isolationTypes = ['ivarloose', 'ivarmedium', 'ivartight', 'iloose', 'icaloloose', 'icalomedium', 'icalotight' ]
     self.__isolated = False

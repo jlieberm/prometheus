@@ -8,6 +8,7 @@ from Gaugi.messenger.macros import *
 from EventAtlas import Accept
 from TrigEgammaEmulationTool.menu import TriggerInfo
 
+from RingerSelectorTools import * 
 
 #
 # Chain definition
@@ -44,34 +45,8 @@ class Chain( Algorithm ):
     if self.__trigInfo.ringer():
 
       version = self.__trigInfo.ringerVersion()
-
-      if version < 0:
-        MSG_FATAL( self, "The trigger %s is ringer chain but you don't specifie a correct tuning version.", self.__trigger)
-
-      MSG_INFO( self, "Version is %d", version )
-      if self.__trigInfo.signature() == 'electron':
-
-        if self.__trigInfo.etthr() > 15 :
-
-          if version == 6:
-            from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
-            names = installElectronL2CaloRingerSelector_v6()
-          elif version == 8:
-            from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
-            names = installElectronL2CaloRingerSelector_v8()
-          elif version == 10:
-            from RingerSelectorTools import installElectronL2CaloRingerSelector_v10
-            names = installElectronL2CaloRingerSelector_v10()
-          else:
-            MSG_FATAL(self, "Ringer vesion not supported for Zee tunings")
-
-        else:
-          if version == 1: # Low energy tunings
-            from RingerSelectorTools import installLowEnergyElectronL2CaloRingerSelector_v1
-            names = installLowEnergyElectronL2CaloRingerSelector_v1()
-          else:
-            MSG_FATAL(self, "Ringer vesion not supported for Jpsiee tunings")
-
+      # get the right version of ringer.
+      names = tuning_sufix[version]
         
       # define like tight, medium, loose and vloose
       self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]

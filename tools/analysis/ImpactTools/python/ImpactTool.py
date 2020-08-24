@@ -30,9 +30,9 @@ class ImpactTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, **kw):
+  def __init__(self, name, selection_list_labels=None, **kw):
     
-    Algorithm.__init__(self, name, selection_list_labels=None)
+    Algorithm.__init__(self, name)
 
     # declare all properties with default values  
     self.declareProperty( "Basepath", "Event/ImpactTool", "Impact base path histogram." )
@@ -46,12 +46,12 @@ class ImpactTool( Algorithm ):
 
     if selection_list_labels is None:
       # default selection names definition
-      __selections = [
+      self.__selections = [
                       'ringer',
                       'no_ringer',
                     ]
     else:
-      __selections = selection_list_labels
+      self.__selections = selection_list_labels
 
     self.__selectionFeatures = list()
    
@@ -100,7 +100,7 @@ class ImpactTool( Algorithm ):
         ### loop over etas...
         for etaBinIdx in range(len(etaBins)-1):
           ### loop over selections...
-          for selection in self.__selections:  
+          for selection in self.__selections:
             # hold binning name
             binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 

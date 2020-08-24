@@ -10,11 +10,12 @@ __all__ =  [
             'installLowEnergyElectronL2CaloRingerSelector_v1_vmedium',
             'installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger',
             'installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_athena'
+            'installLowEnergyElectronL2CaloRingerSelector_v1_athena',
+            # tuning sufixes
+            'tuning_sufix'
            ]
 import os
-
-
+from RingerSelectorTools.callbacks import norm1 as norm
 
 ###########################################################
 ################## Official 2017 tuning ###################
@@ -22,7 +23,7 @@ import os
 def installElectronL2CaloRingerSelector_v6( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/zee/TrigL2_20170505_v6'
 
 
@@ -51,7 +52,7 @@ def installElectronL2CaloRingerSelector_v6( toolname = "Emulator" ):
 def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/zee/TrigL2_20180125_v8'
 
   hypos = [
@@ -79,7 +80,7 @@ def installElectronL2CaloRingerSelector_v8( toolname = "Emulator" ):
 def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   #calibpath = 'RingerSelectorTools/TrigL2_20180125_v8'
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/zee/TrigL2_20200715_v10'
@@ -109,7 +110,7 @@ def installElectronL2CaloRingerSelector_v10( toolname = "Emulator" ):
 def installLowEnergyElectronL2CaloRingerSelector_v1( toolname = "Emulator" ):
 
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/TrigL2_20200805_v1'
 
@@ -140,7 +141,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_athena( toolname = "Emulator
   This tuning was emulated in athena and was adjusted to minimize the impact at the final of HLT.
   '''
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/final_tuning_09032019_athena_onnx'
 
@@ -167,7 +168,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased( toolname = "Em
   This tuning was adjust in rDev to have the same efficiency as CutBased with respect to a subset of EGAM2 (lh medium) and EGAM7 (!veryloose)
   '''
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/final_tuning_28022019_sameCutBased_onnx'
 
@@ -194,7 +195,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger( toolname = "Emul
   This tuning was adjusted in order to have the operation points around of the max SP point.
   '''
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/final_tuning_28022019_puroRinger_onnx'
 
@@ -222,7 +223,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium( toolname = "Emulato
   This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
   '''
   from RingerSelectorTools import RingerSelectorTool
-  from RingerSelectorTools import norm1 as norm
+  #from RingerSelectorTools import norm1 as norm
   # do not change this paths...
   calibpath = os.environ['PRT_PATH'] + '/tools/trigger/RingerSelectorTools/data/jpsiee/final_tuning_28022019_vmedium_onnx'
 
@@ -240,3 +241,17 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium( toolname = "Emulato
     if not emulator.isValid( hypo.name() ):
       emulator+=hypo
   return names
+
+# this dict is used to avoid a lot of elifs into the Menu.
+tuning_sufix = {
+  # Zee
+  "v6"                 : installElectronL2CaloRingerSelector_v6(),
+  "v8"                 : installElectronL2CaloRingerSelector_v8(),
+  "v10"                : installElectronL2CaloRingerSelector_v10(),
+  # Jpsiee
+  'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(),
+  'v1_vmedium'         : installLowEnergyElectronL2CaloRingerSelector_v1_vmedium(), 
+  'v1_freeRinger'      : installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger(),  
+  'v1_sameCutBased'    : installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased(),
+  'v1_athena'          : installLowEnergyElectronL2CaloRingerSelector_v1_athena(),
+}
