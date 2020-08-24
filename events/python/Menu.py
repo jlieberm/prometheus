@@ -64,7 +64,7 @@ class Menu(EDM):
       return self.getDecor( key )
 
     # get the accept decision from the TDT metadata
-    elif self._dataframe is DataframeEnum.PhysVal_v2 and key.startswith('TDT__'):
+    elif (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1) and key.startswith('TDT__'):
       #  TDT__HLT__e28_lhtight_nod0_ivarloose
       #  TDT__EFCalo__e28_lhtight_nod0_ivarloose
       tdt = self.getContext().getHandler("HLT__TDT")
@@ -77,7 +77,7 @@ class Menu(EDM):
       self.setDecor( key, accept )
       return accept
     # get the accept decision from the Emulation metadata
-    elif self._dataframe is DataframeEnum.PhysVal_v2 and key.startswith('EMU__'):
+    elif (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1) and key.startswith('EMU__'):
       #  EMU__HLT__e28_lhtight_nod0_ivarloose
       tdt = self.getContext().getHandler("HLT__TDT")
       trigInfo = key.split('__')

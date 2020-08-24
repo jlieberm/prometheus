@@ -16,6 +16,14 @@ from . import FastElectron
 __all__.extend(FastElectron.__all__)
 from .FastElectron import *
 
+from . import Photon
+__all__.extend(Photon.__all__)
+from .Photon import *
+
+from . import FastPhoton
+__all__.extend(FastPhoton.__all__)
+from .FastPhoton import *
+
 from . import FastCalo
 __all__.extend(FastCalo.__all__)
 from .FastCalo import *

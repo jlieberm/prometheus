@@ -7,12 +7,13 @@ from Gaugi.messenger.macros import *
 from ProfileTools import ProfileToolBase
 from ProfileTools.constants import ( basicInfoNBins, basicInfoLowerEdges, basicInfoHighEdges, 
                                      default_etabins, coarse_etbins, nvtx_bins )
+from prometheus import Dataframe as DataframeEnum
 
 
 
 class BasicInfoProfiles( ProfileToolBase ):
 
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
     ProfileToolBase.__init__(self, name, **kw)
     from ProfileTools.constants import basicInfoNBins
     self.basicInfos = basicInfoNBins.keys()
@@ -61,8 +62,13 @@ class BasicInfoProfiles( ProfileToolBase ):
     sg = self.getStoreGateSvc()
     if self._doTrigger:
       obj = context.getHandler('HLT__FastCaloContainer')
+    elif self._dataframe is DataframeEnum.Electron_v1:
+      obj   = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      obj    = context.getHandler( "PhotonContainer" )
     else:
-      obj = context.getHandler('ElectronContainer')
+      obj    = context.getHandler( "ElectronContainer" )
+    
 
     # If is trigger, the position must use the trigger et/eta positions.
     from Gaugi.constants import GeV

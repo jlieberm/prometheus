@@ -45,37 +45,87 @@ class Chain( Algorithm ):
     if self.__trigInfo.ringer():
 
       version = self.__trigInfo.ringerVersion()
+<<<<<<< HEAD
       # get the right version of ringer.
       names = tuning_sufix[version]
         
       # define like tight, medium, loose and vloose
+=======
+
+      if version < 0:
+        MSG_FATAL( self, "The trigger %s is ringer chain but you don't specifie a correct tuning version.", self.__trigger)
+
+      MSG_INFO( self, "Version is %d", version )
+      if self.__trigInfo.signature() == 'electron':
+
+        if self.__trigInfo.etthr() > 15 :
+
+          if version == 6:
+            from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
+            names = installElectronL2CaloRingerSelector_v6()
+          elif version == 8:
+            from RingerSelectorTools import installElectronL2CaloRingerSelector_v8
+            names = installElectronL2CaloRingerSelector_v8()
+          elif version == 10:
+            from RingerSelectorTools import installElectronL2CaloRingerSelector_v10
+            names = installElectronL2CaloRingerSelector_v10()
+          else:
+            MSG_FATAL(self, "Ringer vesion not supported for Zee tunings")
+
+        else:
+          if version == 1: # Low energy tunings
+            from RingerSelectorTools import installLowEnergyElectronL2CaloRingerSelector_v1
+            names = installLowEnergyElectronL2CaloRingerSelector_v1()
+          else:
+            MSG_FATAL(self, "Ringer vesion not supported for Jpsiee tunings")
+        # define like tight, medium, loose and vloose
+
+>>>>>>> 1c7193c6319cb4309119e2193d49019e82546554
       self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
 
+      if self.__trigInfo.signature() == 'photon':
+        print('selecionou ringer de photon')
 
     else:
       # Configure the L2Calo hypo step
       from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
       self.__l2caloItem = configure( self.__trigger )
     
-     
+    if self.__trigInfo.signature() == 'electron':
+
     # Configure the EFCalo hypo step
-    from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
-    self.__l2Item = configure( self.__trigger )
-    
+      from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
+      self.__l2Item = configure( self.__trigger )
+      
 
-    # Configure the HLT hypo step
-    from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
-    self.__hltItem = configure( self.__trigger )
-   
+      # Configure the HLT hypo step
+      from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
+      self.__hltItem = configure( self.__trigger )
+     
 
-    if self.__trigInfo.isolated():
-      self.__applyIsolation=True
-      from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
-      self.__hltIsoItem = configure( self.__trigger )
-    else:
-      self.__applyIsolation=False
+      if self.__trigInfo.isolated():
+        self.__applyIsolation=True
+        from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
+        self.__hltIsoItem = configure( self.__trigger )
+      else:
+        self.__applyIsolation=False
 
-    
+    elif self.__trigInfo.signature() == 'photon':
+      # Configure the EFCalo hypo step
+      from TrigEgammaEmulationTool.TrigEgammaL2PhotonHypoTool import configure
+      self.__l2Item = configure( self.__trigger )
+      
+      # Configure the HLT hypo step
+      from TrigEgammaEmulationTool.TrigEgammaPhotonHypoTool import configure
+      self.__hltItem = configure( self.__trigger )
+
+      if self.__trigInfo.isolated():
+        self.__applyIsolation=True
+        from TrigEgammaEmulationTool.TrigEgammaPhotonIsolationHypoTool import configure
+        self.__hltIsoItem = configure( self.__trigger )
+      else:
+        self.__applyIsolation=False
+
 
     # configure et cuts
     self.__l2caloEtCut = (self.__trigInfo.etthr() - 3 ) * GeV

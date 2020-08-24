@@ -8,6 +8,8 @@ from Gaugi import StatusCode, StatusWTD
 from Gaugi import EnumStringification
 from Gaugi.messenger.macros import *
 import collections
+from prometheus import Dataframe as DataframeEnum
+
 
 
 #
@@ -60,7 +62,7 @@ class EventSelection( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name):
+  def __init__(self, name, dataframe):
 
     Algorithm.__init__(self, name)
 
@@ -85,8 +87,14 @@ class EventSelection( Algorithm ):
   # Execute method
   #
   def execute(self, context):
+    
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    else:
+      elCont    = context.getHandler( "ElectronContainer" )
 
-    elCont    = context.getHandler( "ElectronContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
     mc        = context.getHandler( "MonteCarloContainer")
     eventInfo = context.getHandler( "EventInfoContainer" )

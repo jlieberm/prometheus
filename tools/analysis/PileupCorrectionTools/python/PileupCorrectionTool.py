@@ -12,6 +12,8 @@ from Gaugi.tex.BeamerAPI    import BeamerTexReportTemplate1, BeamerSection, Beam
 from Gaugi.monet.AtlasStyle import SetAtlasStyle
 from PileupCorrectionTools.utilities  import RetrieveBinningIdx
 from ProfileTools.constants import zee_etbins, default_etabins, nvtx_bins
+from prometheus import Dataframe as DataframeEnum
+
 
 from ROOT import TH2F, TH1F, TProfile
 from itertools import product
@@ -31,7 +33,7 @@ class PileupCorrectionTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
 
     Algorithm.__init__(self, name)
 
@@ -149,8 +151,14 @@ class PileupCorrectionTool( Algorithm ):
 
     isBackground = self.getProperty("IsBackground")
 
-    # offline electron
-    el = context.getHandler( "ElectronContainer" )
+    # offline container
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    else:
+      elCont    = context.getHandler( "ElectronContainer" )
+    
     dec = context.getHandler( "MenuContainer" )
     sg = self.getStoreGateSvc()
 

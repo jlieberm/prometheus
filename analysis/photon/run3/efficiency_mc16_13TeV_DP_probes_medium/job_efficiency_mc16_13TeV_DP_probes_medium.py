@@ -33,10 +33,8 @@ args = parser.parse_args()
 
 acc = EventATLAS( "EventATLASLoop",
                   inputFiles = args.inputFiles, 
-                  treePath= '*/HLT/Physval/Egamma/fakes',
-                  #treePath= '*/HLT/Egamma/Egamma/probes',
-                  #treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes',
-                  dataframe = DataframeEnum.Electron_v1, 
+                  treePath= '*/HLT/PhysVal/Egamma/photons',
+                  dataframe = DataframeEnum.Photon_v1, 
                   outputFile = args.outputFile,
                   level = LoggingLevel.INFO
                   )
@@ -45,14 +43,12 @@ acc = EventATLAS( "EventATLASLoop",
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1)
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Photon_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
-#pidname = 'el_lhmedium'
-pidname = '!el_lhvloose'
+pidname = 'ph_medium'
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
-evt.setCutValue( EtCutType.L2CaloAbove , 3)
-evt.setCutValue( EtCutType.L2CaloBelow , 15)
+evt.setCutValue( EtCutType.L2CaloAbove , 15)
 
 ToolSvc += evt
 
@@ -60,22 +56,14 @@ ToolSvc += evt
 from TrigEgammaEmulationTool import Chain, Group, TDT
 
 triggerList = [
-                # e17 lhvloose
-                #Group( TDT( "TDT_e5_lhloose_nod0" , "HLT_e5_lhloose_nod0"   ), "el_lhloose", 5 ),
-                #Group( Chain( "EMU_e5_lhloose_nod0_noringer", "L1_EM3", "HLT_e5_lhloose_nod0_noringer"    ), "el_lhloose", 5 ),
-                #Group( Chain( "EMU_e5_lhloose_nod0_ringer_v1", "L1_EM3", "HLT_e5_lhloose_nod0_ringer_v1"    ), "el_lhloose", 5 ),
-              
-                Group( Chain( "EMU_e5_lhloose_nod0_noringer", "L1_EM3", "HLT_e5_lhloose_nod0_noringer"    ), None, 5 ),
-                Group( Chain( "EMU_e5_lhloose_nod0_ringer_v1", "L1_EM3", "HLT_e5_lhloose_nod0_ringer_v1"    ), None, 5 ),
-                
-                
+                Group( Chain( "TDT_g10_etcut_noringer","L1_EM3","HLT_g10_etcut_noringer"), None, 10 ),
               ]
 
 
 
 
 from EfficiencyTools import EfficiencyTool
-alg = EfficiencyTool( "Efficiency", dataframe = DataframeEnum.Electron_v1 )
+alg = EfficiencyTool( "Efficiency", dataframe = DataframeEnum.Photon_v1 )
 
 
 for group in triggerList:
@@ -84,11 +72,3 @@ for group in triggerList:
 ToolSvc += alg
 
 acc.run(args.nov)
-
-
-
-
-
-
-
-

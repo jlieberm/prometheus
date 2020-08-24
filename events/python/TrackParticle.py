@@ -234,7 +234,7 @@ class TrackParticle(EDM):
         self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
         self._branches.append(branch) # hold all branches from the body class
     
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         branches = self.__eventBranches["PhysVal"]["HLT__TrackParticle"]
       else:
@@ -265,7 +265,7 @@ class TrackParticle(EDM):
       else:
         return getattr(self._event, ('elCand%d_el_pt')%(self._elCand))
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_pt[self.getPos()]
       else:
@@ -286,7 +286,7 @@ class TrackParticle(EDM):
         return getattr(self._event, ('elCand%d_el_eta')%(self._elCand))
 
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_eta[self.getPos()]
       else:
@@ -306,7 +306,7 @@ class TrackParticle(EDM):
       else:
         return getattr(self._event, ('elCand%d_el_charge')%(self._elCand))
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_charge[self.getPos()]
       else:
@@ -323,7 +323,7 @@ class TrackParticle(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_d0')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_d0')%(self._elCand))
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_d0[self.getPos()]
       else:  
@@ -340,7 +340,7 @@ class TrackParticle(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_d0significance')%(self._elCand))
       else:  
         return getattr(self._event, ('elCand%d_el_d0significance')%(self._elCand))
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_d0significance[self.getPos()]
       else:
@@ -363,7 +363,7 @@ class TrackParticle(EDM):
       else:  
         return getattr(self._event, ('elCand%d_el_trk_sigd0')%(self._elCand))
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_sigd0[self.getPos()]
       else:  
@@ -382,7 +382,7 @@ class TrackParticle(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_trk_eProbabilityHT')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_trk_eProbabilityHT')%(self._elCand))
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_eProbabilityHT[self.getPos()]
       else:
@@ -403,7 +403,7 @@ class TrackParticle(EDM):
       import math
       TRT_PID = -(1/tau) * math.log( (1.0/TRT_PID) - 1.0)
       return TRT_PID
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_transformed_eProbabilityHT[self.getPos()]
       else:  
@@ -420,7 +420,7 @@ class TrackParticle(EDM):
         return getattr(self._event, ('elCand%d_trig_EF_el_trk_DeltaPOverP')%(self._elCand))
       else:
         return getattr(self._event, ('elCand%d_el_trk_DeltaPOverP')%(self._elCand))
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_deltaPOverP[self.getPos()]
       else:  
@@ -438,7 +438,7 @@ class TrackParticle(EDM):
       else:
         return getattr(self._event, ('elCand%d_el_trk_qoverp')%(self._elCand))
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_qOverP[self.getPos()]
       else:  
@@ -461,7 +461,7 @@ class TrackParticle(EDM):
       else:  
         return getattr(self._event, ('elCand%d_el_trk_%s')%(self._elCand,st) )
 
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       from RingerCore import stdvector_to_list
       if self._is_hlt:  
         offset = ( self._event.trig_EF_el_trk_summaryValues.size()/ float(self.size()) ) * self.getPos()
@@ -544,7 +544,7 @@ class TrackParticle(EDM):
     """
     if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
       return 1
-    elif self._dataframe is DataframeEnum.PhysVal_v2:
+    elif self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self.event.trig_EF_el_trk_eta.size()
       else:

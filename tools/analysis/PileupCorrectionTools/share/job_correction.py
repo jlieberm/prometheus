@@ -8,6 +8,35 @@ from Gaugi.enumerations import Dataframe as DataframeEnum
 from Gaugi.messenger import LoggingLevel
 from Gaugi import ToolSvc, ToolMgr
 
+import argparse
+parser = argparse.ArgumentParser(description = '', add_help = False)
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--Zee', action='store_true',
+    dest='doZee', required = False,
+    help = "Do Zee collection.")
+
+parser.add_argument('--Jpsi', action='store_true',
+    dest='doJpsi', required = False,
+    help = "Do Jpsi collection.")
+
+parser.add_argument('--Zrad', action='store_true',
+    dest='doZrad', required = False,
+    help = "Do Zrad collection.")
+
+import sys,os
+if len(sys.argv)==1:
+  parser.print_help()
+  sys.exit(1)
+
+args = parser.parse_args()
+
+if args.doZee or args.doJpsi:
+  signature = 'electron'
+elif args.doZrad:
+  signature = 'photon'
+else:
+  signature = 'electron'
 
 datapath = '/afs/cern.ch/work/j/jodafons/public/data_samples/PhysVal/user.jodafons.data17_13TeV.00329835.physics_Main.deriv.DAOD_EGAM1.f843_m1824_p3336.Physval.GRL_v97.r7000_GLOBAL'
 
@@ -15,7 +44,7 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
                             inputFiles = datapath, 
                             treePath = '*/HLT/Physval/Egamma/probes', 
                             nov = 1000,
-                            dataframe = DataframeEnum.PhysVal_v2, 
+                            dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1,
                             outputFile = 'test_output.root',
                             level = LoggingLevel.INFO
                           )
@@ -24,7 +53,7 @@ ToolMgr += EventATLASLoop(  "EventATLASLoop",
 
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
-evt = EventSelection('EventSelection')
+evt = EventSelection('EventSelection', dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1)
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 evt.setCutValue( SelectionType.SelectionPID, "el_lhtight" ) 
 evt.setCutValue( EtCutType.L2CaloAbove , 15)
@@ -44,7 +73,7 @@ installTrigEgammaL2CaloSelectors()
 
 
 from PileupCorrectionTools import PileupCorrectionTool, Target
-alg = PileupCorrectionTool( 'PileupCorrection' )
+alg = PileupCorrectionTool( 'PileupCorrection' , dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1)
 
 targets = [
             Target( 'L2_Tight' , 'T0HLTElectronRingerTight_v6' , "T0HLTElectronT2CaloTight"  ) , 
@@ -78,11 +107,3 @@ from Gaugi import job
 job.initialize()
 job.execute()
 job.finalize()
-
-
-
-
-
-
-
-

@@ -7,6 +7,8 @@ from Gaugi import GeV
 from Gaugi import Algorithm
 from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
+from prometheus import Dataframe as DataframeEnum
+
 
 # External
 from ROOT import TH1F, TH2F, TProfile, TProfile2D
@@ -25,7 +27,7 @@ class EfficiencyTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
 
     Algorithm.__init__(self, name)
     self.__groups = list()
@@ -104,7 +106,13 @@ class EfficiencyTool( Algorithm ):
 
     basepath = self.getProperty( "Basepath" )
     # Retrieve Electron container
-    elCont = context.getHandler( "ElectronContainer" )
+    if self._dataframe is DataframeEnum.Electron_v1:
+      elCont    = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      elCont    = context.getHandler( "PhotonContainer" )
+    else:
+      elCont    = context.getHandler( "ElectronContainer" )
+      
     dec = context.getHandler( "MenuContainer" )
 
 

@@ -58,7 +58,7 @@ class EmTauRoI(EDM):
                         self._branches.append(branch) # hold all branches from the body class
                     except:
                         self._logger.warning('Exception when try to setBranchAddress for %s...',branch)
-            elif self._dataframe is DataframeEnum.PhysVal_v2:
+            elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
                 for branch in self.__eventBranches["PhysVal"]:
                     try:
                         self.setBranchAddress( self._tree, branch , self._event)
@@ -79,7 +79,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_emClus'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_emClus
         else:
             self._logger.warning("Impossible to retrieve the value of L1 EmClus. Unknow dataframe")
@@ -90,7 +90,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_tauClus'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_tauClus
         else:
             self._logger.warning("Impossible to retrieve the value of L1 tauClus. Unknow dataframe")
@@ -101,7 +101,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_emIsol'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_emIsol
         else:
             self._logger.warning("Impossible to retrieve the value of L1 EmIsol. Unknow dataframe")
@@ -112,7 +112,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_hadCore'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_hadIsol
         else:
             self._logger.warning("Impossible to retrieve the value of L1 hadIsol. Unknow dataframe")
@@ -123,7 +123,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_eta'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_eta
         else:
             self._logger.warning("Impossible to retrieve the value of eta. Unknow dataframe")
@@ -134,7 +134,7 @@ class EmTauRoI(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return getattr(self._event, 'elCand%d_trig_L1_calo_phi'%self._elCand)
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.trig_L1_phi
         else:
             self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")

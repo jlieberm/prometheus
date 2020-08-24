@@ -7,8 +7,14 @@ from Gaugi  import StatusCode
 
 
 class EventInfo(EDM):
+    __eventBranches = {}
+    
+    def __init__(self):
+        EDM.__init__(self)
 
-    __eventBranches = {
+    def initialize(self):
+        if self._dataframe is DataframeEnum.Electron_v1:
+            self.__eventBranches.update({
             'SkimmedNtuple':
             [ 'EventNumber',
                 'RunNumber',
@@ -24,19 +30,34 @@ class EventInfo(EDM):
                 'avgmu',
                 'LumiBlock',
                 'el_nPileupPrimaryVtx'],
-            }
+            })
+        
+        if self._dataframe is DataframeEnum.Photon_v1:
+            self.__eventBranches.update({
+            'SkimmedNtuple':
+            [ 'EventNumber',
+                'RunNumber',
+                'Nvtx',
+                'RandomRunNumber',
+                'MCChannelNumber',
+                'RandomLumiBlockNumber',
+                'MCPileupWeight',
+                'averageIntPerXing'],
 
-    def __init__(self):
-        EDM.__init__(self)
+            'PhysVal':
+            [ 'RunNumber',
+                'avgmu',
+                'LumiBlock',
+                'ph_nPileupPrimaryVtx'],
+            })
 
-    def initialize(self):
         try:
             if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
                 # Link all branches
                 for branch in self.__eventBranches["SkimmedNtuple"]:
                     self.setBranchAddress( self._tree, branch, self._event)
                     self._branches.append(branch) # hold all branches from the body class
-            elif self._dataframe is DataframeEnum.PhysVal_v2:
+            elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
                 for branch in self.__eventBranches["PhysVal"]:
                     self.setBranchAddress( self._tree, branch , self._event)
                     self._branches.append(branch) # hold all branches from the body class
@@ -55,8 +76,11 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self._event.Nvtx
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1:
             return self._event.el_nPileupPrimaryVtx
+        elif self._dataframe is DataframeEnum.Photon_v1:
+            return self._event.ph_nPileupPrimaryVtx
+            
         else:
             self._logger.warning("Impossible to retrieve the value of nvtx. Unknow dataframe.")
 
@@ -66,7 +90,7 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self._event.averageIntPerXing
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.avgmu
         else:
             self._logger.warning("Impossible to retrieve the value of avgmu. Unknow dataframe.")
@@ -77,7 +101,7 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self._event.RunNumber
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.RunNumber
         else:
             self._logger.warning("Impossible to retrieve the value of avgmu. Unknow dataframe.")
@@ -88,7 +112,7 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return -999
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return self._event.LumiBlock
         else:
             self._logger.warning("Impossible to retrieve the value of LB. Unknow dataframe.")
@@ -100,7 +124,7 @@ class EventInfo(EDM):
         """
         if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
             return self._event.MCPileupWeight
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             return 1
         else:
             self._logger.warning("Impossible to retrieve the value of MC Pileup Weight")

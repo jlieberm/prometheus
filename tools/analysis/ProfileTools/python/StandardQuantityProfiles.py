@@ -6,6 +6,8 @@ from ProfileTools  import ProfileToolBase
 from ProfileTools.constants import ( standardQuantitiesEtaEdge, standardQuantitiesHighEdges, standardQuantitiesLowerEdges
                                    , standardQuantitiesSpecialBins, standardQuantitiesNBins, standardQuantitiesPDFsHighEdges
                                    , standardQuantitiesPDFsLowerEdges, standardQuantitiesPDFsNBins )
+from prometheus import Dataframe as DataframeEnum
+
 
 
 
@@ -13,7 +15,7 @@ from ProfileTools.constants import ( standardQuantitiesEtaEdge, standardQuantiti
 
 class StandardQuantityProfiles( ProfileToolBase ):
 
-  def __init__(self, name, **kw):
+  def __init__(self, name, dataframe, **kw):
     ProfileToolBase.__init__(self, name, **kw)
     self.doSpecialBins  = False
     self.standardQuantities = standardQuantitiesNBins.keys()
@@ -62,8 +64,12 @@ class StandardQuantityProfiles( ProfileToolBase ):
     sg = selg.getStoreGateSvc()
     if self._doTrigger:
       obj = context.getHandler('HLT__FastCaloContainer')
+    elif self._dataframe is DataframeEnum.Electron_v1:
+      obj   = context.getHandler( "ElectronContainer" )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      obj    = context.getHandler( "PhotonContainer" )
     else:
-      obj = context.getHandler('ElectronContainer')
+      obj    = context.getHandler( "ElectronContainer" )
 
     # If is trigger, the position must use the trigger et/eta positions.
     from Gaugi.constants import GeV 

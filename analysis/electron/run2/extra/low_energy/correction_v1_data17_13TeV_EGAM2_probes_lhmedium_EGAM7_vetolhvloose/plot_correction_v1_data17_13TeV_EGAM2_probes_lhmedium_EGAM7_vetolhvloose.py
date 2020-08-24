@@ -35,7 +35,7 @@ from Gaugi.storage import  restoreStoreGate
 sg =  restoreStoreGate( args.inputFile )
 
 from PileupCorrectionTools import PileupCorrectionTool, Target
-alg = PileupCorrectionTool( 'PileupCorrection' )
+alg = PileupCorrectionTool( 'PileupCorrection',  dataframe = DataframeEnum.Electron_v1 )
 
 targets = [
             Target( 'L2_Tight_v1' , 'T0HLTLowEnergyElectronRingerTight_v1' , "T0HLTElectronT2CaloTight"  ) , 

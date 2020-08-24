@@ -32,22 +32,7 @@ class DecisionCore(EnumStringification):
 
 class TDT(EDM):
     # define all skimmed branches here.
-    __eventBranches = {
-             "SkimmedNtuple" : [], # default skimmed ntuple branches ],
-             "PhysVal"       : [
-              'trig_tdt_L1_calo_accept',
-              'trig_tdt_L2_calo_accept',
-              'trig_tdt_L2_el_accept',
-              'trig_tdt_EF_calo_accept',
-              'trig_tdt_EF_el_accept',
-              'trig_tdt_emu_L1_calo_accept',
-              'trig_tdt_emu_L2_calo_accept',
-              'trig_tdt_emu_L2_el_accept',
-              'trig_tdt_emu_EF_calo_accept',
-              'trig_tdt_emu_EF_el_accept',
-              ],
-          }
-
+    __eventBranches = {}
     def __init__(self):
         EDM.__init__(self)
         # force this class to hold some extra params to read the external information
@@ -59,7 +44,7 @@ class TDT(EDM):
         self._metadataName = 'tdt'
         # decision core (default)
         self._core = DecisionCore.TriggerDecisionTool
-
+        
 
     def core(self, core):
         if core is (DecisionCore.TriggerDecisionTool) or (DecisionCore.TrigEgammaEmulationTool):
@@ -71,7 +56,42 @@ class TDT(EDM):
     def initialize(self):
         import ROOT
         from Gaugi import stdvector_to_list
-        if not (self._dataframe is DataframeEnum.PhysVal_v2):
+
+        if self._dataframe is DataframeEnum.Electron_v1:
+            self.__eventBranches.update({
+               "SkimmedNtuple" : [], # default skimmed ntuple branches ],
+               "PhysVal"       : [
+                'trig_tdt_L1_calo_accept',
+                'trig_tdt_L2_calo_accept',
+                'trig_tdt_L2_el_accept',
+                'trig_tdt_EF_calo_accept',
+                'trig_tdt_EF_el_accept',
+                'trig_tdt_emu_L1_calo_accept',
+                'trig_tdt_emu_L2_calo_accept',
+                'trig_tdt_emu_L2_el_accept',
+                'trig_tdt_emu_EF_calo_accept',
+                'trig_tdt_emu_EF_el_accept',
+                ],
+            })
+        if self._dataframe is DataframeEnum.Photon_v1:
+            self.__eventBranches.update({
+               "SkimmedNtuple" : [], # default skimmed ntuple branches ],
+               "PhysVal"       : [
+                'trig_tdt_L1_calo_accept',
+                'trig_tdt_L2_calo_accept',
+                'trig_tdt_L2_ph_accept',
+                'trig_tdt_EF_calo_accept',
+                'trig_tdt_EF_ph_accept',
+                'trig_tdt_emu_L1_calo_accept',
+                'trig_tdt_emu_L2_calo_accept',
+                'trig_tdt_emu_L2_ph_accept',
+                'trig_tdt_emu_EF_calo_accept',
+                'trig_tdt_emu_EF_ph_accept',
+                ],
+            })
+
+
+        if not (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1):
             MSG_WARNING( self, 'Not possible to initialize this metadata using this dataframe. skip!')
             return StatusCode.SUCCESS
         inputFile = self._metadataParams['file']
@@ -147,19 +167,20 @@ class TDT(EDM):
           elif acceptType is AcceptType.L2Calo:
               return bool(self._event.trig_tdt_L2_calo_accept[idx]if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_L2_calo_accept[idx])
           elif acceptType is AcceptType.L2:
-              return bool(self._event.trig_tdt_L2_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_L2_el_accept[idx])
+              if self._dataframe is DataframeEnum.Electron_v1:
+                return bool(self._event.trig_tdt_L2_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_L2_el_accept[idx])
+              elif self._dataframe is DataframeEnum.Photon_v1:
+                return bool(self._event.trig_tdt_L2_ph_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_L2_ph_accept[idx])
           elif acceptType is AcceptType.EFCalo:
               ef = bool(self._event.trig_tdt_EF_calo_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_calo_accept[idx])
               return bool(self._event.trig_tdt_EF_calo_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_calo_accept[idx])
           elif acceptType is AcceptType.HLT:
-              return bool(self._event.trig_tdt_EF_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_el_accept[idx])
+              if self._dataframe is DataframeEnum.Electron_v1:
+                return bool(self._event.trig_tdt_EF_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_el_accept[idx])
+              if self._dataframe is DataframeEnum.Photon_v1:
+                return bool(self._event.trig_tdt_EF_ph_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_ph_accept[idx])
+          
           else:
               MSG_ERROR( self, 'Trigger type not suppported.')
         else:
             MSG_WARNING( self, 'Trigger %s not storage in TDT metadata.',trigItem)
-
-    
-
-
-
-
