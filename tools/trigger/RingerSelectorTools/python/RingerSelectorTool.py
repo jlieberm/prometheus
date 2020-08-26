@@ -66,10 +66,10 @@ class RingerSelectorTool(Algorithm):
         else:
           import onnxruntime as rt
           self.__session = rt.InferenceSession(modelPath)
-          self.__input_name = self._session.get_inputs()[0].name
-          self.__input_shape = self._session.get_inputs()[0].shape
-          self.__input_type = self._session.get_inputs()[0].type
-          self.__output_name = self._session.get_outputs()[0].name
+          self.__input_name = self.__session.get_inputs()[0].name
+          self.__input_shape = self.__session.get_inputs()[0].shape
+          self.__input_type = self.__session.get_inputs()[0].type
+          self.__output_name = self.__session.get_outputs()[0].name
 
       def predict( self, input ):
         if self.__useKeras:
@@ -130,7 +130,7 @@ class RingerSelectorTool(Algorithm):
     paths = treat_string( env, 'Model__path' )
     
     for idx, path in enumerate( paths ):
-      model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx], True) 
+      model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx], False) 
       self.__models.append(model)
 
     number_of_thresholds = env.GetValue("Threshold__size", 0)

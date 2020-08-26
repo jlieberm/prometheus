@@ -32,9 +32,10 @@ class ImpactTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, dataframe, **kw):
+  def __init__(self, name, dataframe, selection_list_labels=None, **kw):
+
     
-    Algorithm.__init__(self, name, selection_list_labels=None)
+    Algorithm.__init__(self, name)
 
     # declare all properties with default values  
     self.declareProperty( "Basepath", "Event/ImpactTool", "Impact base path histogram." )
@@ -48,12 +49,12 @@ class ImpactTool( Algorithm ):
 
     if selection_list_labels is None:
       # default selection names definition
-      __selections = [
+      self.__selections = [
                       'ringer',
                       'no_ringer',
                     ]
     else:
-      __selections = selection_list_labels
+      self.__selections = selection_list_labels
 
     self.__selectionFeatures = list()
    
@@ -102,7 +103,7 @@ class ImpactTool( Algorithm ):
         ### loop over etas...
         for etaBinIdx in range(len(etaBins)-1):
           ### loop over selections...
-          for selection in self.__selections:  
+          for selection in self.__selections:
             # hold binning name
             binning_name = ('et%d_eta%d') % (etBinIdx,etaBinIdx)
 
@@ -155,9 +156,9 @@ class ImpactTool( Algorithm ):
       elCont    = context.getHandler( "ElectronContainer" )
     
     evt = context.getHandler( "EventInfoContainer" )
-    eta = math.fabs(el.eta())
-    et = el.et()/GeV
-    track = el.trackParticle()
+    eta = math.fabs(elCont.eta())
+    et = elCont.et()/GeV
+    track = elCont.trackParticle()
     
     dec = context.getHandler( "MenuContainer" )
 
@@ -195,21 +196,21 @@ class ImpactTool( Algorithm ):
         pw=1
         # Fill basic infos
         sg.histogram(dirname+'/et').Fill(et,pw)
-        sg.histogram(dirname+'/eta').Fill(el.eta(),pw)
-        sg.histogram(dirname+'/phi').Fill(el.phi(),pw)
+        sg.histogram(dirname+'/eta').Fill(elCont.eta(),pw)
+        sg.histogram(dirname+'/phi').Fill(elCont.phi(),pw)
         sg.histogram(dirname+'/avgmu').Fill(evt.avgmu(),pw)
         sg.histogram(dirname+'/nvtx').Fill(evt.nvtx(),pw)
         # Fill shower shapes
-        sg.histogram(dirname+'/f1').Fill(el.f1(),pw)
-        sg.histogram(dirname+'/f3').Fill(el.f3(),pw)
-        sg.histogram(dirname+'/weta2').Fill(el.weta2(),pw)
-        sg.histogram(dirname+'/wtots1').Fill(el.wtots1(),pw)
-        sg.histogram(dirname+'/reta').Fill(el.reta(),pw)
-        sg.histogram(dirname+'/rhad').Fill(el.rhad(),pw)
-        sg.histogram(dirname+'/rphi').Fill(el.rphi(),pw)
-        sg.histogram(dirname+'/eratio').Fill(el.eratio(),pw)
-        sg.histogram(dirname+'/deltaEta1').Fill(el.deltaEta1(),pw)
-        sg.histogram(dirname+'/deltaPhiRescaled2').Fill(el.deltaPhiRescaled2(),pw)
+        sg.histogram(dirname+'/f1').Fill(elCont.f1(),pw)
+        sg.histogram(dirname+'/f3').Fill(elCont.f3(),pw)
+        sg.histogram(dirname+'/weta2').Fill(elCont.weta2(),pw)
+        sg.histogram(dirname+'/wtots1').Fill(elCont.wtots1(),pw)
+        sg.histogram(dirname+'/reta').Fill(elCont.reta(),pw)
+        sg.histogram(dirname+'/rhad').Fill(elCont.rhad(),pw)
+        sg.histogram(dirname+'/rphi').Fill(elCont.rphi(),pw)
+        sg.histogram(dirname+'/eratio').Fill(elCont.eratio(),pw)
+        sg.histogram(dirname+'/deltaEta1').Fill(elCont.deltaEta1(),pw)
+        sg.histogram(dirname+'/deltaPhiRescaled2').Fill(elCont.deltaPhiRescaled2(),pw)
         # Fill track variables
         if track:
           sg.histogram(dirname+'/trackd0pvunbiased').Fill(track.d0(),pw)
