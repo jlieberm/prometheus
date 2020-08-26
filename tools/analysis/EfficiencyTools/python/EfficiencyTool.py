@@ -35,6 +35,7 @@ class EfficiencyTool( Algorithm ):
     # declare all props here
     self.declareProperty( "Basepath", "Event/EfficiencyTool", "Histograms base path for the efficiency tool"      )
     self.declareProperty( "DoJpisee", False                 , "Use the J/psiee et bins in the eff et histograms." )
+    
  
     # Set property values using the constructor args
     for key, value in kw.items():
@@ -69,7 +70,7 @@ class EfficiencyTool( Algorithm ):
     eta_bins = default_etabins
     nvtx_bins.extend(high_nvtx_bins)
     #eta_bins = [0,0.6,0.8,1.15,1.37,1.52,1.81,2.01,2.37,2.47]
-    et_bins = jpsiee_etbins if doJpsiee else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
+    et_bins = jpsiee_etbins if doJpsiee else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] #[6.,9.,12.,15.,18.,21.,24.,27.,30.,32.,35.]
 
     for group in self.__groups:
       # Get the chain object

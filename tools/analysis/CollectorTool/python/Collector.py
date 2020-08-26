@@ -230,8 +230,3 @@ class Collector( Algorithm ):
         MSG_INFO( self, 'Saving %s with : (%d, %d)', key, d['pattern_'+key].shape[0], d['pattern_'+key].shape[1] )
         save( d, self._outputname+'/'+self._outputname+"_"+key , protocol = 'savez_compressed')
     return StatusCode.SUCCESS
-
-
-
-
-

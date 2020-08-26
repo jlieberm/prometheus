@@ -165,7 +165,8 @@ class Photon(EDM):
                               'ph_loose',
                               'ph_medium',
                               'ph_tight',
-                              'ph_multiLepton'],
+                              'ph_multiLepton',
+                              'mc_isPhoton'],
                     'HLT__Photon':[ 'trig_EF_calo_et',
                                     'trig_EF_calo_eta',
                                     'trig_EF_calo_phi',
@@ -216,6 +217,7 @@ class Photon(EDM):
                                     'trig_EF_ph_tight',
                                     'trig_EF_ph_medium',
                                     'trig_EF_ph_loose',
+                                    'mc_isPhoton',
                                     ]
                                     }
                   }
@@ -671,3 +673,14 @@ class Photon(EDM):
         return False
     else:
       self._logger.warning("Impossible to retrieve the pidname. Unknow dataframe")
+
+  def isMCPhoton(self):
+    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
+      return False
+    elif self._dataframe is DataframeEnum.Photon_v1:
+        return self._event.mc_isPhoton
+    else:
+      self._logger.warning("Impossible to retrieve the value of deltaE. Unknow dataframe")
+      return False
+

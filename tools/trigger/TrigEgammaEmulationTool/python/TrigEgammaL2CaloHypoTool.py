@@ -106,6 +106,8 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     etaRef = emTauRoi.eta()
 
     if etaRef > 2.6:
+
+
       self._logger.debug('The cluster had eta coordinates beyond the EM fiducial volume.')
       return False
 
@@ -209,7 +211,8 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
       hadET_cut = hadeTthr[etaBin]
 
     # ET_had
-    if ( hadET_T2Calo > hadET_cut ): return False
+    if ( hadET_T2Calo > hadET_cut ): 
+      return False
     PassedCuts+=1 #ET_had
     # F1
     # if ( F1 < m_F1thr[0]) return true;  //(VD) not cutting on this variable, only used to select whether to cut or not on eRatio
@@ -254,6 +257,7 @@ def configure( trigger ):
 
     def same(value):
       return [value]*9
+    
     if info.signature() == 'electron':
       from .TrigEgammaL2CaloHypoCuts import L2CaloCutMaps
       cuts = L2CaloCutMaps(etthr)
@@ -276,7 +280,6 @@ def configure( trigger ):
                                      CAERATIOthr    = cuts.MapsCAERATIOthr[pidname],
                                      )
     emulator+=hypo
-
   return name
 
 
