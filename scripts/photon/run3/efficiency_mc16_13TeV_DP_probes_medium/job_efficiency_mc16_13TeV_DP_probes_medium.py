@@ -44,11 +44,12 @@ acc = EventATLAS( "EventATLASLoop",
 from EventSelectionTool import EventSelection, SelectionType, EtCutType
 
 evt = EventSelection('EventSelection', dataframe = DataframeEnum.Photon_v1)
-evt.setCutValue( SelectionType.SelectionOnlineWithRings )
+# evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
-pidname = 'ph_medium'
+pidname = 'ph_tight'
 evt.setCutValue( SelectionType.SelectionPID, pidname ) 
-evt.setCutValue( EtCutType.L2CaloAbove , 15)
+evt.setCutValue( EtCutType.L2CaloAbove , 10)
+
 
 ToolSvc += evt
 
@@ -56,8 +57,11 @@ ToolSvc += evt
 from TrigEgammaEmulationTool import Chain, Group, TDT
 
 triggerList = [
-                Group( Chain( "TDT_g10_etcut_noringer","L1_EM3","HLT_g10_etcut_noringer"), None, 10 ),
-              ]
+                Group( TDT( "HLT_g10_etcut","HLT__TDT__g10_etcut"), 'ph_tight', 10 ),
+                # Group( Chain( "HLT__TDT__g10_etcut__medium","L1_EM3","HLT_g10_medium_noringer"), 'ph_medium', 10 ),
+                # Group( Chain( "HLT__TDT__g10_etcut__loose","L1_EM3","HLT_g10_loose_noringer"), 'ph_loose', 10 ),
+                ]
+                
 
 
 

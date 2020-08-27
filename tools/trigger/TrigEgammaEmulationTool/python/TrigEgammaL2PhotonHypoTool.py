@@ -56,7 +56,7 @@ class TrigEgammaL2PhotonHypoTool( Algorithm ):
 
     phCont = context.getHandler( "HLT__PhotonContainer" )
     current = phCont.getPos()
-  
+
     bitAccept = [False for _ in range(phCont.size())]
     etThr =  self.getProperty('EtCut')
     for ph in phCont:
@@ -80,7 +80,6 @@ def configure( trigger ):
 
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve("Emulator")
-
   name = 'Hypo__L2Photon__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
 
   if not emulator.isValid(name):

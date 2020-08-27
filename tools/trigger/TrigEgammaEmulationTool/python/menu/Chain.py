@@ -203,7 +203,6 @@ class Chain( Algorithm ):
 
     # Is passed by HLT electron/photon et cut
     passedHLT_etcut = False
-
     if self.__signature == 'electron':
       cont = context.getHandler("HLT__ElectronContainer")
       for el in cont:
@@ -213,7 +212,9 @@ class Chain( Algorithm ):
     elif self.__signature == 'photon':
       cont = context.getHandler("HLT__PhotonContainer")
       for ph in cont:
+
         if ph.et() > self.__hltEtCut:
+
           passedHLT_etcut = True; break
 
     else:

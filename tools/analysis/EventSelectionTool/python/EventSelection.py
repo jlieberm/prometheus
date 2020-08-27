@@ -50,6 +50,8 @@ class SelectionType(EnumStringification):
   SelectionOfflineWithRings = 7
   # @brief: Select by PID
   SelectionPID = 8
+  #@brief: Select by MC Truth
+  SelectionMC = 9
 
 
 
@@ -101,7 +103,6 @@ class EventSelection( Algorithm ):
 
     # Apply all et cut values setted in the dict
     for key, value in self.__cutValues.items():
-
       MSG_DEBUG( self, 'Apply Selection cut for %s',EtCutType.tostring(key))
       MSG_DEBUG( self, 'Apply Selection cut for %s',SelectionType.tostring(key))
       el=elCont
@@ -192,12 +193,24 @@ class EventSelection( Algorithm ):
         if not isVeto and not passed:
           self.wtd = StatusWTD.ENABLE
           return StatusCode.SUCCESS
+      
+      elif key is SelectionType.SelectionMC:
+        if self._dataframe is DataframeEnum.Photon_v1:
+          if value == 'probes' and bool(el.isMCPhoton()):
+            MSG_DEBUG(self, 'Selected True MC Photon')
+            return StatusCode.SUCCESS
+
+            break
+          elif value == 'fakes' and not bool(el.isMCPhoton()):
+            MSG_DEBUG(self, 'Select Fake MC Photon')
+            return StatusCode.SUCCESS
+            break
       else:
-        MSG_DEBUG( self, 'Selection cut (%s) approved.',key)
+          MSG_DEBUG( self, 'Selection cut (%s) approved.',key)
 
 
-    self.wtd = StatusWTD.DISABLE
-    return StatusCode.SUCCESS
+      self.wtd = StatusWTD.DISABLE
+      return StatusCode.SUCCESS
 
 
   #

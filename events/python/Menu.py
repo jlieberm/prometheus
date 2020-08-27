@@ -65,6 +65,7 @@ class Menu(EDM):
 
     # get the accept decision from the TDT metadata
     elif (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1) and key.startswith('TDT__'):
+
       #  TDT__HLT__e28_lhtight_nod0_ivarloose
       #  TDT__EFCalo__e28_lhtight_nod0_ivarloose
       tdt = self.getContext().getHandler("HLT__TDT")
@@ -79,6 +80,7 @@ class Menu(EDM):
     # get the accept decision from the Emulation metadata
     elif (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1) and key.startswith('EMU__'):
       #  EMU__HLT__e28_lhtight_nod0_ivarloose
+
       tdt = self.getContext().getHandler("HLT__TDT")
       trigInfo = key.split('__')
       tdt.core(DecisionCore.TrigEgammaEmulationTool) # athena emulation e/g core
@@ -92,6 +94,7 @@ class Menu(EDM):
     # This name is not in metadata and not in cache, let's access the emulation svc and run it!
     else:  
       emulator = ToolSvc.retrieve( "Emulator" )
+      
       if emulator.isValid( key ):
         accept = emulator.accept( self.getContext(), key )
         self.setDecor( key, accept )

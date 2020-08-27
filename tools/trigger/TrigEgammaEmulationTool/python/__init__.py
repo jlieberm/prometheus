@@ -33,6 +33,10 @@ from . import TrigEgammaL2ElectronHypoTool
 __all__.extend(TrigEgammaL2ElectronHypoTool.__all__)
 from .TrigEgammaL2ElectronHypoTool import *
 
+from . import TrigEgammaL2PhotonHypoTool
+__all__.extend(TrigEgammaL2PhotonHypoTool.__all__)
+from .TrigEgammaL2PhotonHypoTool import *
+
 from . import install
 __all__.extend(install.__all__)
 from .install import *

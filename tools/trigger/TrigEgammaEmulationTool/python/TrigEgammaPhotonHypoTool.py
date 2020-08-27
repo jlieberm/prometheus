@@ -93,7 +93,11 @@ def configure( trigger ):
   name = 'Hypo__HLT__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
 
   if not emulator.isValid(name):
-    hypo  = TrigEgammaPhotonHypoTool(name, Branch = 'trig_EF_ph_'+info.pidname() )
-    emulator+=hypo
+    if info.pidname() == 'etcut':
+      hypo  = TrigEgammaPhotonHypoTool(name, Branch = 'trig_EF_ph_loose' )
+      emulator+=hypo
+    else:
+      hypo  = TrigEgammaPhotonHypoTool(name, Branch = 'trig_EF_ph_'+info.pidname() )
+      emulator+=hypo
 
   return name

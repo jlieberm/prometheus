@@ -37,9 +37,17 @@ parser.add_argument('--Zrad', action='store_true',
     dest='doZrad', required = False,
     help = "Do Zrad collection.")
 
+parser.add_argument('--Fakes', action='store_true',
+    dest='doFakes', required = False,
+    help = "Do Fakes collection.")
+
 parser.add_argument('--egam7', action='store_true',
     dest='doEgam7', required = False,
     help = "The colelcted sample came from EGAM7 skemma.")
+
+parser.add_argument('--fromMC', action='store_true',
+    dest='doMC', required = False, default=False,
+    help = "The colelcted sample cames from MC truth match.")
 
 import sys,os
 if len(sys.argv)==1:
@@ -77,35 +85,45 @@ evt = EventSelection('EventSelection',
 evt.setCutValue( SelectionType.SelectionOnlineWithRings )
 
 # Do not change this!
-if args.doEgam7:
-  #pidname = '!VeryLooseLLH_DataDriven_Rel21_Run2_2018'
-  pidname = '!el_lhvloose'
-elif args.doZee or args.doJpsi:
-  #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
-  pidname = 'el_lhmedium'
-elif args.doZrad:
-  pidname = 'ph_medium'
+if not args.doMC:
+  if args.doEgam7:
+    #pidname = '!VeryLooseLLH_DataDriven_Rel21_Run2_2018'
+    pidname = '!el_lhvloose'
+  elif args.doZee or args.doJpsi:
+    #pidname = 'MediumLLH_DataDriven_Rel21_Run2_2018'
+    pidname = 'el_lhmedium'
+  elif args.doZrad:
+    pidname = 'ph_medium'
+  elif args.doFakes:
+    pidname = '!ph_loose'
+  else:
+    pidname = 'el_lhmedium'
 else:
-  pidname = 'el_lhmedium'
-
-if args.doZee:
-    evt.setCutValue( SelectionType.SelectionPID, pidname )
-    evt.setCutValue( EtCutType.L2CaloAbove , 15)
-    ToolSvc += evt
-elif args.doJpsi:
-    evt.setCutValue( SelectionType.SelectionPID, pidname )
-    evt.setCutValue( EtCutType.L2CaloAbove, 4 )
-    evt.setCutValue( EtCutType.L2CaloBelow, 15 )
-    evt.setCutValue( EtCutType.OfflineAbove, 2 )
-    ToolSvc += evt
-elif args.doZrad:
-    evt.setCutValue( SelectionType.SelectionPID, pidname )
-    evt.setCutValue( EtCutType.L2CaloAbove , 15)
-    ToolSvc += evt
-else:
-    evt.setCutValue( SelectionType.SelectionPID, pidname )
-    evt.setCutValue( EtCutType.L2CaloAbove , 15)
-    ToolSvc += evt
+    if args.doFakes:
+      evt.setCutValue(SelectionType.SelectionMC, 'fakes')
+    else:
+      evt.setCutValue(SelectionType.SelectionMC, 'probes')
+    ToolSvc +=evt
+    
+if not args.doMC:
+  if args.doZee:
+      evt.setCutValue( SelectionType.SelectionPID, pidname )
+      evt.setCutValue( EtCutType.L2CaloAbove , 15)
+      ToolSvc += evt
+  elif args.doJpsi:
+      evt.setCutValue( SelectionType.SelectionPID, pidname )
+      evt.setCutValue( EtCutType.L2CaloAbove, 4 )
+      evt.setCutValue( EtCutType.L2CaloBelow, 15 )
+      evt.setCutValue( EtCutType.OfflineAbove, 2 )
+      ToolSvc += evt
+  elif args.doZrad:
+      evt.setCutValue( SelectionType.SelectionPID, pidname )
+      evt.setCutValue( EtCutType.L2CaloAbove , 15)
+      ToolSvc += evt
+  else:
+      evt.setCutValue( SelectionType.SelectionPID, pidname )
+      evt.setCutValue( EtCutType.L2CaloAbove , 15)
+      ToolSvc += evt
 
 if args.doZee:
 #    from RingerSelectorTools import installElectronL2CaloRingerSelector_v6
@@ -155,10 +173,3 @@ if args.doZee:
 ToolSvc += alg
 
 acc.run(args.nov)
-
-
-
-
-
-
-
