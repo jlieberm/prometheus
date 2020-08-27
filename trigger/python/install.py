@@ -40,7 +40,7 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False):
 
 
 # this dict is used to avoid a lot of elifs into the Menu.
-def installElectronRingerJpsieeFromVersion( key , useOnnx=False):
+def installElectronRingerJpsieeFromVersion( key , useOnnx=True):
   
   versions =  {
                   # Jpsiee

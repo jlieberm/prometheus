@@ -64,10 +64,11 @@ class EventSelection( Algorithm ):
   #
   def __init__(self, name):
 
-    Algorithm.__init__(self, name)
+    Algorithm.__init__(self, name, dataframe)
 
     # Cut type and values
     self.__cutValues = collections.OrderedDict()
+    self._dataframe  = dataframe
 
 
   #
