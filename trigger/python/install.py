@@ -40,7 +40,7 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False):
 
 
 # this dict is used to avoid a lot of elifs into the Menu.
-def installElectronRingerJpsieeFromVersion( key , useOnnx=False):
+def installElectronRingerJpsieeFromVersion( key , useOnnx=True):
   
   versions =  {
                   # Jpsiee
@@ -216,7 +216,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
 ################### jpsiee v1 legacy  #####################
 ###########################################################
 
-def installLowEnergyElectronL2CaloRingerSelector_v1_athena():
+def installLowEnergyElectronL2CaloRingerSelector_v1_athena( useOnnx=False ):
   '''
   This tuning was emulated in athena and was adjusted to minimize the impact at the final of HLT.
   '''
@@ -276,7 +276,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased( useOnnx=False 
 
 
 
-def installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger():
+def installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger( useOnnx=False ):
   '''
   This tuning was adjusted in order to have the operation points around of the max SP point.
   '''
@@ -309,7 +309,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger():
 
 
 
-def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium(useOnnx=False):
+def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium( useOnnx=False ):
   '''
   This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
   '''
@@ -331,8 +331,3 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium(useOnnx=False):
     if not emulator.isValid( hypo.name() ):
       emulator+=hypo
   return names
-
-
-
-
-
