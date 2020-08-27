@@ -40,7 +40,7 @@ class QuadrantTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, dataframe, **kw):
+  def __init__(self, name, **kw):
     
     Algorithm.__init__(self, name)
 
@@ -148,16 +148,16 @@ class QuadrantTool( Algorithm ):
 
     # Retrieve container
     if self._dataframe is DataframeEnum.Electron_v1:
-      elCont    = context.getHandler( "ElectronContainer" )
+      eg    = context.getHandler( "ElectronContainer" )
     elif self._dataframe is DataframeEnum.Photon_v1:
-      elCont    = context.getHandler( "PhotonContainer" )
+      eg    = context.getHandler( "PhotonContainer" )
     else:
-      elCont    = context.getHandler( "ElectronContainer" )
+      eg    = context.getHandler( "ElectronContainer" )
     
     evt = context.getHandler( "EventInfoContainer" )
-    eta = math.fabs(el.eta())
-    et = el.et()/GeV
-    track = el.trackParticle()
+    eta = math.fabs(eg.eta())
+    et = eg.et()/GeV
+    track = eg.trackParticle()
     
     dec = context.getHandler( "MenuContainer" )
 
@@ -189,21 +189,21 @@ class QuadrantTool( Algorithm ):
       pw=1
       # Fill basic infos
       sg.histogram(dirname+'/et').Fill(et,pw)
-      sg.histogram(dirname+'/eta').Fill(el.eta(),pw)
-      sg.histogram(dirname+'/phi').Fill(el.phi(),pw)
+      sg.histogram(dirname+'/eta').Fill(eg.eta(),pw)
+      sg.histogram(dirname+'/phi').Fill(eg.phi(),pw)
       sg.histogram(dirname+'/avgmu').Fill(evt.avgmu(),pw)
       sg.histogram(dirname+'/nvtx').Fill(evt.nvtx(),pw)
       # Fill shower shapes
-      sg.histogram(dirname+'/f1').Fill(el.f1(),pw)
-      sg.histogram(dirname+'/f3').Fill(el.f3(),pw)
-      sg.histogram(dirname+'/weta2').Fill(el.weta2(),pw)
-      sg.histogram(dirname+'/wtots1').Fill(el.wtots1(),pw)
-      sg.histogram(dirname+'/reta').Fill(el.reta(),pw)
-      sg.histogram(dirname+'/rhad').Fill(el.rhad(),pw)
-      sg.histogram(dirname+'/rphi').Fill(el.rphi(),pw)
-      sg.histogram(dirname+'/eratio').Fill(el.eratio(),pw)
-      sg.histogram(dirname+'/deltaEta1').Fill(el.deltaEta1(),pw)
-      sg.histogram(dirname+'/deltaPhiRescaled2').Fill(el.deltaPhiRescaled2(),pw)
+      sg.histogram(dirname+'/f1').Fill(eg.f1(),pw)
+      sg.histogram(dirname+'/f3').Fill(eg.f3(),pw)
+      sg.histogram(dirname+'/weta2').Fill(eg.weta2(),pw)
+      sg.histogram(dirname+'/wtots1').Fill(eg.wtots1(),pw)
+      sg.histogram(dirname+'/reta').Fill(eg.reta(),pw)
+      sg.histogram(dirname+'/rhad').Fill(eg.rhad(),pw)
+      sg.histogram(dirname+'/rphi').Fill(eg.rphi(),pw)
+      sg.histogram(dirname+'/eratio').Fill(eg.eratio(),pw)
+      sg.histogram(dirname+'/deltaEta1').Fill(eg.deltaEta1(),pw)
+      sg.histogram(dirname+'/deltaPhiRescaled2').Fill(eg.deltaPhiRescaled2(),pw)
       # Fill track variables
       if track:
         sg.histogram(dirname+'/trackd0pvunbiased').Fill(track.d0(),pw)

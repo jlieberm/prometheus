@@ -27,7 +27,7 @@ class EfficiencyTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, dataframe, dojpsiee=False, **kw):
+  def __init__(self, name, dojpsiee=False, **kw):
 
     Algorithm.__init__(self, name)
     self.__groups = list()
