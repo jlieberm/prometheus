@@ -37,15 +37,15 @@ ncpu = multiprocessing.cpu_count()
 f = open('/command.sh', 'w')
 
 # pull and setup prometheus
-cmd( f,  'source /setup_here.sh %s' % volume )
+cmd( f,  '. /setup_envs.sh' )
 
-command = 'python /ci/ci.py -i /ci/sample.root -o /ci/output.root --nov 100 -t %s'%args.test
+command = 'python /code/prometheus/ci/ci.py -i /ci/sample.root -o /ci/output.root --nov 100 -t %s'%args.test
 
 # Run it!
 cmd( f, command )
 f.close()
 
-os.system('source /command.sh')
+os.system('. /command.sh')
 
 
 

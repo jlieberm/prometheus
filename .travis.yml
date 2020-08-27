@@ -1,0 +1,12 @@
+language: python
+sudo: required
+
+services:
+  - docker
+
+script:
+  - docker run jodafons/prometheus:ci -t q221
+  - docker run jodafons/prometheus:ci -t q222
+  - docker run jodafons/prometheus:ci -t q223
+
+

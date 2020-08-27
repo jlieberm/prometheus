@@ -29,7 +29,6 @@ COPY setup_envs.sh /
 
 RUN mkdir /ci
 COPY sample.root /ci
-COPY ci.py /ci
 COPY parser.py /parser.py
 ENTRYPOINT ["/parser.py"]
 
