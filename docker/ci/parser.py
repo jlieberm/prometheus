@@ -39,7 +39,7 @@ f = open('/command.sh', 'w')
 # pull and setup prometheus
 cmd( f,  '. /setup_envs.sh' )
 
-command = 'python /ci/ci.py -i /ci/sample.root -o /ci/output.root --nov 100 -t %s'%args.test
+command = 'python /code/prometheus/ci/ci.py -i /ci/sample.root -o /ci/output.root --nov 100 -t %s'%args.test
 
 # Run it!
 cmd( f, command )
