@@ -27,21 +27,18 @@ class EfficiencyTool( Algorithm ):
   #
   # Constructor
   #
-  def __init__(self, name, dataframe, **kw):
+  def __init__(self, name, dataframe, dojpsiee=False, **kw):
 
     Algorithm.__init__(self, name)
     self.__groups = list()
 
     # declare all props here
     self.declareProperty( "Basepath", "Event/EfficiencyTool", "Histograms base path for the efficiency tool"      )
-    self.declareProperty( "DoJpisee", False                 , "Use the J/psiee et bins in the eff et histograms." )
+    self.declareProperty( "DoJpisee", dojpsiee                 , "Use the J/psiee et bins in the eff et histograms." )
  
     # Set property values using the constructor args
     for key, value in kw.items():
       self.setProperty(key, value)
-
-     
-
 
   #
   # Add trigger group to the monitoring list
@@ -70,7 +67,7 @@ class EfficiencyTool( Algorithm ):
     nvtx_bins.extend(high_nvtx_bins)
     #eta_bins = [0,0.6,0.8,1.15,1.37,1.52,1.81,2.01,2.37,2.47]
     et_bins = jpsiee_etbins if doJpsiee else [4.,7.,10.,15.,20.,25.,30.,35.,40.,45.,50.,60.,80.,150.] 
-
+    
     for group in self.__groups:
       # Get the chain object
       chain = group.chain()
