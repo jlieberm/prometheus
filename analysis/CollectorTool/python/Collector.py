@@ -73,10 +73,6 @@ class Collector( Algorithm ):
 
     self._event_label.extend( [
                                 # Offline variables
-                                'el_lhtight',
-                                'el_lhmedium',
-                                'el_lhloose',
-                                'el_lhvloose',
                                 'et',
                                 'eta',
                                 'phi',
@@ -92,8 +88,34 @@ class Collector( Algorithm ):
                                 'weta2',
                                 'e277',
                                 'deltaE',
-                                'deltaR',
-                                'eeMass',
+                                ] )
+
+    if self._dataframe is DataframeEnum.Electron_v1:
+      self._event_label.extend( [
+                                # Offline variables
+                                'el_lhtight', #esses todos
+                                'el_lhmedium', #esses todos
+                                'el_lhloose', #esses todos
+                                'el_lhvloose', #esses todos
+                                'deltaR', #esse 
+                                'eeMass', #esse
+                                ] )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      self._event_label.extend( [
+                                # Offline variables
+                                'ph_tight',
+                                'ph_medium',
+                                'ph_loose',
+                                ] )
+    else:
+      self._event_label.extend( [
+                                # Offline variables
+                                'el_lhtight', #esses todos
+                                'el_lhmedium', #esses todos
+                                'el_lhloose', #esses todos
+                                'el_lhvloose', #esses todos
+                                'deltaR', #esse 
+                                'eeMass', #esse
                                 ] )
 
 
