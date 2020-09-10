@@ -9,7 +9,7 @@ electron_chainDict = {
     "idInfo"          : ['tight','medium','loose','vloose','lhtight','lhmedium','lhloose','lhvloose', 'etcut'],
     "isoInfo"         : ['ivarloose', 'ivarmedium', 'ivartight', 'iloose', 'icaloloose', 'icalomedium', 'icalotight' ],
     "ringerVersion"   : ['v1','v2','v6','v7','v8','v10'],
-    "ringerExtraInfo" : ['vmedium', 'freeRinger', 'sameCutBased', 'athena'],
+    "ringerExtraInfo" : ['vmedium', 'freeRinger', 'sameCutBased', 'athena', 'ringerss'],
     }
 
 

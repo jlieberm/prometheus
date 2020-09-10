@@ -56,7 +56,10 @@ class TriggerInfo(Logger):
     # check the ringer flag
     if 'noringer' in trigger:
       self.__ringer = False
-    elif 'ringer' in trigger:
+    elif 'ringerss' in trigger:
+      self.__ringerss = True
+      self.__ringer = False
+    elif 'ringer' in trigger and 'ringerss' not in trigger:
       self.__ringer = True
     else:
       self.__ringer = True
@@ -100,6 +103,10 @@ class TriggerInfo(Logger):
   #
   def ringer(self):
     return self.__ringer
+
+  def ringerss(self):
+    return self.__ringerss
+
 
   #
   # Get the ringer tuning version

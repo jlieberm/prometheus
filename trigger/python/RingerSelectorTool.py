@@ -121,7 +121,7 @@ class RingerSelectorTool(Algorithm):
 
     from ROOT import TEnv
     env = TEnv( configPath )
-
+    
     version = env.GetValue("__version__", '')
     number_of_models = env.GetValue("Model__size", 0)
     etmin_list = treat_float( env, 'Model__etmin' )

@@ -224,6 +224,7 @@ def CalculateEfficiency(h2D, effref, b, a, fix_fraction=1, doCorrection=True, li
       histEff.SetBinError(bin+1,dEff)
     else:
       histEff.SetBinError(bin+1,0)
+
   eff=passed/float(total)
   if doCorrection:
     return histNum, histDen, histEff, (eff,passed,float(total)), b, a

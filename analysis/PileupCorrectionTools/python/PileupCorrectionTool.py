@@ -111,8 +111,8 @@ class PileupCorrectionTool( Algorithm ):
           sg.mkdir( basepath+'/'+dirname+'/'+name+'/'+target.algname()+'/'+binningname )
           sg.addHistogram(TH2F('discriminantVsEt'  , 'Et Vs discriminant' , xbins, xmin, xmax, len(etbins)-1 , np.array(etbins) ) )
           sg.addHistogram(TH2F('discriminantVsEta' , 'Eta Vs discriminant', xbins, xmin, xmax, len(etabins)-1, np.array(etabins) ) )
-          sg.addHistogram(TH2F('discriminantVsNvtx', 'Offline Pileup as function of the discriminant;discriminant;nvtx;Count', \
-                                       xbins, xmin,xmax,len(nvtx_bins)-1,np.array(nvtx_bins)) )
+          # sg.addHistogram(TH2F('discriminantVsNvtx', 'Offline Pileup as function of the discriminant;discriminant;nvtx;Count', \
+                                       # xbins, xmin,xmax,len(nvtx_bins)-1,np.array(nvtx_bins)) )
           sg.addHistogram(TH2F('discriminantVsMu'  , 'Online Pileup as function of the discriminant;discriminant;nvtx;Count' , \
                                        xbins, xmin,xmax,nmubins,mumin,mumax) )
 
@@ -216,20 +216,20 @@ class PileupCorrectionTool( Algorithm ):
       sg.histogram(path+'/et').Fill(et)
       sg.histogram(path+'/eta').Fill(eta)
       sg.histogram(path+'/phi').Fill(phi)
-      sg.histogram(path+'/nvtx').Fill(nvtx)
+      # sg.histogram(path+'/nvtx').Fill(nvtx)
       sg.histogram(path+'/mu').Fill(avgmu)
 
       if passed: # If approved by the selector
         sg.histogram(path+'/match_et').Fill(et)
         sg.histogram(path+'/match_eta').Fill(eta)
         sg.histogram(path+'/match_phi').Fill(phi)
-        sg.histogram(path+'/match_nvtx').Fill(nvtx)
+        # sg.histogram(path+'/match_nvtx').Fill(nvtx)
         sg.histogram(path+'/match_mu').Fill(avgmu)
 
       sg.histogram(path+'/eff_et').Fill(et,passed)
       sg.histogram(path+'/eff_eta').Fill(eta,passed)
       sg.histogram(path+'/eff_phi').Fill(phi,passed)
-      sg.histogram(path+'/eff_nvtx').Fill(nvtx,passed)
+      # sg.histogram(path+'/eff_nvtx').Fill(nvtx,passed)
       sg.histogram(path+'/eff_mu').Fill(avgmu,passed)
 
       # Fill discriminant distributions
@@ -237,7 +237,7 @@ class PileupCorrectionTool( Algorithm ):
       sg.histogram(path+'/discriminantVsEt').Fill(discriminant, et)
       sg.histogram(path+'/discriminantVsEta').Fill(discriminant, eta)
       sg.histogram(path+'/discriminantVsMu').Fill(discriminant, avgmu)
-      sg.histogram(path+'/discriminantVsNvtx').Fill(discriminant, nvtx)
+      # sg.histogram(path+'/discriminantVsNvtx').Fill(discriminant, nvtx)
 
     return StatusCode.SUCCESS
 

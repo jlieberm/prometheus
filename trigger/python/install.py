@@ -15,11 +15,17 @@ __all__ =  [
             'installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger',
             'installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased',
             'installLowEnergyElectronL2CaloRingerSelector_v1_athena',
+
+            #zrad
+            'installPhotonL2CaloRingerSelector_v1',
+
+            #zee shower shape
+            'installZeeSSL2CaloRingerSelector_v1',
             
             # install helper
             'installElectronRingerZeeFromVersion',
             'installElectronRingerJpsieeFromVersion',
-            'installPhotonRingerZeegFromVersion',
+            'installPhotonRingerZradFromVersion',
            ]
 
 
@@ -55,9 +61,10 @@ def installElectronRingerJpsieeFromVersion( key , useOnnx=True):
 
 
 # this dict is used to avoid a lot of elifs into the Menu.
-def installPhotonRingerZeegFromVersion( key , useOnnx=False):
+def installPhotonRingerZradFromVersion( key , useOnnx=True):
   
   versions =  {
+                'v1'                 : installPhotonL2CaloRingerSelector_v1(useOnnx)
               }
   return versions[key]
 
@@ -331,3 +338,62 @@ def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium( useOnnx=False ):
     if not emulator.isValid( hypo.name() ):
       emulator+=hypo
   return names
+
+
+def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
+  '''
+  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
+  '''
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/TrigL2_20200909_v1'
+
+  hypos = [
+              RingerSelectorTool( "T0HLTPhotonRingerTight_v1"    , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTPhotonRingerMedium_v1"    , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTPhotonRingerLoose_v1"    , ConfigFile = calibpath+'/PhotonRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+    ]
+
+
+  # very medum has only one operation point alocate in tight
+
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve( "Emulator" )
+  names = []
+  for hypo in hypos:
+    names.append( hypo.name() )
+    if not emulator.isValid( hypo.name() ):
+      emulator+=hypo
+  return names
+
+
+def installZeeSSL2CaloRingerSelector_v1( useOnnx=True ):
+  '''
+  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
+  '''
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zeess/TrigL2_20200909_v1'
+
+  hypos = [
+              RingerSelectorTool( "T0HLTElectronSSRingerTight_v1"    , ConfigFile = calibpath+'/ElectronSSRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTElectronSSRingerMedium_v1"    , ConfigFile = calibpath+'/ElectronSSRingerMediumTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTElectronSSRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronSSRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTElectronSSRingerVeryLoose_v1"    , ConfigFile = calibpath+'/ElectronSSRingerVeryLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+    ]
+
+
+  # very medum has only one operation point alocate in tight
+
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve( "Emulator" )
+  names = []
+  for hypo in hypos:
+    names.append( hypo.name() )
+    if not emulator.isValid( hypo.name() ):
+      emulator+=hypo
+  return names
+
+

@@ -157,7 +157,10 @@ class QuadrantTool( Algorithm ):
     evt = context.getHandler( "EventInfoContainer" )
     eta = math.fabs(eg.eta())
     et = eg.et()/GeV
-    track = eg.trackParticle()
+    if self._dataframe is DataframeEnum.Electron_v1:
+      track = eg.trackParticle()
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      track = False
     
     dec = context.getHandler( "MenuContainer" )
 
@@ -202,8 +205,9 @@ class QuadrantTool( Algorithm ):
       sg.histogram(dirname+'/rhad').Fill(eg.rhad(),pw)
       sg.histogram(dirname+'/rphi').Fill(eg.rphi(),pw)
       sg.histogram(dirname+'/eratio').Fill(eg.eratio(),pw)
-      sg.histogram(dirname+'/deltaEta1').Fill(eg.deltaEta1(),pw)
-      sg.histogram(dirname+'/deltaPhiRescaled2').Fill(eg.deltaPhiRescaled2(),pw)
+      if self._dataframe is DataframeEnum.Electron_v1:
+        sg.histogram(dirname+'/deltaEta1').Fill(eg.deltaEta1(),pw)
+        sg.histogram(dirname+'/deltaPhiRescaled2').Fill(eg.deltaPhiRescaled2(),pw)
       # Fill track variables
       if track:
         sg.histogram(dirname+'/trackd0pvunbiased').Fill(track.d0(),pw)
