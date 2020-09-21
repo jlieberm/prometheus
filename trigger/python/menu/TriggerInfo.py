@@ -52,17 +52,17 @@ class TriggerInfo(Logger):
       if pidname == trigParts[1]:
         self.__pidname = pidname; break
     
- 
+    # Ringer is default
+    self.__ringerss = False
+    self.__ringer   = True
     # check the ringer flag
     if 'noringer' in trigger:
+      MSG_INFO(self, "This chain don't use any Ringer as Selector turn off Ringer" )
       self.__ringer = False
     elif 'ringerss' in trigger:
+      MSG_INFO(self, "This chain don't use Shower Shape + Ringer as Selector turn off Ringer" )
       self.__ringerss = True
-      self.__ringer = False
-    elif 'ringer' in trigger and 'ringerss' not in trigger:
-      self.__ringer = True
-    else:
-      self.__ringer = True
+      self.__ringer   = False
 
     self.__ringerVersion = None
 
