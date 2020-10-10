@@ -3,9 +3,13 @@ __all__ = ['Electron', 'ElectronPid', 'EgammaParameters', 'IsolationType']
 
 from Gaugi import EDM
 from Gaugi  import StatusCode, EnumStringification
+from Gaugi  import stdvector_to_list
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from EventAtlas.TrackParticle   import TrackCaloMatchType
 import math
+
+
+
 
 class ElectronPid(EnumStringification):
 
@@ -153,72 +157,8 @@ class Electron(EDM):
 
   # define all skimmed branches here.
   __eventBranches = {
-      "SkimmedNtuple" : {"Electron":[
-                         # default skimmed ntuple branches
-                         "TightLLH_DataDriven_Rel21_Run2_2018",
-                         "MediumLLH_DataDriven_Rel21_Run2_2018",
-                         "LooseLLH_DataDriven_Rel21_Run2_2018",
-                         "VeryLooseLLH_DataDriven_Rel21_Run2_2018",
-                         #"TightLLH_DataDriven_Rel21_Run2_2017",
-                         #"MediumLLH_DataDriven_Rel21_Run2_2017",
-                         #"LooseLLH_DataDriven_Rel21_Run2_2017",
-                         #"VeryLooseLLH_DataDriven_Rel21_Run2_2017",
-                         'el_pt',
-                         'el_et',
-                         'el_eta',
-                         'el_phi',
-                         'el_reta',
-                         'el_eratio' ,
-                         'el_weta2',
-                         'el_wtots1',
-                         'el_rhad',
-                         'el_rhad1',
-                         'el_rphi' ,
-                         'el_f1',
-                         'el_f3',
-                         'el_e277',
-                         'el_deltaEta1',
-                         'el_deltaEta2',
-                         'el_deltaPhi2',
-                         'el_deltaPhiRescaled2',
-                         'el_calo_ringsE'],
 
-                         "HLT__Electron":[
-                         # default skimmed ntuple for trigger branches
-                         "trig_EF_TightLLH_DataDriven_Rel21_Run2_2018",
-                         "trig_EF_MediumLLH_DataDriven_Rel21_Run2_2018",
-                         "trig_EF_LooseLLH_DataDriven_Rel21_Run2_2018",
-                         "trig_EF_VeryLooseLLH_DataDriven_Rel21_Run2_2018",
-                         #"trig_EF_TightLLH_DataDriven_Rel21_Run2_2017",
-                         #"trig_EF_MediumLLH_DataDriven_Rel21_Run2_2017",
-                         #"trig_EF_LooseLLH_DataDriven_Rel21_Run2_2017",
-                         #"trig_EF_VeryLooseLLH_DataDriven_Rel21_Run2_2017",
-                         'trig_EF_el_pt',
-                         'trig_EF_el_et',
-                         'trig_EF_el_eta',
-                         'trig_EF_el_phi',
-                         'trig_EF_el_reta',
-                         'trig_EF_el_eratio' ,
-                         'trig_EF_el_weta2',
-                         'trig_EF_el_wtots1',
-                         'trig_EF_el_rhad',
-                         'trig_EF_el_rhad1',
-                         'trig_EF_el_rphi' ,
-                         'trig_EF_el_f1',
-                         'trig_EF_el_f3',
-                         'trig_EF_el_e277',
-                         'trig_EF_el_deltaEta1',
-                         'trig_EF_el_deltaEta2',
-                         'trig_EF_el_deltaPhi2',
-                         'trig_EF_el_deltaPhiRescaled2',
-                         #'trig_EF_el_calo_ringsE'
-                         ],
-
-
-
-                         },
-
-      "PhysVal"       : {'Electron':[
+      "Electron_v1"  : {'Electron':[
 
                           'el_hasCalo',
                           'el_hasTrack',
@@ -356,28 +296,15 @@ class Electron(EDM):
     EDM.__init__(self)
 
   def initialize(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        branches = self.__eventBranches['SkimmedNtuple']["HLT__Electron"]
-      else:
-        branches = self.__eventBranches['SkimmedNtuple']["Electron"]
-      # Link all branches
-      for branch in branches:
-        self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
-    elif self._dataframe is DataframeEnum.Electron_v1:
-      if self._is_hlt:
-        branches = self.__eventBranches["PhysVal"]["HLT__Electron"]
-      else:
-        branches = self.__eventBranches["PhysVal"]["Electron"]
-      # loop over branches
-      for branch in branches:
-        self.setBranchAddress( self._tree, branch  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
+    """
+      Link all branches
+    """
+    if self._dataframe is DataframeEnum.Electron_v1:
+      self.link( self.__eventBranches["Electron_v1"]['HLT__Electron'] if self._is_hlt else self.__eventBranches["Electron_v1"]["Electron"] )
     else:
       self._logger.warning( "Electron object can''t retrieved" )
       return StatusCode.FAILURE
-    # Success
+
     return StatusCode.SUCCESS
 
 
@@ -386,12 +313,7 @@ class Electron(EDM):
     """
       Retrieve the Et information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_et')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_et')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       eta = self.caloCluster().etaBE2()
       if self.trackParticle() and  self.trackParticle().eta() != 0:
           return (self.caloCluster().energy()/math.cosh(self.trackParticle().eta()))
@@ -406,12 +328,7 @@ class Electron(EDM):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_eta')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_eta')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_eta[self.getPos()]
       else:
@@ -424,12 +341,7 @@ class Electron(EDM):
     """
       Retrieve the Phi information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_phi')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_phi')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_phi[self.getPos()]
       else:
@@ -444,12 +356,7 @@ class Electron(EDM):
     """
       Retrieve the Reta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_reta')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_reta')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_Reta[self.getPos()]
       else:
@@ -463,12 +370,7 @@ class Electron(EDM):
     """
       Retrieve the eratio information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_el_eratio')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_eratio')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_Eratio[self.getPos()]
       else:
@@ -483,13 +385,7 @@ class Electron(EDM):
     """
       Retrieve the weta1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      #if self._is_hlt:
-      #  return getattr(self._event, ('elCand%d_weta1')%(self._elCand))
-      #else:
-      #  return getattr(self._event, ('elCand%d_weta1')%(self._elCand))
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_weta1[self.getPos()]
       else:
@@ -503,13 +399,7 @@ class Electron(EDM):
     """
       Retrieve the weta2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_weta2')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_weta2')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_weta2[self.getPos()]
       else:
@@ -525,13 +415,7 @@ class Electron(EDM):
     """
       Retrieve the rhad information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_rhad')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_rhad')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_Rhad[self.getPos()]
       else:
@@ -545,14 +429,7 @@ class Electron(EDM):
     """
       Retrieve the rhad1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_rhad1')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_rhad1')%(self._elCand))
-
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_Rhad1[self.getPos()]
       else:
@@ -568,13 +445,7 @@ class Electron(EDM):
     """
       Retrieve the rphi information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_rphi')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_rphi')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_Rphi[self.getPos()]
       else:
@@ -588,13 +459,7 @@ class Electron(EDM):
     """
       Retrieve the f1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_f1')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_f1')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_f1[self.getPos()]
       else:
@@ -608,14 +473,7 @@ class Electron(EDM):
     """
       Retrieve the f3 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_f3')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_f3')%(self._elCand))
-
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_f3[self.getPos()]
       else:
@@ -626,13 +484,7 @@ class Electron(EDM):
 
   # shower shape
   def wtots1(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_wtots1')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_wtots1')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_wtots1[self.getPos()]
       else:
@@ -643,12 +495,7 @@ class Electron(EDM):
 
   # shower shape
   def e277(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_e277')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_e277')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_e277[self.getPos()]
       else:
@@ -659,9 +506,7 @@ class Electron(EDM):
 
   # shower shape
   def deltaE(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_deltaE[self.getPos()]
       else:
@@ -720,12 +565,7 @@ class Electron(EDM):
 
   # trackCaloMatchValue
   def deltaEta1(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_deltaEta1')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_deltaEta1')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_deltaEta1[self.getPos()]
       else:
@@ -735,12 +575,7 @@ class Electron(EDM):
       return -999
 
   def deta1(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_deltaEta1')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_deltaEta1')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_deltaEta1[self.getPos()]
       else:
@@ -755,12 +590,7 @@ class Electron(EDM):
     """
       Retrieve the deta2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_deltaEta2')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_deltaEta2')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_deta2[self.getPos()]
       else:
@@ -776,12 +606,7 @@ class Electron(EDM):
     """
       Retrieve the dphi2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_deltapPhi2')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_deltapPhi2')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_dphi2[self.getPos()]
       else:
@@ -795,9 +620,7 @@ class Electron(EDM):
     """
       Adds DeltaR and eeMass information
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return -999
       else:
@@ -811,9 +634,7 @@ class Electron(EDM):
     """
       Adds DeltaR and eeMass information
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return -999
       else:
@@ -827,9 +648,7 @@ class Electron(EDM):
     """
       Retrieve the DeltaPhiRescaled information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_dphiresc[self.getPos()]
       else:
@@ -843,14 +662,7 @@ class Electron(EDM):
     """
       Retrieve the DeltaPhiRescaled2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_deltaPhiRescaled2')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_deltaPhiRescaled2')%(self._elCand))
-
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_deltaPhiRescaled2[self.getPos()]
       else:
@@ -925,36 +737,24 @@ class Electron(EDM):
     """
       Retrieve the Ringer Rings information from Physval or SkimmedNtuple
     """
-    from RingerCore import stdvector_to_list
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
+
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Electron object.")
         return -999
       else:
-        return getattr(self._event, ('elCand%d_el_calo_ringsE')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
-      if self._is_hlt:
-        self._logger.warning("Ringer rings information not available in HLT Electron object.")
-        return -999
-      else:
-        return self._event.el_ringsE
+        rings = stdvector_to_list(self._event.el_ringsE)
+        return rings
     else:
       self._logger.warning("Impossible to retrieve the value of ringer rings. Unknow dataframe.")
       return -999
 
 
+
+
   # Check if this object has rings
   def isGoodRinger(self):
-    from RingerCore import stdvector_to_list
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        self._logger.warning("Ringer rings information not available in HLT Electron object.")
-        return False
-      else:
-        rings = stdvector_to_list(getattr(self._event, ('elCand%d_el_calo_ringsE')%(self._elCand)))
-        return True if len(rings)!=0 else False
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Electron object.")
         return False
@@ -970,9 +770,7 @@ class Electron(EDM):
     """
     	Retrieve the electro container size
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return 1
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self.event.trig_EF_el_et.size()
       else:
@@ -998,11 +796,7 @@ class Electron(EDM):
       Retrieve the CaloCluster python object into the Store Event
       For now, this is only available into the PhysVal dataframe.
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-
-      return self.retrieve('CaloClusterContainer')
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       # The electron object is empty
       if self.empty():
         return None
@@ -1028,9 +822,7 @@ class Electron(EDM):
       Retrieve the CaloCluster python object into the Store Event
       For now, this is only available into the PhysVal dataframe.
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return self.retrieve('TrackParticleContainer')
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self.empty():
         return None
       elif self._is_hlt:
@@ -1084,23 +876,13 @@ class Electron(EDM):
   #
   def accept( self,  pidname ):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-
-      if pidname in self.__eventBranches["SkimmedNtuple"]['HLT__Electron'] and self._is_hlt:
-        return bool(getattr(self._event, 'elCand%d_%s'%(self._elCand,pidname)))
-      elif pidname in self.__eventBranches["SkimmedNtuple"]['Electron'] and not self._is_hlt:
-        return bool(getattr(self._event, 'elCand%d_%s'%(self._elCand,pidname)))
-      elif pidname in self.decorations():
-        return bool(self.getDecor(pidname))
-      else:
-        return False
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       # Dictionary to acess the physval dataframe
-      if pidname in self.__eventBranches['PhysVal']['HLT__Electron'] and self._is_hlt:
+      if pidname in self.__eventBranches['Electron_v1']['HLT__Electron'] and self._is_hlt:
         # the default selector branches is a vector
         return bool(getattr(self._event, pidname)[self.getPos()]) if getattr(self._event, pidname).size()>0 else False
 
-      elif pidname in self.__eventBranches['PhysVal']['Electron'] and not self._is_hlt:
+      elif pidname in self.__eventBranches['Electron_v1']['Electron'] and not self._is_hlt:
         return bool(getattr(self._event, pidname))
       elif pidname in self.decorations():
         return bool(self.getDecor(pidname))

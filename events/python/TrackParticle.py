@@ -5,6 +5,7 @@ __all__ = ["TrackCaloMatchType","SummaryType","TrackParticle"]
 from Gaugi import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
+from Gaugi import stdvector_to_list
 
 
 
@@ -115,80 +116,8 @@ class TrackParticle(EDM):
 
   # define all skimmed branches here.
   __eventBranches = {
-      "SkimmedNtuple" : {'TrackParticle':[ 
-                          # default skimmed ntuple branches
-                          'el_pt',
-                          'el_eta',
-                          'el_charge',
-                          'el_deltaEta1',
-                          'el_deltaPhiRescaled2',
-                          'el_d0',
-                          'el_d0significance',
-                          'el_trk_eProbabilityHT',
-                          'el_trk_DeltaPOverP',
-                          'el_trk_numberOfInnermostPixelLayerHits'           ,  
-                          'el_trk_numberOfInnermostPixelLayerOutliers'       ,  
-                          'el_trk_expectInnermostPixelLayerHit'              ,  
-                          'el_trk_numberOfNextToInnermostPixelLayerHits'     ,  
-                          'el_trk_numberOfNextToInnermostPixelLayerOutliers' ,  
-                          'el_trk_expectNextToInnermostPixelLayerHit'        ,  
-                          'el_trk_numberOfBLayerHits'                        ,  
-                          'el_trk_numberOfBLayerOutliers'                    ,  
-                          'el_trk_expectBLayerHit'                           ,  
-                          'el_trk_numberOfPixelHits'                         ,  
-                          'el_trk_numberOfPixelOutliers'                     ,  
-                          'el_trk_numberOfPixelDeadSensors'                  ,  
-                          'el_trk_numberOfSCTHits'                           ,  
-                          'el_trk_numberOfSCTOutliers'                       ,  
-                          'el_trk_numberOfSCTDeadSensors'                    ,  
-                          'el_trk_numberOfTRTHits'                           ,  
-                          'el_trk_numberOfTRTOutliers'                       ,  
-                          'el_trk_numberOfTRTHighThresholdHits'              ,  
-                          'el_trk_numberOfTRTHighThresholdOutliers'          ,  
-                          'el_trk_numberOfTRTDeadStraws'                     ,  
-                          'el_trk_numberOfTRTXenonHits'                      ,  
-                          'el_trk_TRTHighTOutliersRatio'                     ,  
 
-                        ],
-
-                        'HLT__TrackParticle':[
-                          'trig_EF_el_pt',
-                          'trig_EF_el_eta',
-                          'trig_EF_el_charge',
-                          'trig_EF_el_deltaEta1',
-                          'trig_EF_el_deltaPhiRescaled2',
-                          'trig_EF_el_d0',
-                          'trig_EF_el_d0significance',
-                          'trig_EF_el_trk_eProbabilityHT',
-                          'trig_EF_el_trk_DeltaPOverP',
-                          'trig_EF_el_trk_numberOfInnermostPixelLayerHits'           ,  
-                          'trig_EF_el_trk_numberOfInnermostPixelLayerOutliers'       ,  
-                          'trig_EF_el_trk_expectInnermostPixelLayerHit'              ,  
-                          'trig_EF_el_trk_numberOfNextToInnermostPixelLayerHits'     ,  
-                          'trig_EF_el_trk_numberOfNextToInnermostPixelLayerOutliers' ,  
-                          'trig_EF_el_trk_expectNextToInnermostPixelLayerHit'        ,  
-                          'trig_EF_el_trk_numberOfBLayerHits'                        ,  
-                          'trig_EF_el_trk_numberOfBLayerOutliers'                    ,  
-                          'trig_EF_el_trk_expectBLayerHit'                           ,  
-                          'trig_EF_el_trk_numberOfPixelHits'                         ,  
-                          'trig_EF_el_trk_numberOfPixelOutliers'                     ,  
-                          'trig_EF_el_trk_numberOfPixelDeadSensors'                  ,  
-                          'trig_EF_el_trk_numberOfSCTHits'                           ,  
-                          'trig_EF_el_trk_numberOfSCTOutliers'                       ,  
-                          'trig_EF_el_trk_numberOfSCTDeadSensors'                    ,  
-                          'trig_EF_el_trk_numberOfTRTHits'                           ,  
-                          'trig_EF_el_trk_numberOfTRTOutliers'                       ,  
-                          'trig_EF_el_trk_numberOfTRTHighThresholdHits'              ,  
-                          'trig_EF_el_trk_numberOfTRTHighThresholdOutliers'          ,  
-                          'trig_EF_el_trk_numberOfTRTDeadStraws'                     ,  
-                          'trig_EF_el_trk_numberOfTRTXenonHits'                      ,  
-                          'trig_EF_el_trk_TRTHighTOutliersRatio'                     ,  
-
-                        
-                        ]
-                        },
-
-      "PhysVal"       : {'TrackParticle':[
+      "Electron_v1": {'TrackParticle':[
                           'el_trk_pt',
                           'el_trk_eta',
                           'el_trk_charge',
@@ -221,37 +150,20 @@ class TrackParticle(EDM):
 
   def __init__(self):
     EDM.__init__(self)
-  
+ 
+
   def initialize(self):
-    #try:
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        branches = self.__eventBranches["SkimmedNtuple"]["HLT__TrackParticle"]
-      else:
-        branches = self.__eventBranches["SkimmedNtuple"]["TrackParticle"]
-      # Link all branches 
-      for branch in branches:
-        self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
-    
-    elif self._dataframe is DataframeEnum.Electron_v1:
-      if self._is_hlt:
-        branches = self.__eventBranches["PhysVal"]["HLT__TrackParticle"]
-      else:
-        branches = self.__eventBranches["PhysVal"]["TrackParticle"]
-      # loop over branches  
-      for branch in branches:
-        self.setBranchAddress( self._tree, branch  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
+    """
+      Link all branches
+    """
+    if self._dataframe is DataframeEnum.Electron_v1:
+      branches = self.__eventBranches["Electron_v1"]["HLT__TrackParticle"] if self._is_hlt else self.__eventBranches["Electron_v1"]["TrackParticle"]
+      self.link( branches )
+      return StatusCode.SUCCESS
     else:
-      self._logger.warning( "TrackParticle object can''t retrieved" )
+      self._logger.warning( "Can not initialize the TrackParticle object. Dataframe not available." )
       return StatusCode.FAILURE
-    # Success
-    
-    return StatusCode.SUCCESS
-    #except:
-    #  self._logger.warning("Impossible to create the TrackParticle Container")
-    #  return StatusCode.FAILURE
+
 
 
 
@@ -259,13 +171,7 @@ class TrackParticle(EDM):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_pt')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_pt')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_pt[self.getPos()]
       else:
@@ -279,14 +185,7 @@ class TrackParticle(EDM):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_eta')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_eta')%(self._elCand))
-
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_eta[self.getPos()]
       else:
@@ -300,13 +199,7 @@ class TrackParticle(EDM):
     """
       Retrieve the charge information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_charge')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_charge')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_charge[self.getPos()]
       else:
@@ -318,12 +211,7 @@ class TrackParticle(EDM):
 
   def d0(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_d0')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_d0')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_d0[self.getPos()]
       else:  
@@ -335,12 +223,7 @@ class TrackParticle(EDM):
 
   def d0significance(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_d0significance')%(self._elCand))
-      else:  
-        return getattr(self._event, ('elCand%d_el_d0significance')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_d0significance[self.getPos()]
       else:
@@ -352,18 +235,7 @@ class TrackParticle(EDM):
 
   def sigd0(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      #if self.d0significance() != 0.0: 
-      #  # d0significance = fabs(d0/sigd0)
-      #  return (self.d0()/float(self.d0significance()))
-      #else:
-      #  return 0.0
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_trk_sigd0')%(self._elCand))
-      else:  
-        return getattr(self._event, ('elCand%d_el_trk_sigd0')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_sigd0[self.getPos()]
       else:  
@@ -377,12 +249,7 @@ class TrackParticle(EDM):
 
   def eProbabilityHT(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_trk_eProbabilityHT')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_trk_eProbabilityHT')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_eProbabilityHT[self.getPos()]
       else:
@@ -394,16 +261,7 @@ class TrackParticle(EDM):
 
   def trans_TRT_PID(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      TRT_PID = self.eProbabilityHT()
-      epsilon = 1e-99
-      if TRT_PID >= 1.0: TRT_PID = 1.0 - 1.e-15
-      elif TRT_PID <= 0.0: TRT_PID = epsilon
-      tau = 15.0
-      import math
-      TRT_PID = -(1/tau) * math.log( (1.0/TRT_PID) - 1.0)
-      return TRT_PID
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_transformed_eProbabilityHT[self.getPos()]
       else:  
@@ -415,12 +273,7 @@ class TrackParticle(EDM):
 
   def DeltaPOverP(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_trk_DeltaPOverP')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_trk_DeltaPOverP')%(self._elCand))
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_deltaPOverP[self.getPos()]
       else:  
@@ -432,13 +285,7 @@ class TrackParticle(EDM):
 
   def qOverP(self):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_trk_qoverp')%(self._elCand))
-      else:
-        return getattr(self._event, ('elCand%d_el_trk_qoverp')%(self._elCand))
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_qOverP[self.getPos()]
       else:  
@@ -453,16 +300,7 @@ class TrackParticle(EDM):
       Helper method:
         Retrieve the summary track value from the ntuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      # get the string name from the enumarion type
-      st = SummaryType.toString(summaryType)
-      if self._is_hlt:
-        return getattr(self._event, ('elCand%d_trig_EF_el_trk_%s')%(self._elCand,st) )
-      else:  
-        return getattr(self._event, ('elCand%d_el_trk_%s')%(self._elCand,st) )
-
-    elif self._dataframe is DataframeEnum.Electron_v1:
-      from RingerCore import stdvector_to_list
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:  
         offset = ( self._event.trig_EF_el_trk_summaryValues.size()/ float(self.size()) ) * self.getPos()
         if offset+summaryType > self._event.trig_EF_el_trk_summaryValues.size():
@@ -542,9 +380,7 @@ class TrackParticle(EDM):
     """		
     	Retrieve the TrackParticle container size
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      return 1
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self.event.trig_EF_el_trk_eta.size()
       else:

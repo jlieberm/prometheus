@@ -129,7 +129,7 @@ class EventATLAS( TEventLoop ):
                                  'file':self._metadataInputFile[0]} ) # remove the last name after '/' (tree name)
       # If initializations is failed, we must remove this from the container
       # service
-
+      MSG_INFO( self, "Initialize the dataframe with name: %s" , key )
       if(edm.initialize().isFailure()):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
 

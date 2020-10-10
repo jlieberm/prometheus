@@ -16,13 +16,19 @@ import numpy as np
 class Collector( Algorithm ):
 
   def __init__(self, name, **kw):
+    
     Algorithm.__init__(self, name)
     self._event = {}
     self._event_label = []
     self._save_these_bins = list()
     self._extra_features = list()
-    self._outputname = retrieve_kw( kw, 'outputname', 'sample.pic'  )
-    self._doTrack    = retrieve_kw( kw, 'doTrack'   , False         )
+    
+    self.declareProperty( "OutputFile", 'sample.pic', "The output file name"       )
+    self.declareProperty( "DoTrack"   , False        , "Dump all track variables." )
+
+
+    for key, value in kw.items():
+      self.setProperty(key, value)
 
 
   def setEtBinningValues( self, etbins ):
@@ -33,9 +39,6 @@ class Collector( Algorithm ):
     self._etabins = etabins
 
 
-  def SaveThisBin( self, key ):
-    self._save_these_bins.append( key )
-
   def AddFeature( self, key ):
     self._extra_features.append( key )
 
@@ -45,7 +48,8 @@ class Collector( Algorithm ):
     for etBinIdx in range(len(self._etbins)-1):
       for etaBinIdx in range(len(self._etabins)-1):
         self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = None
-        #self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = []
+
+    doTrack = self.getProperty("DoTrack")
 
     self._event_label.append( 'avgmu' )
 
@@ -56,14 +60,19 @@ class Collector( Algorithm ):
                                 'L2Calo_eta',
                                 'L2Calo_phi',
                                 'L2Calo_reta',
-                                #'L2Calo_rphi',
+                                'L2Calo_ehad1', # new
                                 'L2Calo_eratio',
-                                'L2Calo_f1',
+                                'L2Calo_f1', # new
+                                'L2Calo_f3', # new
+                                'L2Calo_weta2', # new
+                                'L2Calo_wstot', # new
+
                                 ] )
 
 
-    if self._doTrack:
-      self._event_label.extend( ['L2_pt',
+    if doTrack:
+      self._event_label.extend( ['L2_hasTrack',
+                                 'L2_pt',
                                  'L2_eta',
                                  'L2_phi',
                                  'L2_trkClusDeta',
@@ -88,17 +97,19 @@ class Collector( Algorithm ):
                                 'weta2',
                                 'e277',
                                 'deltaE',
+                                'deltaR', # for boosted 
+                                'eeMass', # for boosted
                                 ] )
+
+
 
     if self._dataframe is DataframeEnum.Electron_v1:
       self._event_label.extend( [
                                 # Offline variables
-                                'el_lhtight', #esses todos
-                                'el_lhmedium', #esses todos
-                                'el_lhloose', #esses todos
-                                'el_lhvloose', #esses todos
-                                'deltaR', #esse 
-                                'eeMass', #esse
+                                'el_lhtight',
+                                'el_lhmedium',
+                                'el_lhloose',
+                                'el_lhvloose',
                                 ] )
     elif self._dataframe is DataframeEnum.Photon_v1:
       self._event_label.extend( [
@@ -110,18 +121,17 @@ class Collector( Algorithm ):
     else:
       self._event_label.extend( [
                                 # Offline variables
-                                'el_lhtight', #esses todos
-                                'el_lhmedium', #esses todos
-                                'el_lhloose', #esses todos
-                                'el_lhvloose', #esses todos
-                                'deltaR', #esse 
-                                'eeMass', #esse
+                                'el_lhtight',
+                                'el_lhmedium',
+                                'el_lhloose',
+                                'el_lhvloose',
                                 ] )
 
 
     self._event_label.extend( self._extra_features )
 
     return StatusCode.SUCCESS
+
 
   def fill( self, key , event ):
 
@@ -130,32 +140,42 @@ class Collector( Algorithm ):
     else:
       self._event[key] = [event]
 
+
+  #
+  # execute 
+  #
   def execute(self, context):
+
+    doTrack = self.getProperty("DoTrack")
+   
+
     if self._dataframe is DataframeEnum.Electron_v1:
       elCont    = context.getHandler( "ElectronContainer" )
+    
     elif self._dataframe is DataframeEnum.Photon_v1:
       elCont    = context.getHandler( "PhotonContainer" )
     
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
-    trk       = context.getHandler( "HLT__FastElectronContainer" )
+    
+   
+    # For some reason, all trk object are the closes one. Maybe some bug into the ntuple.
+    # But, here, we are interest to get the closest track object w.r.t the cluster. So,
+    # You can use any trk position inside of the container.
+    trkCont   = context.getHandler( "HLT__FastElectronContainer" )
+    
+    
+    hasTrack = True if trkCont.size()>0 else False
 
-    if self._doTrack and not (trk.size()>0):
-      # skip if the event does not fast electron feature in the
-      # trigger element.
-      return StatusCode.SUCCESS
 
 
     from PileupCorrectionTools.utilities import RetrieveBinningIdx
     etBinIdx, etaBinIdx = RetrieveBinningIdx( fc.et()/1000., abs(fc.eta()), self._etbins, self._etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
-      #MSG_WARNING( self,'Skipping event since et/eta idx does not match with the current GEO/Energy position.')
       return StatusCode.SUCCESS
 
-    key = ('et%d_eta%d') % (etBinIdx, etaBinIdx)
-    if (len(self._save_these_bins) > 0) and (not key in self._save_these_bins):
-        return StatusCode.SUCCESS
 
+    key = ('et%d_eta%d') % (etBinIdx, etaBinIdx)
 
     event_row = list()
     # event info
@@ -167,24 +187,37 @@ class Collector( Algorithm ):
     event_row.append( fc.eta()      )
     event_row.append( fc.phi()      )
     event_row.append( fc.reta()     )
-    #event_row.append( fc.rphi()     )
+    event_row.append( fc.ehad1()    )
     event_row.append( fc.eratio()   )
-    event_row.append( fc.f1()   )
+    event_row.append( fc.f1()       )
+    event_row.append( fc.f3()       )
+    event_row.append( fc.weta2()    )
+    event_row.append( fc.wstot()    )
+
+
+    #print( 'et = %1.4f, eta = %1.4f, phi = %1.4f, reta = %1.2f, ehad1 = %1.2f, eratio = %1.2f, f1 = %1.2f, f3 = %1.2f, weta2 = %1.2f, wstot = %1.2f' % 
+    #    (fc.et(),fc.eta(),fc.phi(),fc.reta(),fc.ehad1(),fc.eratio(),fc.f1(),fc.f3(),fc.weta2(),fc.wstot()) )
 
     # fast electron features
-    if self._doTrack:
-      event_row.append( trk.pt() )
-      event_row.append( trk.eta() )
-      event_row.append( trk.phi() )
-      event_row.append( trk.trkClusDeta() )
-      event_row.append( trk.trkClusDphi() )
-      event_row.append( trk.etOverPt() )
+    if doTrack and hasTrack:
+      event_row.append( hasTrack)
+      event_row.append( trkCont.pt() )
+      event_row.append( trkCont.eta() )
+      event_row.append( trkCont.phi() )
+      event_row.append( trkCont.trkClusDeta() )
+      event_row.append( trkCont.trkClusDphi() )
+      event_row.append( trkCont.etOverPt() )
+      #print( "pt = %1.4f, eta = %1.4f, phi = %1.4f, etOverPt = %1.2f, dEta = %1.2f, dPhi = %1.2f"%
+      #    (trkCont.pt(),trkCont.eta(),trkCont.phi(),trkCont.etOverPt(),trkCont.trkClusDeta(), trkCont.trkClusDphi()))
+    else:
+      event_row.extend( [False, -1, -1, -1, -1, -1, -1] )
+
+
 
 
     from EventAtlas import EgammaParameters
+    
     # Offline Shower shapes
-
-
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
     event_row.append( elCont.phi() )
@@ -200,13 +233,16 @@ class Collector( Algorithm ):
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
+    event_row.append( elCont.deltaR() )
+    event_row.append( elCont.eeMass() )
+    
     if self._dataframe is DataframeEnum.Electron_v1:
       event_row.append( elCont.accept( "el_lhtight"  ) )
       event_row.append( elCont.accept( "el_lhmedium" ) )
       event_row.append( elCont.accept( "el_lhloose"  ) )
       event_row.append( elCont.accept( "el_lhvloose" ) )
-      event_row.append( elCont.deltaR() )
-      event_row.append( elCont.eeMass() )
+
+
     elif self._dataframe is DataframeEnum.Photon_v1:
       event_row.append( elCont.accept( "ph_tight"  ) )
       event_row.append( elCont.accept( "ph_medium" ) )
@@ -215,12 +251,7 @@ class Collector( Algorithm ):
     dec = context.getHandler("MenuContainer")
 
     for feature in self._extra_features:
-      passed = dec.accept(feature)
-      while True:
-        try:
-          passed = passed.getCutResult('Pass')
-        except AttributeError:
-          break
+      passed = dec.accept(feature).getCutResult('Pass')
       event_row.append( passed )
 
     self.fill(key , event_row)
@@ -232,11 +263,14 @@ class Collector( Algorithm ):
   def finalize( self ):
 
     from Gaugi import save, mkdir_p
+
+    outputname = self.getProperty("OutputFile")
+
     for etBinIdx in range(len(self._etbins)-1):
       for etaBinIdx in range(len(self._etabins)-1):
 
         key =  'et%d_eta%d' % (etBinIdx,etaBinIdx)
-        mkdir_p( self._outputname )
+        mkdir_p( outputname )
         if self._event[key] is None:
           continue
 
@@ -250,7 +284,7 @@ class Collector( Algorithm ):
 
         d[ 'pattern_'+key ] = np.array( self._event[key] )
         MSG_INFO( self, 'Saving %s with : (%d, %d)', key, d['pattern_'+key].shape[0], d['pattern_'+key].shape[1] )
-        save( d, self._outputname+'/'+self._outputname+"_"+key , protocol = 'savez_compressed')
+        save( d, outputname+'/'+outputname+"_"+key , protocol = 'savez_compressed')
     return StatusCode.SUCCESS
 
 

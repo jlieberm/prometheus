@@ -8,38 +8,18 @@ from prometheus import Dataframe as DataframeEnum
 
 
 class CaloCluster(EDM):
+
   # define all skimmed branches here.
-  __eventBranches = {}
-    
-    
-  
-  def __init__(self):
-    EDM.__init__(self)
-    
-    
-  def initialize(self):
-    if self._dataframe is DataframeEnum.Electron_v1:
-      self.__eventBranches.update({
-          "SkimmedNtuple" : {'CaloCluster':[ # default skimmed ntuple branches
-                             'el_e',
-                             'el_calo_eta',
-                             'el_calo_pt',
-                             'el_etas2',
-                              ],
-                            'HLT__CaloCluster':[
-                             'trig_EF_el_e',
-                             'trig_EF_calo_eta',
-                             'trig_EF_calo_pt',
-                             'trig_EF_el_etas2',
-                            ]},
-          "PhysVal"       : {'CaloCluster':[
+  __eventBranches = {
+          "Electron_v1"    : {
+                  'CaloCluster':[
                               'el_calo_et',
                               'el_calo_eta',
                               'el_calo_phi',
                               'el_calo_etaBE2',
                               'el_calo_e',
                             ],
-                             'HLT__CaloCluster':[
+                   'HLT__CaloCluster':[
                               'trig_EF_el_calo_e',
                               'trig_EF_el_calo_et',
                               'trig_EF_el_calo_eta',
@@ -53,20 +33,17 @@ class CaloCluster(EDM):
                               'trig_EF_calo_lhmedium',
                               'trig_EF_calo_lhtight', 
                               ] 
-                              }
-                    })
-  
-    if self._dataframe is DataframeEnum.Photon_v1:
-      
-      self.__eventBranches.update({
-          "PhysVal"       : {'CaloCluster':[
+                            },
+
+          "Photon_v1"      : {
+                  'CaloCluster':[
                               'ph_calo_et',
                               'ph_calo_eta',
                               'ph_calo_phi',
                               'ph_calo_etaBE2',
                               'ph_calo_e',
-                            ],
-                             'HLT__CaloCluster':[
+                              ],
+                  'HLT__CaloCluster':[
                               'trig_EF_ph_calo_e',
                               'trig_EF_ph_calo_et',
                               'trig_EF_ph_calo_eta',
@@ -81,41 +58,32 @@ class CaloCluster(EDM):
                               'trig_EF_calo_lhtight', 
                               ] 
                               }
-                    })
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        branches = self.__eventBranches['SkimmedNtuple']['HLT__CaloCluster']
-      else:
-        branches = self.__eventBranches['SkimmedNtuple']['CaloCluster']
-      # Link all branches 
-      for branch in branches:
-        self._logger.debug(branch)
-        self.setBranchAddress( self._tree, ('elCand%d_%s')%(self._elCand, branch)  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
+                    }
     
-    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1 :
-      if self._is_hlt:
-        branches = self.__eventBranches["PhysVal"]["HLT__CaloCluster"]
-      else:
-        branches = self.__eventBranches["PhysVal"]["CaloCluster"]
-      # loop over branches  
-      for branch in branches:
-        self.setBranchAddress( self._tree, branch  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
+    
+  
+  def __init__(self):
+    EDM.__init__(self)
+    
+    
+  def initialize(self):
+  
+    if self._dataframe is DataframeEnum.Electron_v1:
+      self.link( self.__eventBranches["Electron_v1"]['HLT__CaloCluster'] if self._is_hlt else self.__eventBranches["Electron_v1"]["CaloCluster"] )
+    elif self._dataframe is DataframeEnum.Photon_v1:
+      self.link( self.__eventBranches["Photon_v1"]['HLT__CaloCluster'] if self._is_hlt else self.__eventBranches["Photon_v1"]["CaloCluster"] )
     else:
       self._logger.warning( "CaloCluster object can''t retrieved" )
       return StatusCode.FAILURE
-    # Success
 
     return StatusCode.SUCCESS
+
 
   def et(self):
     """
       Retrieve the Et information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      return getattr(self._event, 'elCand%d_el_et'%self._elCand)
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_calo_et[self.getPos()]
       else:
@@ -134,12 +102,7 @@ class CaloCluster(EDM):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      if self._is_hlt:
-        return getattr(self._event, 'elCand%d_trig_EF_calo_eta'%self._elCand)
-      else:
-        return getattr(self._event, 'elCand%d_el_calo_eta'%self._elCand)
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_calo_eta[self.getPos()]
       else:
@@ -158,9 +121,7 @@ class CaloCluster(EDM):
     """
       Retrieve the Phi information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      return -999
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_calo_phi[self.getPos()]
       else:
@@ -178,12 +139,7 @@ class CaloCluster(EDM):
     """
       Retrieve the EtaBE2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, 'elCand%d_trig_EF_el_etas2'%self._elCand)
-      else:  
-        return getattr(self._event, 'elCand%d_el_etas2'%self._elCand)
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_calo_etaBE2[self.getPos()]
       else:
@@ -201,12 +157,7 @@ class CaloCluster(EDM):
     """
       Retrieve the E information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        return getattr(self._event, 'elCand%d_trig_EF_el_e'%self._elCand)
-      else:
-        return getattr(self._event, 'elCand%d_el_e'%self._elCand)
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_calo_e[self.getPos()]
       else:
@@ -226,9 +177,7 @@ class CaloCluster(EDM):
       Retrieve the TrigEmCluster (FastCalo) python object into the Store Event
       For now, this is only available into the PhysVal dataframe.
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      return self.getContext().getHandler('HLT__FastCalo')
-    elif self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       cluster = self.getContext().getHandler('HLT__FastCalo')
       cluster.setPos(self.getPos())
       return cluster
@@ -242,9 +191,7 @@ class CaloCluster(EDM):
     """		
     	Retrieve the TrackParticle container size
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      return 1
-    elif self._dataframe is DataframeEnum.Electron_v1:
+    if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self.event.trig_EF_el_calo_eta.size()
       else:
@@ -259,3 +206,6 @@ class CaloCluster(EDM):
  
   def empty(self):
     return False if self.size()>0 else True
+
+
+

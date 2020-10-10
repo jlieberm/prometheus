@@ -125,7 +125,7 @@ class EgammaParameters(EnumStringification):
 class Photon(EDM):
 
   __eventBranches = { 
-        'PhysVal':{'Photon':[ 'ph_hasCalo',
+        'Photon_v1':{'Photon':[ 'ph_hasCalo',
                               'ph_hasTrack',
                               'ph_e',
                               'ph_et',
@@ -225,39 +225,24 @@ class Photon(EDM):
   def __init__(self):
     EDM.__init__(self)
 
+
   def initialize(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      if self._is_hlt:
-        branches = self.__eventBranches['SkimmedNtuple']["HLT__Photon"]
-      else:
-        branches = self.__eventBranches['SkimmedNtuple']["Photon"]
-      # Link all branches
-      for branch in branches:
-        self.setBranchAddress( self._tree, ('phCand%d_%s')%(self._phCand, branch)  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
-    elif self._dataframe is DataframeEnum.Photon_v1:
-      if self._is_hlt:
-        branches = self.__eventBranches["PhysVal"]["HLT__Photon"]
-      else:
-        branches = self.__eventBranches["PhysVal"]["Photon"]
-      # loop over branches
-      for branch in branches:
-        self.setBranchAddress( self._tree, branch  , self._event)
-        self._branches.append(branch) # hold all branches from the body class
+    """
+      Initalize all branches
+    """
+    if self._dataframe is DataframeEnum.Photon_v1:
+      self.link( self.__eventBranches["Photon_v1"]["HLT__Photon"] if self._is_hlt else self.__eventBranches["Photon_v1"]["Photon"] )
+      return StatusCode.SUCCESS
     else:
-      self._logger.warning( "Photon object can''t retrieved" )
+      self._logger.warning( "Can not initialize the Photon object. Dataframe not available." )
       return StatusCode.FAILURE
-    # Success
-    return StatusCode.SUCCESS
+
 
   def et(self):
     """
       Retrieve the Et information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       eta = self.caloCluster().etaBE2()
       return (self.caloCluster().energy()/math.cosh(eta))
     else:
@@ -268,10 +253,7 @@ class Photon(EDM):
     """
       Retrieve the Eta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_eta[self.getPos()]
       else:
@@ -284,10 +266,7 @@ class Photon(EDM):
     """
       Retrieve the Phi information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_phi[self.getPos()]
       else:
@@ -300,10 +279,7 @@ class Photon(EDM):
     """
       Retrieve the Reta information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_Reta[self.getPos()]
       else:
@@ -317,10 +293,7 @@ class Photon(EDM):
     """
       Retrieve the eratio information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_Eratio[self.getPos()]
       else:
@@ -335,10 +308,7 @@ class Photon(EDM):
     """
       Retrieve the weta1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_weta1[self.getPos()]
       else:
@@ -352,10 +322,7 @@ class Photon(EDM):
     """
       Retrieve the weta2 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_weta2[self.getPos()]
       else:
@@ -371,10 +338,7 @@ class Photon(EDM):
     """
       Retrieve the rhad information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_Rhad[self.getPos()]
       else:
@@ -388,10 +352,7 @@ class Photon(EDM):
     """
       Retrieve the rhad1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_Rhad1[self.getPos()]
       else:
@@ -407,10 +368,7 @@ class Photon(EDM):
     """
       Retrieve the rphi information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_Rphi[self.getPos()]
       else:
@@ -424,10 +382,7 @@ class Photon(EDM):
     """
       Retrieve the f1 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_f1[self.getPos()]
       else:
@@ -441,10 +396,7 @@ class Photon(EDM):
     """
       Retrieve the f3 information from Physval or SkimmedNtuple
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_f3[self.getPos()]
       else:
@@ -455,10 +407,7 @@ class Photon(EDM):
 
   # shower shape
   def wtots1(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_wtots1[self.getPos()]
       else:
@@ -469,10 +418,7 @@ class Photon(EDM):
 
   # shower shape
   def e277(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_e277[self.getPos()]
       else:
@@ -483,10 +429,7 @@ class Photon(EDM):
 
   # shower shape
   def deltaE(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self._event.trig_EF_ph_deltaE[self.getPos()]
       else:
@@ -550,10 +493,7 @@ class Photon(EDM):
     """
     # Retrieve event info to get the pileup information
     eventInfo  = self.retrieve('EventInfoContainer')
-    if self._dataframe is DataframeEnum.SkimmedNtuple:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       return eventInfo.avgmu()
     else:
       self._logger.warning("Impossible to retrieve the value of pileup. Unknow dataframe")
@@ -564,11 +504,7 @@ class Photon(EDM):
     """
       Retrieve the Ringer Rings information from Physval or SkimmedNtuple
     """
-    from RingerCore import stdvector_to_list
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return -999
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Photon object.")
         return -999
@@ -581,11 +517,7 @@ class Photon(EDM):
 
   # Check if this object has rings
   def isGoodRinger(self):
-    from RingerCore import stdvector_to_list
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return False
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         self._logger.warning("Ringer rings information not available in HLT Electron object.")
         return False
@@ -601,10 +533,7 @@ class Photon(EDM):
     """
       Retrieve the electro container size
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return 0
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       if self._is_hlt:
         return self.event.trig_EF_ph_et.size()
       else:
@@ -630,10 +559,7 @@ class Photon(EDM):
       Retrieve the CaloCluster python object into the Store Event
       For now, this is only available into the PhysVal dataframe.
     """
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return None
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       # The electron object is empty
       if self.empty():
         return None
@@ -656,10 +582,7 @@ class Photon(EDM):
 
   def accept( self,  pidname ):
 
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return False
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
       # Dictionary to acess the physval dataframe
       if pidname in self.__eventBranches['PhysVal']['HLT__Photon'] and self._is_hlt:
         # the default selector branches is a vector
@@ -675,10 +598,7 @@ class Photon(EDM):
       self._logger.warning("Impossible to retrieve the pidname. Unknow dataframe")
 
   def isMCPhoton(self):
-    if self._dataframe is DataframeEnum.SkimmedNtuple_v2:
-      self._logger.warning("There is no SkimmedNtuple dataframe for photons. Please select Physval_v2 instead.")
-      return False
-    elif self._dataframe is DataframeEnum.Photon_v1:
+    if self._dataframe is DataframeEnum.Photon_v1:
         return self._event.mc_isPhoton
     else:
       self._logger.warning("Impossible to retrieve the value of deltaE. Unknow dataframe")

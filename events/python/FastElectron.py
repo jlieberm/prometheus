@@ -5,13 +5,13 @@ from Gaugi import EDM
 from Gaugi  import StatusCode
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi import stdvector_to_list
+import numpy as np
+
 
 class FastElectron(EDM):
 
-    __eventBranches = { 'SkimmedNtuple':
-                    [
-                      ],
-                      'PhysVal':
+    __eventBranches = { 
+                      'Electron_v1':
                     [
                       'trig_L2_el_trackAlgID',
                       'trig_L2_el_pt',
@@ -32,37 +32,23 @@ class FastElectron(EDM):
         EDM.__init__(self)
 
     def initialize(self):
-        try:
-            if self._dataframe is DataframeEnum.SkimmedNtuple:
-                # Link all branches
-                for branch in self.__eventBranches["SkimmedNtuple"]:
-                    try:
-                        self.setBranchAddress( self._tree, ('fcCand%d_%s')%(self._fcCand,branch), self._event)
-                        self._branches.append(branch) # hold all branches from the body class
-                    except:
-                        self._logger.warning('Exception when try to setBranchAddress for %s...',branch)
-            elif self._dataframe is DataframeEnum.Electron_v1:
-                for branch in self.__eventBranches["PhysVal"]:
-                    try:
-                        self.setBranchAddress( self._tree, branch , self._event)
-                        self._branches.append(branch) # hold all branches from the body class
-                    except:
-                        self._logger.warning('Exception when try to setBranchAddress for %s...',branch)
-            else:
-                self._logger.warning( "FastCalo object can''t retrieved" )
-                return StatusCode.FAILURE
-            return StatusCode.SUCCESS
-        except TypeError as e:
-            self._logger.error("Impossible to create the FastCalo Container. Reason:\n%s", e)
-            return StatusCode.SUCCESS
+        """
+          Initialize all branches
+        """
+        if self._dataframe is DataframeEnum.Electron_v1:
+           self.link( self.__eventBranches["Electron_v1"] )
+           return StatusCode.SUCCESS
+        else:
+           self._logger.warning( "Can not initialize the FastElectron object. Dataframe not available." )
+           return StatusCode.FAILURE
+        
+
 
     def pt(self):
         """
-        Retrieve the pt information from Physval or SkimmedNtuple
+          Retrieve the pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_pt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of pt. Unknow dataframe")
@@ -72,9 +58,7 @@ class FastElectron(EDM):
         """
         Retrieve the eta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_eta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of eta. Unknow dataframe")
@@ -83,9 +67,7 @@ class FastElectron(EDM):
         """
         Retrieve the phi information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_phi[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")
@@ -94,9 +76,7 @@ class FastElectron(EDM):
         """
          Retrieve the charge information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_charge[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of charge. Unknow dataframe")
@@ -105,9 +85,7 @@ class FastElectron(EDM):
         """
         Retrieve the caloEta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_caloEta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of caloEta. Unknow dataframe")
@@ -116,9 +94,7 @@ class FastElectron(EDM):
         """
         Retrieve the number of TRT hits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_nTRTHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHits. Unknow dataframe")
@@ -127,9 +103,7 @@ class FastElectron(EDM):
         """
         Retrieve the number of TRT high thresholdhits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_nTRTHiThresholdHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHiThrehsoldHits. Unknow dataframe")
@@ -139,9 +113,7 @@ class FastElectron(EDM):
         """
         Retrieve the et/pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_etOverPt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of et/pt. Unknow dataframe")
@@ -150,9 +122,7 @@ class FastElectron(EDM):
         """
         Retrieve the trkClusDeta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_trkClusDeta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of trkClusDeta. Unknow dataframe")
@@ -161,9 +131,7 @@ class FastElectron(EDM):
         """
         Retrieve the trkClusDphi information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_el_trkClusDphi[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of trkClusDphi. Unknow dataframe")
@@ -171,4 +139,34 @@ class FastElectron(EDM):
 
     def size(self):
         return self._event.trig_L2_el_pt.size()
+
+
+
+    def setToBeClosestThan( self, eta, phi ):
+      
+      
+      x=  stdvector_to_list(self._event.trig_L2_el_pt)
+      print(x)
+      
+      idx = 0; minDeltaR = 999
+      for trk in self:
+        print ('aki %d, eta = %1.2f, phi = %1.2f'%(self.getPos(),trk.eta(),trk.phi()))
+        dR = self.deltaR( eta, phi, trk.eta(), trk.phi() )
+        if dR < minDeltaR:
+          minDeltaR = dR
+          idx = self.getPos()
+      print('closest with dR = %1.2f is %d'%(minDeltaR, idx) )
+      self.setPos(idx)
+
+
+    def deltaR( self, eta1, phi1, eta2, phi2 ):
+      deta = abs( eta1 - eta2 )
+      dphi = abs( phi1 - phi2 ) if abs(phi1 - phi2) < np.pi else (2*np.pi-abs(phi1-phi2))
+      return np.sqrt( deta*deta + dphi*dphi )
+
+
+
+
+
+
 

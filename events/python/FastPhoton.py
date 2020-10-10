@@ -8,10 +8,8 @@ from Gaugi import stdvector_to_list
 
 class FastPhoton(EDM):
 
-    __eventBranches = { 'SkimmedNtuple':
-                    [
-                      ],
-                      'PhysVal':
+    __eventBranches = {
+                      'Photon_v1':
                     [
                       'trig_L2_ph_pt',
                       'trig_L2_ph_caloEta',
@@ -26,38 +24,25 @@ class FastPhoton(EDM):
     def __init__(self):
         EDM.__init__(self)
 
+
     def initialize(self):
-        try:
-            if self._dataframe is DataframeEnum.SkimmedNtuple:
-                # Link all branches
-                for branch in self.__eventBranches["SkimmedNtuple"]:
-                    try:
-                        self.setBranchAddress( self._tree, ('fcCand%d_%s')%(self._fcCand,branch), self._event)
-                        self._branches.append(branch) # hold all branches from the body class
-                    except:
-                        self._logger.warning('Exception when try to setBranchAddress for %s...',branch)
-            elif self._dataframe is DataframeEnum.PhysVal_v2:
-                for branch in self.__eventBranches["PhysVal"]:
-                    try:
-                        self.setBranchAddress( self._tree, branch , self._event)
-                        self._branches.append(branch) # hold all branches from the body class
-                    except:
-                        self._logger.warning('Exception when try to setBranchAddress for %s...',branch)
-            else:
-                self._logger.warning( "FastCalo object can''t retrieved" )
-                return StatusCode.FAILURE
+        """
+          Initialize all branches
+        """
+        if self._dataframe is DataframeEnum.Photon_v1:
+            self.link( self.__eventBranches["Photon_v1"] )
             return StatusCode.SUCCESS
-        except TypeError as e:
-            self._logger.error("Impossible to create the FastCalo Container. Reason:\n%s", e)
-            return StatusCode.SUCCESS
+        else:
+            self._logger.warning( "Can not initialize the FastPhoton object. Dataframe not available." )
+            return StatusCode.FAILURE
+        
+
 
     def pt(self):
         """
-        Retrieve the pt information from Physval or SkimmedNtuple
+          Retrieve the pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_pt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of pt. Unknow dataframe")
@@ -67,9 +52,7 @@ class FastPhoton(EDM):
         """
         Retrieve the eta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_eta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of eta. Unknow dataframe")
@@ -78,9 +61,7 @@ class FastPhoton(EDM):
         """
         Retrieve the phi information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_phi[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")
@@ -89,9 +70,7 @@ class FastPhoton(EDM):
         """
         Retrieve the caloEta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_caloEta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of caloEta. Unknow dataframe")
@@ -100,9 +79,7 @@ class FastPhoton(EDM):
         """
         Retrieve the number of TRT hits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_nTRTHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHits. Unknow dataframe")
@@ -111,9 +88,7 @@ class FastPhoton(EDM):
         """
         Retrieve the number of TRT high thresholdhits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_nTRTHiThresholdHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHiThrehsoldHits. Unknow dataframe")
@@ -123,9 +98,7 @@ class FastPhoton(EDM):
         """
         Retrieve the et/pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.SkimmedNtuple:
-            return
-        elif self._dataframe is DataframeEnum.PhysVal_v2:
+        if self._dataframe is DataframeEnum.Electron_v1:
             return self._event.trig_L2_ph_etOverPt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of et/pt. Unknow dataframe")

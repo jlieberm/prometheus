@@ -9,6 +9,7 @@ from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi  import StatusCode, EnumStringification
 from Gaugi import stdvector_to_list
 from Gaugi.messenger.macros import *
+import ROOT
 
 
 class AcceptType(EnumStringification):
@@ -32,7 +33,34 @@ class DecisionCore(EnumStringification):
 
 class TDT(EDM):
     # define all skimmed branches here.
-    __eventBranches = {}
+    __eventBranches = {
+            "Electron_v1":[
+                'trig_tdt_L1_calo_accept',
+                'trig_tdt_L2_calo_accept',
+                'trig_tdt_L2_el_accept',
+                'trig_tdt_EF_calo_accept',
+                'trig_tdt_EF_el_accept',
+                'trig_tdt_emu_L1_calo_accept',
+                'trig_tdt_emu_L2_calo_accept',
+                'trig_tdt_emu_L2_el_accept',
+                'trig_tdt_emu_EF_calo_accept',
+                'trig_tdt_emu_EF_el_accept',
+                ],
+
+            "Photon_v1":[
+                'trig_tdt_L1_calo_accept',
+                'trig_tdt_L2_calo_accept',
+                'trig_tdt_L2_el_accept',
+                'trig_tdt_EF_calo_accept',
+                'trig_tdt_EF_el_accept',
+                'trig_tdt_emu_L1_calo_accept',
+                'trig_tdt_emu_L2_calo_accept',
+                'trig_tdt_emu_L2_el_accept',
+                'trig_tdt_emu_EF_calo_accept',
+                'trig_tdt_emu_EF_el_accept',
+                ],
+            }
+
     def __init__(self):
         EDM.__init__(self)
         # force this class to hold some extra params to read the external information
@@ -54,52 +82,24 @@ class TDT(EDM):
 
 
     def initialize(self):
-        import ROOT
-        from Gaugi import stdvector_to_list
+
 
         if self._dataframe is DataframeEnum.Electron_v1:
-            self.__eventBranches.update({
-               "SkimmedNtuple" : [], # default skimmed ntuple branches ],
-               "PhysVal"       : [
-                'trig_tdt_L1_calo_accept',
-                'trig_tdt_L2_calo_accept',
-                'trig_tdt_L2_el_accept',
-                'trig_tdt_EF_calo_accept',
-                'trig_tdt_EF_el_accept',
-                'trig_tdt_emu_L1_calo_accept',
-                'trig_tdt_emu_L2_calo_accept',
-                'trig_tdt_emu_L2_el_accept',
-                'trig_tdt_emu_EF_calo_accept',
-                'trig_tdt_emu_EF_el_accept',
-                ],
-            })
-        if self._dataframe is DataframeEnum.Photon_v1:
-            self.__eventBranches.update({
-               "SkimmedNtuple" : [], # default skimmed ntuple branches ],
-               "PhysVal"       : [
-                'trig_tdt_L1_calo_accept',
-                'trig_tdt_L2_calo_accept',
-                'trig_tdt_L2_ph_accept',
-                'trig_tdt_EF_calo_accept',
-                'trig_tdt_EF_ph_accept',
-                'trig_tdt_emu_L1_calo_accept',
-                'trig_tdt_emu_L2_calo_accept',
-                'trig_tdt_emu_L2_ph_accept',
-                'trig_tdt_emu_EF_calo_accept',
-                'trig_tdt_emu_EF_ph_accept',
-                ],
-            })
-
-
-        if not (self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1):
+            branches = self.__eventBranches["Electron_v1"]
+        elif self._dataframe is DataframeEnum.Photon_v1:
+            branches = self.__eventBranches["Photon_v1"]
+        else:
             MSG_WARNING( self, 'Not possible to initialize this metadata using this dataframe. skip!')
             return StatusCode.SUCCESS
+        
+
         inputFile = self._metadataParams['file']
         # Check if file exists
         f  = ROOT.TFile.Open(inputFile, 'read')
         if not f or f.IsZombie():
             MSG_WARNING( self, 'Couldn''t open file: %s', inputFile)
             return StatusCode.FAILURE
+        
         # Inform user whether TTree exists, and which options are available:
         MSG_DEBUG( self, "Adding file: %s", inputFile)
         treePath = self._metadataParams['basepath'] + '/' + self._metadataName
@@ -116,22 +116,19 @@ class TDT(EDM):
         try:
             obj.GetEntry(0)
             self._triggerList = stdvector_to_list(obj.trig_tdt_triggerList)
+            for trigItem in self._triggerList:
+                MSG_INFO( self, "Metadata trigger: %s", trigItem)
         except:
             MSG_ERROR( self, "Can not extract the trigger list from the metadata file.")
             return StatusCode.FAILURE
 
-        for trigItem in self._triggerList:
-            MSG_INFO( self, "Metadata trigger: %s", trigItem)
-            # try to get all triggers into the TDT metadata information
-            try:
-                for branch in self.__eventBranches["PhysVal"]:
-                    self.setBranchAddress( self._tree, branch  , self._event)
-                    self._branches.append(branch) # hold all branches from the body class
-                # Success
-                return StatusCode.SUCCESS
-            except:
-                MSG_WARNING( self, "Impossible to create the TDTMetaData Container")
-                return StatusCode.FAILURE
+        try:
+            self.link( branches )
+            return StatusCode.SUCCESS
+        except:
+            MSG_WARNING( self, "Impossible to create the TDTMetaData Container")
+            return StatusCode.FAILURE
+
 
     def isPassed(self, trigItem):
         return self.ancestorPassed(trigitem,AcceptType.HLT, ignoreDeactivateRois=True)
@@ -184,3 +181,8 @@ class TDT(EDM):
               MSG_ERROR( self, 'Trigger type not suppported.')
         else:
             MSG_WARNING( self, 'Trigger %s not storage in TDT metadata.',trigItem)
+
+
+
+
+
