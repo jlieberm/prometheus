@@ -71,6 +71,7 @@ class DataReader( Logger ):
   def __call__(self, inputFiles  ):
     obj  =None
     for idx, f in progressbar(enumerate(inputFiles), len(inputFiles), 'Reading...: ', 60,  logger = self._logger):
+      #d = dict(np.load(f,allow_pickle=True))
       d = dict(load(f))
       obj = self.merge(d,obj,self._skip_these_keys) if obj else d
     return obj

@@ -208,6 +208,7 @@ class Accept( object ):
   def __init__(self, name, results=[] ):
     self.__name = name
     self.__results = collections.OrderedDict()
+    
     for (key,value) in results:
       self.__results[key] = value
 

@@ -25,7 +25,7 @@ parser.add_argument('-n','--nov', action='store',
     dest='nov', required = False, default = -1, type=int,
     help = "Number of events.")
 
-parser.add_argument('--Jpsi', action='store_true',
+parser.add_argument('--jpsi', action='store_true',
     dest='doJpsi', required = False,
     help = "Do Jpsi collection.")
 
@@ -38,7 +38,7 @@ parser.add_argument('--oldGrid', action='store_true',
     help = "Use the old grid implemented during 2017 to ringer v6 (20 phase spaces). default is 25 bins")
 
 parser.add_argument('--jf17', action='store_true', 
-    dest='doJf17', required = False, 
+    dest='jf17', required = False, 
     help = "The collected samples came from JF17 (veto mc)")
 
 
@@ -57,10 +57,13 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
+isFake = True if (args.jf17 or args.doEgam7) else False
+
+
 if args.doOldPath:
-  treePath= '*/HLT/Physval/Egamma/fakes' if args.doEgam7 else '*/HLT/Physval/Egamma/probes'
+  treePath= '*/HLT/Physval/Egamma/fakes' if isFake else '*/HLT/Physval/Egamma/probes'
 else:
-  treePath= '*/HLT/Egamma/Egamma/fakes' if args.doEgam7 else '*/HLT/Egamma/Egamma/probes'
+  treePath= '*/HLT/Egamma/Egamma/fakes' if isFake else '*/HLT/Egamma/Egamma/probes'
 
 
 
@@ -106,8 +109,11 @@ ToolSvc += evt
 
 
 
-from TrigEgammaEmulationTool import installTrigEgammaL2CaloSelectors
+from TrigEgammaEmulationTool import installTrigEgammaL2CaloSelectors, installElectronL2CaloRingerSelector_v6, installElectronL2CaloRingerSelector_v8
 installTrigEgammaL2CaloSelectors()
+#installElectronL2CaloRingerSelector_v6()
+#installElectronL2CaloRingerSelector_v8()
+
 
 
 from CollectorTool import Collector
@@ -138,6 +144,18 @@ alg.AddFeature( "T0HLTElectronT2CaloTight"        )
 alg.AddFeature( "T0HLTElectronT2CaloMedium"       )
 alg.AddFeature( "T0HLTElectronT2CaloLoose"        )
 alg.AddFeature( "T0HLTElectronT2CaloVLoose"       )
+
+
+#alg.AddFeature( "T0HLTElectronRingerTight_v6"       )
+#alg.AddFeature( "T0HLTElectronRingerMedium_v6"      )
+#alg.AddFeature( "T0HLTElectronRingerLoose_v6"       )
+#alg.AddFeature( "T0HLTElectronRingerVeryLoose_v6"   )
+#
+#
+#alg.AddFeature( "T0HLTElectronRingerTight_v8"       )
+#alg.AddFeature( "T0HLTElectronRingerMedium_v8"      )
+#alg.AddFeature( "T0HLTElectronRingerLoose_v8"       )
+#alg.AddFeature( "T0HLTElectronRingerVeryLoose_v8"   )
 
 
 ToolSvc += alg

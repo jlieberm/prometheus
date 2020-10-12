@@ -145,12 +145,7 @@ class FastCalo(EDM):
     def eratio(self):
         eratio = (self.emaxs1() - self.e2tsts1())
         eratio /= (self.emaxs1() + self.e2tsts1())
-        if eratio > 1.0 and eratio <= 1.5:
-          return 1
-        elif eratio > 1.5:
-          return 0.0
-        else:
-          return eratio
+        return eratio
 
 
         

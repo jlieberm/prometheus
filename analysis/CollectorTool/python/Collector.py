@@ -66,7 +66,7 @@ class Collector( Algorithm ):
                                 'L2Calo_f3', # new
                                 'L2Calo_weta2', # new
                                 'L2Calo_wstot', # new
-
+                                'L2Calo_e2tsts1', # new
                                 ] )
 
 
@@ -193,30 +193,37 @@ class Collector( Algorithm ):
     event_row.append( fc.f3()       )
     event_row.append( fc.weta2()    )
     event_row.append( fc.wstot()    )
+    event_row.append( fc.e2tsts1()  )
 
 
-    #print( 'et = %1.4f, eta = %1.4f, phi = %1.4f, reta = %1.2f, ehad1 = %1.2f, eratio = %1.2f, f1 = %1.2f, f3 = %1.2f, weta2 = %1.2f, wstot = %1.2f' % 
-    #    (fc.et(),fc.eta(),fc.phi(),fc.reta(),fc.ehad1(),fc.eratio(),fc.f1(),fc.f3(),fc.weta2(),fc.wstot()) )
 
     # fast electron features
-    if doTrack and hasTrack:
-      event_row.append( hasTrack)
-      event_row.append( trkCont.pt() )
-      event_row.append( trkCont.eta() )
-      event_row.append( trkCont.phi() )
-      event_row.append( trkCont.trkClusDeta() )
-      event_row.append( trkCont.trkClusDphi() )
-      event_row.append( trkCont.etOverPt() )
-      #print( "pt = %1.4f, eta = %1.4f, phi = %1.4f, etOverPt = %1.2f, dEta = %1.2f, dPhi = %1.2f"%
-      #    (trkCont.pt(),trkCont.eta(),trkCont.phi(),trkCont.etOverPt(),trkCont.trkClusDeta(), trkCont.trkClusDphi()))
-    else:
-      event_row.extend( [False, -1, -1, -1, -1, -1, -1] )
+    if doTrack:
+
+      if hasTrack:
+        event_row.append( hasTrack)
+        event_row.append( trkCont.pt() )
+        event_row.append( trkCont.eta() )
+        event_row.append( trkCont.phi() )
+        event_row.append( trkCont.trkClusDeta() )
+        event_row.append( trkCont.trkClusDphi() )
+        event_row.append( trkCont.etOverPt() )
+      else:
+        event_row.extend( [False, -1, -1, -1, -1, -1, -1] )
 
 
 
 
     from EventAtlas import EgammaParameters
     
+    #if fc.wstot() < 0:    
+    #  wstot = elCont.showerShapeValue(EgammaParameters.wtots1)
+    #  e2tsts1 = fc.e2tsts1() 
+    #  eratio = elCont.showerShapeValue(EgammaParameters.Eratio)
+    #  weta2 = elCont.showerShapeValue(EgammaParameters.weta2)
+    #  print( 'reta = %1.2f, ehad1 = %1.2f, eratio = %1.2f (%1.2f), f1 = %1.2f, f3 = %1.2f, weta2 = %1.2f (%1.2f), wstot = %1.2f (%1.2f), e2tsts1= %1.2f' % 
+    #           (fc.reta(),fc.ehad1(),fc.eratio(),eratio,fc.f1(),fc.f3(),fc.weta2(),weta2,fc.wstot(),wstot, e2tsts1) )
+      
     # Offline Shower shapes
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
@@ -253,6 +260,7 @@ class Collector( Algorithm ):
     for feature in self._extra_features:
       passed = dec.accept(feature).getCutResult('Pass')
       event_row.append( passed )
+
 
     self.fill(key , event_row)
 

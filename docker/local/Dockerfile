@@ -8,6 +8,8 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV TERM screen
 
+
+RUN ls
 # Install Gaugi
 RUN pip install tensorflow==2.0.0b1
 RUN pip install gaugi saphyra future numpy onnxruntime
@@ -25,9 +27,6 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ls -lisah
-RUN mkdir /code && cd /code && git clone https://github.com/jodafons/prometheus.git && cd prometheus && mkdir build \
-    && cd build && cmake .. && make
 
 
 
