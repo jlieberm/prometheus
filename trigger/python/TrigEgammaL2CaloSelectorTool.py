@@ -95,8 +95,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
       passed = self.__hypos[1].accept(context)
     else:
       passed =  self.__hypos[2].accept(context)
-
-    return Accept( self.name(), [("Pass", passed)] )
+    return passed
 
 
   #

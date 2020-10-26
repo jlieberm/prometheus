@@ -14,6 +14,6 @@ class BasicInfoDrawer(DrawerBase):
     self.plotBasicInfo(**kw)
 
   def plotBasicInfo(self, **kw):
-    from CommonTools.constants import basicInfoLatexStr
+    from ProfileTools.constants import basicInfoLatexStr
     #self.defaultPlotProfiles("BasicInfo", basicInfoLatexStr, logPrefix="Drawing basic info", norm=False)
     self.defaultPlotProfiles("BasicInfo", basicInfoLatexStr, logPrefix="Drawing basic info" )

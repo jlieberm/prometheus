@@ -39,6 +39,7 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False):
                   "v6"                 : installElectronL2CaloRingerSelector_v6(useOnnx),
                   "v8"                 : installElectronL2CaloRingerSelector_v8(useOnnx),
                   "v10"                : installElectronL2CaloRingerSelector_v10(useOnnx),
+                  "v11"                : installElectronL2CaloRingerSelector_v11(useOnnx),
               }
   return versions[key]
 
@@ -189,6 +190,39 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
     if not emulator.isValid( hypo.name() ):
       emulator+=hypo
   return names
+
+
+
+###########################################################
+################## Testing 2020 tuning  ###################
+###########################################################
+def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
+
+  # Using shower shapes + rings here
+
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v11'
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v11"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm1, UseOnnx=useOnnx), 
+    ]
+
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve( "Emulator" )
+  names = []
+  for hypo in hypos:
+    names.append( hypo.name() )
+    if not emulator.isValid( hypo.name() ):
+      emulator+=hypo
+  return names
+
+
 
 
 

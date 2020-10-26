@@ -24,7 +24,6 @@ class Collector( Algorithm ):
     self._extra_features = list()
     
     self.declareProperty( "OutputFile", 'sample.pic', "The output file name"       )
-    self.declareProperty( "DoTrack"   , False        , "Dump all track variables." )
 
 
     for key, value in kw.items():
@@ -49,7 +48,6 @@ class Collector( Algorithm ):
       for etaBinIdx in range(len(self._etabins)-1):
         self._event[ 'et%d_eta%d' % (etBinIdx,etaBinIdx) ] = None
 
-    doTrack = self.getProperty("DoTrack")
 
     self._event_label.append( 'avgmu' )
 
@@ -66,18 +64,10 @@ class Collector( Algorithm ):
                                 'L2Calo_f3', # new
                                 'L2Calo_weta2', # new
                                 'L2Calo_wstot', # new
-
+                                'L2Calo_e2tsts1', # new
                                 ] )
 
 
-    if doTrack:
-      self._event_label.extend( ['L2_hasTrack',
-                                 'L2_pt',
-                                 'L2_eta',
-                                 'L2_phi',
-                                 'L2_trkClusDeta',
-                                 'L2_trkClusDphi',
-                                 'L2_etOverPt'] )
 
 
     self._event_label.extend( [
@@ -96,13 +86,25 @@ class Collector( Algorithm ):
                                 'weta1',
                                 'weta2',
                                 'e277',
-                                'deltaE',
+                                'deltaE'
+                                # offline track
+                                'hastrack',
+                                'DeltaPOverP',
+                                'trans_TRT_PID',
+                                'eProbabilityHT',
+                                'd0significance',
+                                'sigd0',
+                                'd0',
+                                'numberOfBLayerHits',
+                                'numberOfPixelHits',
+                                'numberOfTRTHits',
+                                # extra for boosted
                                 'deltaR', # for boosted 
                                 'eeMass', # for boosted
                                 ] )
 
 
-
+    
     if self._dataframe is DataframeEnum.Electron_v1:
       self._event_label.extend( [
                                 # Offline variables
@@ -146,27 +148,20 @@ class Collector( Algorithm ):
   #
   def execute(self, context):
 
-    doTrack = self.getProperty("DoTrack")
-   
 
     if self._dataframe is DataframeEnum.Electron_v1:
       elCont    = context.getHandler( "ElectronContainer" )
+      trkCont   = elCont.trackContainer()
+      hasTrack = True if trkCont.size()>0 else False
     
     elif self._dataframe is DataframeEnum.Photon_v1:
       elCont    = context.getHandler( "PhotonContainer" )
-    
+      trkCont   = None
+      hasTrack  = False
+
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
     
-   
-    # For some reason, all trk object are the closes one. Maybe some bug into the ntuple.
-    # But, here, we are interest to get the closest track object w.r.t the cluster. So,
-    # You can use any trk position inside of the container.
-    trkCont   = context.getHandler( "HLT__FastElectronContainer" )
-    
-    
-    hasTrack = True if trkCont.size()>0 else False
-
 
 
     from PileupCorrectionTools.utilities import RetrieveBinningIdx
@@ -193,30 +188,12 @@ class Collector( Algorithm ):
     event_row.append( fc.f3()       )
     event_row.append( fc.weta2()    )
     event_row.append( fc.wstot()    )
-
-
-    #print( 'et = %1.4f, eta = %1.4f, phi = %1.4f, reta = %1.2f, ehad1 = %1.2f, eratio = %1.2f, f1 = %1.2f, f3 = %1.2f, weta2 = %1.2f, wstot = %1.2f' % 
-    #    (fc.et(),fc.eta(),fc.phi(),fc.reta(),fc.ehad1(),fc.eratio(),fc.f1(),fc.f3(),fc.weta2(),fc.wstot()) )
-
-    # fast electron features
-    if doTrack and hasTrack:
-      event_row.append( hasTrack)
-      event_row.append( trkCont.pt() )
-      event_row.append( trkCont.eta() )
-      event_row.append( trkCont.phi() )
-      event_row.append( trkCont.trkClusDeta() )
-      event_row.append( trkCont.trkClusDphi() )
-      event_row.append( trkCont.etOverPt() )
-      #print( "pt = %1.4f, eta = %1.4f, phi = %1.4f, etOverPt = %1.2f, dEta = %1.2f, dPhi = %1.2f"%
-      #    (trkCont.pt(),trkCont.eta(),trkCont.phi(),trkCont.etOverPt(),trkCont.trkClusDeta(), trkCont.trkClusDphi()))
-    else:
-      event_row.extend( [False, -1, -1, -1, -1, -1, -1] )
-
-
+    event_row.append( fc.e2tsts1()  )
 
 
     from EventAtlas import EgammaParameters
     
+      
     # Offline Shower shapes
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
@@ -233,9 +210,27 @@ class Collector( Algorithm ):
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
+  
+    # Offline track variables
+    if hasTrack:
+      event_row.append( hasTrack)
+      event_row.append( trkCont.DeltaPOverP() )
+      event_row.append( trkCont.trans_TRT_PID() )
+      event_row.append( trkCont.eProbabilityHT() )
+      event_row.append( trkCont.d0significance() )
+      event_row.append( trkCont.sigd0() )
+      event_row.append( trkCont.d0() )
+      event_row.append( trkCont.numberOfBLayerHits() )
+      event_row.append( trkCont.numberOfPixelHits() )
+      event_row.append( trkCont.numberOfTRTHits() )
+    else:
+      event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1, -1, -1] )
+
     event_row.append( elCont.deltaR() )
     event_row.append( elCont.eeMass() )
-    
+ 
+
+
     if self._dataframe is DataframeEnum.Electron_v1:
       event_row.append( elCont.accept( "el_lhtight"  ) )
       event_row.append( elCont.accept( "el_lhmedium" ) )
@@ -253,6 +248,7 @@ class Collector( Algorithm ):
     for feature in self._extra_features:
       passed = dec.accept(feature).getCutResult('Pass')
       event_row.append( passed )
+
 
     self.fill(key , event_row)
 

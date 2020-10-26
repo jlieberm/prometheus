@@ -127,7 +127,7 @@ def addTopLabels(can, legend
   text_lines.append( GetSqrtsText(13) )
   if dataLegend: text_lines.append( dataLegend )
   if legend:
-      MakeLegend(can,.73,.68,.89,.93,option='p',textsize=10, names=legend, ncolumns=1, squarebox=False, doFixLength=False)
+      MakeLegend(can,.68,.68,.89,.93,option='p',textsize=10, names=legend, ncolumns=1, squarebox=False, doFixLength=False)
   moreText = []
   if binBounderies:
     moreText.append( getBinText(binBounderies, binStr, binUnit ) if not isinstance(binBounderies,str) else binBounderies )
@@ -197,12 +197,15 @@ class DrawerBase(Logger):
     from Gaugi import retrieve_kw
     import numpy as np
     from ROOT import gROOT, kTRUE, kAzure
+    from Gaugi.monet.AtlasStyle import SetAtlasStyle
+    SetAtlasStyle()
+    
     gROOT.SetBatch(kTRUE)
     d.update( kw )
     Logger.__init__(self, d)
     self._sg                      = restoreStoreGate( retrieve_kw(d, 'filePath','') )
     #self._sg = None
-    from CommonTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
+    from ProfileTools.constants import ringer_tuning_etbins, ringer_tuning_etabins
     self._etBins                  = retrieve_kw( d, 'etBins', ringer_tuning_etbins )
     self._etaBins                 = retrieve_kw( d, 'etaBins', ringer_tuning_etabins )
     self._EDM                     = retrieve_kw( d, 'EDM',        ''              )
@@ -213,7 +216,8 @@ class DrawerBase(Logger):
     self._etaRefBin               = retrieve_kw( d, 'etaRefBin',   0              )
     self._dataLegend              = retrieve_kw( d, 'dataLegend',  None           )
     self._rebin                   = retrieve_kw( d, 'rebin',       None           )
-    self._baseEtaColor            = retrieve_kw( d, 'baseEtaColor', np.array([255,124,124],dtype=np.float_)/255 )
+    #self._baseEtaColor            = retrieve_kw( d, 'baseEtaColor', np.array([255,124,124],dtype=np.float_)/255 )
+    self._baseEtaColor            = retrieve_kw( d, 'baseEtaColor', np.array([64,64,64],dtype=np.float_)/255 )
     self._baseEtColor             = retrieve_kw( d, 'baseEtColor', np.array([124,124,255],dtype=np.float_)/255 )
     self._fullPhaseSpaceColor     = retrieve_kw( d, 'fullPhaseSpaceColor', kAzure-4 )
     self._useRefFirst             = retrieve_kw( d, 'useRefFirst', False )
@@ -284,7 +288,6 @@ class DrawerBase(Logger):
         continue
       else:
         names.append(n)
-    print(names)
     import re, numpy as np
     filt = re.compile('^et(?P<et_idx>\d+)_eta(?P<eta_idx>\d+)$')
     def transform(s):
@@ -296,7 +299,6 @@ class DrawerBase(Logger):
     bins = list(map(transform, names))
 
     from operator import itemgetter
-    print(bins)
     highestEtIdx, highestEtaIdx = max([bin[0] for bin in bins]), max([bin[1] for bin in bins])
     if len(self._etBins) != highestEtIdx + 2:
       self._fatal("Number of et bins in the file do not match with the et bins provided")

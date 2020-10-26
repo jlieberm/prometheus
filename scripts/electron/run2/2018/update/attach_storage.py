@@ -27,16 +27,16 @@ if args.name == 'lps':
   path3 = '/home/asp-calo/jodafons/tuning_data'
 elif args.name == 'castor':
   path1 = '/Volumes/castor/cern_data'
-  path2 = '/Volumes/castor/phd_data/analysis/run2/2018/update'
+  path2 = '/Volumes/castor/phd_data/analysis/electron/run2/2018/update'
   path3 = '/Volumes/castor/tuning_data'
 elif args.name == 'cern':
   path1 = '/eos/user/j/jodafons/cern_data'
-  path2 = '/eos/user/j/jodafons/phd_data/analysis/run2/2018/update'
+  path2 = '/eos/user/j/jodafons/phd_data/analysis/electron/run2/2018/update'
   path3 = '/eos/user/j/jodafons/tuning_data'
 else:
   print('Using default path')
   path1 = '/Volumes/castor/cern_data'
-  path2 = '/Volumes/castor/phd_data/analysis/run2/2018/update'
+  path2 = '/Volumes/castor/phd_data/analysis/electron/run2/2018/update'
   path3 = '/Volumes/castor/tuning_data'
 
 

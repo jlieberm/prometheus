@@ -14,6 +14,6 @@ class StandardQuantitiesDrawer(DrawerBase):
     self.plotStandardQuantityProfiles(**kw)
 
   def plotStandardQuantityProfiles(self, **kw):
-    from CommonTools.constants import electronLatexStr, specialElectronBins
+    from ProfileTools.constants import electronLatexStr, specialElectronBins
     self.defaultPlotProfiles("StandardQuantities", electronLatexStr, logPrefix="Drawing standard quantities"
                             , entriesMap = specialElectronBins)
