@@ -51,8 +51,6 @@ class Chain( Algorithm ):
         names = configure(version)
         # define like tight, medium, loose and vloose
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
-      elif self.__trigInfo.ringerss():
-        print('selecionou ringer ss')
       else:
         # Configure the L2Calo hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure

@@ -143,6 +143,16 @@ class RingerSelectorTool(Algorithm):
     slopes = treat_float( env, 'Threshold__slope' )
     offsets = treat_float( env, 'Threshold__offset' )
  
+
+
+    # To be tested in the new ringer tuning config versions
+    try:
+      self.__useShowerShapes = env.GetValue("Input__useShowerShapes", False)
+    except:
+      self.__useShowerShapes=False
+
+
+
     for idx, slope in enumerate(slopes):
       threshold = Threshold( slope, offsets[idx], etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
       self.__thresholds.append(threshold)
@@ -189,8 +199,19 @@ class RingerSelectorTool(Algorithm):
     # apply the normalization step
     preproc = self.getProperty("Preproc")
     # normalize the inpur data
-    data = preproc( fc.ringsE() )
-    
+    rings = preproc( fc.ringsE() )
+   
+
+    if self.__useShowerShapes:
+      reta = fc.reta()
+      rphi = fc.rphi()
+      eratio = fc.eratio()
+      weta2= fc.weta2()
+      f1 = fc.f1()
+      data = [rings , [reta,rphi,eratio,weta2,f1] ]
+    else:
+      data = rings
+
     # compute the output
     output = model.predict( data )
 
