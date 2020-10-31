@@ -10,7 +10,7 @@ from Gaugi.messenger  import Logger
 from Gaugi.constants import GeV
 from Gaugi import EnumStringification
 import numpy as np
-
+import pandas as pd
 
 
 class ReaderPool( Logger ):
@@ -113,7 +113,7 @@ class CreateData(Logger):
 
 
 
-  def __call__( self, sgnFileList, bkgFileList, ofile):
+  def __call__( self, sgnFileList, bkgFileList, ofile, dump_csv=False):
 
     # get all keys
     paths = expandFolders(sgnFileList)
@@ -187,6 +187,16 @@ class CreateData(Logger):
       npatterns['sgnPattern_'+id] = int(sgnDict['pattern_'+id].shape[0])
       npatterns['bkgPattern_'+id] = int(bkgDict['pattern_'+id].shape[0])
       save( d, ofile+'_'+id , protocol = 'savez_compressed')
+
+      if dump_csv:
+        # Save as csv for pandas
+        dd = {}
+        for ikey, key in enumerate(d['features']):
+          dd[key] = d['data'][:,ikey]
+        dd['target'] = d['target']
+        df = pd.DataFrame( dd )
+        df.to_csv(ofile+'_'+id+'.csv')
+
 
     self.plotNSamples( npatterns, etBins, etaBins )
 

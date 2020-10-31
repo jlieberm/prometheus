@@ -151,7 +151,7 @@ class Collector( Algorithm ):
 
     if self._dataframe is DataframeEnum.Electron_v1:
       elCont    = context.getHandler( "ElectronContainer" )
-      trkCont   = elCont.trackContainer()
+      trkCont   = elCont.trackParticle()
       hasTrack = True if trkCont.size()>0 else False
     
     elif self._dataframe is DataframeEnum.Photon_v1:

@@ -119,7 +119,6 @@ installTrigEgammaL2CaloSelectors()
 from CollectorTool import Collector
 alg = Collector( 'Collector' , 
                   OutputFile = args.outputFile.replace('.root',''), 
-                  DoTrack = False, # 2017,2018, L2 track is not dump properly. There are something strange. do not use it!
                   )
 
 
