@@ -15,8 +15,11 @@ In 2017 the ATLAS experiment implemented an ensemble of neural networks (NeuralR
 Use `make` to install this repository into your python path. 
 
 ```bash
-mkdir build && cd build
-cmake .. && make && cd ..
+mkdir build
+cd build
+cmake ..
+make
+cd ..
 source setup.sh
 ```
 
