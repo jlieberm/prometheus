@@ -11,6 +11,7 @@ __all__ =  [
             
             #jpsiee
             'installLowEnergyElectronL2CaloRingerSelector_v1',
+            'installLowEnergyElectronL2CaloRingerSelector_v1_noHAD',
             'installLowEnergyElectronL2CaloRingerSelector_v1_vmedium',
             'installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger',
             'installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased',
@@ -52,6 +53,7 @@ def installElectronRingerJpsieeFromVersion( key , useOnnx=True):
   versions =  {
                   # Jpsiee
                   'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(useOnnx),
+                  'v1_noHAD'           : installLowEnergyElectronL2CaloRingerSelector_v1_noHAD(useOnnx),
                   'v1_vmedium'         : installLowEnergyElectronL2CaloRingerSelector_v1_vmedium(useOnnx), 
                   'v1_freeRinger'      : installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger(useOnnx),  
                   'v1_sameCutBased'    : installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased(useOnnx),
@@ -78,7 +80,10 @@ def installPhotonRingerZradFromVersion( key , useOnnx=True):
 def norm1( data ):
   return (data/abs(sum(data))).reshape((1,100))
 
-
+def noHad( data ):
+  data = data.reshape((1,100))
+  data[1, 88:] = 0. 
+  return data/abs(sum(data))
 
 
 # Install the LH HLT selector
@@ -241,6 +246,32 @@ def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
       RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm1, UseOnnx=useOnnx), 
       RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
       RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm1, UseOnnx=useOnnx), 
+    ]
+
+
+  from Gaugi import ToolSvc
+  emulator = ToolSvc.retrieve( "Emulator" )
+  names = []
+  for hypo in hypos:
+    names.append( hypo.name() )
+    if not emulator.isValid( hypo.name() ):
+      emulator+=hypo
+  return names
+
+def installLowEnergyElectronL2CaloRingerSelector_v1_noHAD( useOnnx=False ):
+  '''
+  This is not a tuning without hadronic information, but the v1 with a mask in hadronic layers in preprocessing step
+  '''
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/TrigL2_20200805_v1'
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=noHad, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=noHad, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=noHad, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=noHad, UseOnnx=useOnnx), 
     ]
 
 
