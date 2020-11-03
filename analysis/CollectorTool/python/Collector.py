@@ -75,29 +75,30 @@ class Collector( Algorithm ):
                                 'et',
                                 'eta',
                                 'phi',
-                                'eratio',
-                                'reta',
-                                'rphi',
-                                'f1',
-                                'f3',
-                                'rhad',
+                                # offline shower shapers
                                 'rhad1',
-                                'wtots1',
-                                'weta1',
+                                'rhad',
+                                'f3',
                                 'weta2',
-                                'e277',
-                                'deltaE'
+                                'rphi',
+                                'reta',
+                                'wtots1',
+                                'eratio',
+                                'f1',
                                 # offline track
                                 'hastrack',
-                                'DeltaPOverP',
-                                'trans_TRT_PID',
-                                'eProbabilityHT',
-                                'd0significance',
-                                'sigd0',
-                                'd0',
                                 'numberOfBLayerHits',
                                 'numberOfPixelHits',
                                 'numberOfTRTHits',
+                                'd0',
+                                'd0significance',
+                                'eProbabilityHT',
+                                'trans_TRT_PID',
+                                'deltaEta1',
+                                'deltaPhi2',
+                                'deltaPhi2Rescaled',
+                                'DeltaPOverP',
+
                                 # extra for boosted
                                 'deltaR', # for boosted 
                                 'eeMass', # for boosted
@@ -193,38 +194,64 @@ class Collector( Algorithm ):
 
     from EventAtlas import EgammaParameters
     
+
+    self._event_label.extend( [
+                                # offline track
+                                'hastrack',
+                                'numberOfBLayerHits',
+                                'numberOfPixelHits',
+                                'numberOfTRTHits',
+                                'd0',
+                                'd0significance',
+                                'eProbabilityHT',
+                                'trans_TRT_PID',
+                                'deltaEta1',
+                                'deltaPhi2',
+                                'deltaPhiRescaled2',
+                                'DeltaPOverP',
+
+                                # extra for boosted
+                                'deltaR', # for boosted 
+                                'eeMass', # for boosted
+                                ] )
+
+
       
     # Offline Shower shapes
     event_row.append( elCont.et() )
     event_row.append( elCont.eta() )
     event_row.append( elCont.phi() )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.Eratio ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.Reta ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.Rphi ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.f1 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.f3 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.Rhad ) )
+    
+    
     event_row.append( elCont.showerShapeValue( EgammaParameters.Rhad1 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.wtots1 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.weta1 ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.Rhad ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.f3 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.weta2 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.e277 ) )
-    event_row.append( elCont.showerShapeValue( EgammaParameters.DeltaE ) )
-  
+    event_row.append( elCont.showerShapeValue( EgammaParameters.Rphi ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.Reta ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.wtots1 ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.Eratio ) )
+    event_row.append( elCont.showerShapeValue( EgammaParameters.f1 ) )
+
+
     # Offline track variables
     if hasTrack:
       event_row.append( hasTrack)
-      event_row.append( trkCont.DeltaPOverP() )
-      event_row.append( trkCont.trans_TRT_PID() )
-      event_row.append( trkCont.eProbabilityHT() )
-      event_row.append( trkCont.d0significance() )
-      event_row.append( trkCont.sigd0() )
-      event_row.append( trkCont.d0() )
       event_row.append( trkCont.numberOfBLayerHits() )
       event_row.append( trkCont.numberOfPixelHits() )
       event_row.append( trkCont.numberOfTRTHits() )
+      event_row.append( trkCont.d0() )
+      event_row.append( trkCont.d0significance() )
+      event_row.append( trkCont.eProbabilityHT() )
+      event_row.append( trkCont.trans_TRT_PID() )
+      event_row.append( elCont.deta1() )
+      event_row.append( elCont.dphi2() )
+      event_row.append( elCont.deltaPhiRescaled2() )
+      event_row.append( trkCont.DeltaPOverP() )
+
+
     else:
-      event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1, -1, -1] )
+      event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1] )
 
     event_row.append( elCont.deltaR() )
     event_row.append( elCont.eeMass() )
