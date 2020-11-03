@@ -584,11 +584,11 @@ class Photon(EDM):
 
     if self._dataframe is DataframeEnum.Photon_v1:
       # Dictionary to acess the physval dataframe
-      if pidname in self.__eventBranches['PhysVal']['HLT__Photon'] and self._is_hlt:
+      if pidname in self.__eventBranches['Photon_v1']['HLT__Photon'] and self._is_hlt:
         # the default selector branches is a vector
         return bool(getattr(self._event, pidname)[self.getPos()]) if getattr(self._event, pidname).size()>0 else False
 
-      elif pidname in self.__eventBranches['PhysVal']['Photon'] and not self._is_hlt:
+      elif pidname in self.__eventBranches['Photon_v1']['Photon'] and not self._is_hlt:
         return bool(getattr(self._event, pidname))
       elif pidname in self.decorations():
         return bool(self.getDecor(pidname))

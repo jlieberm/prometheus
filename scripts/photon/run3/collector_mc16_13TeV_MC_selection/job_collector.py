@@ -118,9 +118,7 @@ installTrigEgammaL2CaloSelectors()
 
 
 from CollectorTool import Collector
-alg = Collector( 'Collector' , outputname = args.outputFile.replace('.root',''), 
-                  doTrack =False,
-                  dataframe = DataframeEnum.Electron_v1 if signature == 'electron' else DataframeEnum.Photon_v1
+alg = Collector( 'Collector' , OutputFile = args.outputFile.replace('.root',''), 
                 )
 
 etabins = [0.0, 0.8, 1.37, 1.54, 2.37, 2.50]
@@ -155,10 +153,3 @@ if args.doZee:
 ToolSvc += alg
 
 acc.run(args.nov)
-
-
-
-
-
-
-

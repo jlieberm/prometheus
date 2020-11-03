@@ -80,7 +80,7 @@ class FastCalo(EDM):
         """
           Link all branches
         """
-        if self._dataframe is DataframeEnum.Electron_v1 or DaraframeEnum.Photon_v1:
+        if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             self.link( self.__eventBranches["v1"] )
             return StatusCode.SUCCESS
         else:
