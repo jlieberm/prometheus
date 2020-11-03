@@ -226,9 +226,7 @@ class Collector( Algorithm ):
     else:
       event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1, -1, -1] )
 
-    event_row.append( elCont.deltaR() )
-    event_row.append( elCont.eeMass() )
- 
+    
 
 
     if self._dataframe is DataframeEnum.Electron_v1:
@@ -236,6 +234,9 @@ class Collector( Algorithm ):
       event_row.append( elCont.accept( "el_lhmedium" ) )
       event_row.append( elCont.accept( "el_lhloose"  ) )
       event_row.append( elCont.accept( "el_lhvloose" ) )
+      event_row.append( elCont.deltaR() )
+      event_row.append( elCont.eeMass() )
+ 
 
 
     elif self._dataframe is DataframeEnum.Photon_v1:

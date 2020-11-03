@@ -26,7 +26,7 @@ class EmTauRoI(EDM):
       """
         Link all branches
       """
-      if self._dataframe is DataframeEnum.Electron_v1 or DatafraneEnum.Photon_v1:
+      if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
           self.link(self.__eventBranches)
           return StatusCode.SUCCESS
       else:

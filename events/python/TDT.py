@@ -50,14 +50,14 @@ class TDT(EDM):
             "Photon_v1":[
                 'trig_tdt_L1_calo_accept',
                 'trig_tdt_L2_calo_accept',
-                'trig_tdt_L2_el_accept',
+                'trig_tdt_L2_ph_accept',
                 'trig_tdt_EF_calo_accept',
-                'trig_tdt_EF_el_accept',
+                'trig_tdt_EF_ph_accept',
                 'trig_tdt_emu_L1_calo_accept',
                 'trig_tdt_emu_L2_calo_accept',
-                'trig_tdt_emu_L2_el_accept',
+                'trig_tdt_emu_L2_ph_accept',
                 'trig_tdt_emu_EF_calo_accept',
-                'trig_tdt_emu_EF_el_accept',
+                'trig_tdt_emu_EF_ph_accept',
                 ],
             }
 
