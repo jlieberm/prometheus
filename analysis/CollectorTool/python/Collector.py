@@ -195,26 +195,6 @@ class Collector( Algorithm ):
     from EventAtlas import EgammaParameters
     
 
-    self._event_label.extend( [
-                                # offline track
-                                'hastrack',
-                                'numberOfBLayerHits',
-                                'numberOfPixelHits',
-                                'numberOfTRTHits',
-                                'd0',
-                                'd0significance',
-                                'eProbabilityHT',
-                                'trans_TRT_PID',
-                                'deltaEta1',
-                                'deltaPhi2',
-                                'deltaPhiRescaled2',
-                                'DeltaPOverP',
-
-                                # extra for boosted
-                                'deltaR', # for boosted 
-                                'eeMass', # for boosted
-                                ] )
-
 
       
     # Offline Shower shapes
