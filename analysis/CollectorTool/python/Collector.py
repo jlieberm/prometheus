@@ -65,9 +65,17 @@ class Collector( Algorithm ):
                                 'L2Calo_weta2', # new
                                 'L2Calo_wstot', # new
                                 'L2Calo_e2tsts1', # new
+                                'L2Electron_pt',
+                                'L2Electron_eta',
+                                'L2Electron_phi',
+                                'L2Electron_caloEta',
+                                'L2Electron_trkClusDeta',
+                                'L2Electron_trkClusDphi',
+                                'L2Electron_etOverPt',
+
                                 ] )
 
-
+ 
 
 
     self._event_label.extend( [
@@ -154,7 +162,10 @@ class Collector( Algorithm ):
       elCont    = context.getHandler( "ElectronContainer" )
       trkCont   = elCont.trackParticle()
       hasTrack = True if trkCont.size()>0 else False
-    
+   
+      fcElCont = context.getHandler("HLT__FastElectronContainer" )
+      hasFcTrack = True if fcElCont.size()>0 else False
+
     elif self._dataframe is DataframeEnum.Photon_v1:
       elCont    = context.getHandler( "PhotonContainer" )
       trkCont   = None
@@ -163,6 +174,7 @@ class Collector( Algorithm ):
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__FastCaloContainer" )
     
+
 
 
     from PileupCorrectionTools.utilities import RetrieveBinningIdx
@@ -192,8 +204,21 @@ class Collector( Algorithm ):
     event_row.append( fc.e2tsts1()  )
 
 
-    from EventAtlas import EgammaParameters
+
     
+    if hasFcTrack:
+      fcElCont.setToBeClosestThanCluster()
+      event_row.append( True )
+      event_row.append( fcElCont.pt() )
+      event_row.append( fcElCont.eta() )
+      event_row.append( fcElCont.phi() )
+      event_row.append( fcElCont.caloEta() )
+      event_row.append( fcElCont.trkClusDeta() )  
+      event_row.append( fcElCont.trkClusDphi() )
+      event_row.append( fcElCont.etOverPt() )
+    else:
+      event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1] )
+
 
 
       
@@ -203,6 +228,7 @@ class Collector( Algorithm ):
     event_row.append( elCont.phi() )
     
     
+    from EventAtlas import EgammaParameters
     event_row.append( elCont.showerShapeValue( EgammaParameters.Rhad1 ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.Rhad ) )
     event_row.append( elCont.showerShapeValue( EgammaParameters.f3 ) )
@@ -228,7 +254,6 @@ class Collector( Algorithm ):
       event_row.append( elCont.dphi2() )
       event_row.append( elCont.deltaPhiRescaled2() )
       event_row.append( trkCont.DeltaPOverP() )
-
 
     else:
       event_row.extend( [False, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1] )

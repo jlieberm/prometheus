@@ -142,20 +142,13 @@ class FastElectron(EDM):
 
 
 
-    def setToBeClosestThan( self, eta, phi ):
-      
-      
-      x=  stdvector_to_list(self._event.trig_L2_el_pt)
-      print(x)
-      
+    def setToBeClosestThanCluster( self ):
       idx = 0; minDeltaR = 999
       for trk in self:
-        print ('aki %d, eta = %1.2f, phi = %1.2f'%(self.getPos(),trk.eta(),trk.phi()))
-        dR = self.deltaR( eta, phi, trk.eta(), trk.phi() )
+        dR = self.deltaR( 0.0, 0.0, trk.trkClusDeta(), trk.trkClusDphi() )
         if dR < minDeltaR:
           minDeltaR = dR
           idx = self.getPos()
-      print('closest with dR = %1.2f is %d'%(minDeltaR, idx) )
       self.setPos(idx)
 
 
