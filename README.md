@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/jodafons/prometheus.svg?branch=master)](https://travisci.org/jodafons/lorenzetti) 
 
 # Prometheus 
 
@@ -34,11 +35,4 @@ source setup.sh
 
 
 
-## Framework status:
-
-This table shows the branch status.
-
-|  Branch    | Build Status |
-| ---------- | ------------ |
-|   Master   |[![Build Status](https://travis-ci.com/jodafons/prometheus.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
 
