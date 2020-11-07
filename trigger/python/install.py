@@ -2,27 +2,21 @@
 
 __all__ =  [
             # Old T2Calo selector
-           "installTrigEgammaL2CaloSelectors",
+            "installTrigEgammaL2CaloSelectors",
+            "installTrigEgammaL2ElectronSelectors",
 
-            #"installElectronL2CaloRingerSelector_v5", 
+            # Zee for electrons signatures
             "installElectronL2CaloRingerSelector_v6",
             "installElectronL2CaloRingerSelector_v8",
             "installElectronL2CaloRingerSelector_v10",
             
-            #jpsiee
+            #jpsiee for electron signatures
             'installLowEnergyElectronL2CaloRingerSelector_v1',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_noHAD',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_vmedium',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased',
-            'installLowEnergyElectronL2CaloRingerSelector_v1_athena',
 
-            #zrad
+            #zrad for photon signatures
             'installPhotonL2CaloRingerSelector_v1',
 
-            #zee shower shape
-            'installZeeSSL2CaloRingerSelector_v1',
-            
+
             # install helper
             'installElectronRingerZeeFromVersion',
             'installElectronRingerJpsieeFromVersion',
@@ -32,71 +26,68 @@ __all__ =  [
 
 
 
-# this dict is used to avoid a lot of elifs into the Menu.
-def installElectronRingerZeeFromVersion( key , useOnnx=False):
+
+
+def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fastcalo"):
   
   versions =  {
+                "fastcalo" : {
                   # Zee
                   "v6"                 : installElectronL2CaloRingerSelector_v6(useOnnx),
                   "v8"                 : installElectronL2CaloRingerSelector_v8(useOnnx),
                   "v10"                : installElectronL2CaloRingerSelector_v10(useOnnx),
                   "v11"                : installElectronL2CaloRingerSelector_v11(useOnnx),
-              }
-  return versions[key]
+                },
+                
+                "fastelectron" : {
+                  #"v1"                 : installElectronL2RingerSelector_v1(useOnnx),
+                  }
+
+             }
+
+  return versions[step][key]
 
 
 
 
-# this dict is used to avoid a lot of elifs into the Menu.
-def installElectronRingerJpsieeFromVersion( key , useOnnx=True):
+def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fastcalo"):
   
   versions =  {
+               "fastcalo" : {
+                'v1'                 : installPhotonL2CaloRingerSelector_v1(useOnnx)
+                },
+               "fastphoton" : {
+
+                }
+              }
+  return versions[step][key]
+
+
+
+
+
+
+def installElectronRingerJpsieeFromVersion( key , useOnnx=True, step="fastcalo" ):
+  
+  versions =  {
+                "fastcalo" : {
                   # Jpsiee
                   'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(useOnnx),
-                  'v1_noHAD'           : installLowEnergyElectronL2CaloRingerSelector_v1_noHAD(useOnnx),
-                  'v1_vmedium'         : installLowEnergyElectronL2CaloRingerSelector_v1_vmedium(useOnnx), 
-                  'v1_freeRinger'      : installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger(useOnnx),  
-                  'v1_sameCutBased'    : installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased(useOnnx),
-                  'v1_athena'          : installLowEnergyElectronL2CaloRingerSelector_v1_athena(useOnnx),
+                },
+                "fastelectron" : {
+                
+                }
               }
-  return versions[key]
 
-
-
-# this dict is used to avoid a lot of elifs into the Menu.
-def installPhotonRingerZradFromVersion( key , useOnnx=True):
-  
-  versions =  {
-                'v1'                 : installPhotonL2CaloRingerSelector_v1(useOnnx)
-              }
-  return versions[key]
+  return versions[step][key]
 
 
 
 
 #
-# Normalize all rings by the abs total energy
+# Helper to avoid to much repetition code into this file
 #
-def norm1( data ):
-  return (data/abs(sum(data))).reshape((1,100))
-
-def noHad( data ):
-  data = data.reshape((1,100))
-  data[1, 88:] = 0. 
-  return data/abs(sum(data))
-
-
-# Install the LH HLT selector
-def installTrigEgammaL2CaloSelectors():
-
-  from TrigEgammaEmulationTool import TrigEgammaL2CaloSelectorTool
-  hypos = [
-        # L2Calo selector only (backward)
-        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloTight"   , OperationPoint ='lhtight'  ) ,
-        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloMedium"  , OperationPoint ='lhmedium' ) ,
-        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloLoose"   , OperationPoint ='lhloose'  ) ,
-        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloVLoose"  , OperationPoint ='lhvloose' ) ,
-      ]
+def attach( hypos ):
   from Gaugi import ToolSvc
   emulator = ToolSvc.retrieve( "Emulator" )
   names = []
@@ -105,6 +96,35 @@ def installTrigEgammaL2CaloSelectors():
     if not emulator.isValid( hypo.name() ):
       emulator+=hypo
   return names
+
+
+
+
+
+
+def installTrigEgammaL2CaloSelectors():
+
+  from TrigEgammaEmulationTool import TrigEgammaL2CaloSelectorTool
+  hypos = [
+        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloTight"   , OperationPoint ='lhtight'  ) ,
+        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloMedium"  , OperationPoint ='lhmedium' ) ,
+        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloLoose"   , OperationPoint ='lhloose'  ) ,
+        TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloVLoose"  , OperationPoint ='lhvloose' ) ,
+      ]
+
+  return attach(hypos)
+
+
+
+
+def installTrigEgammaL2ElectronSelectors():
+
+  from TrigEgammaEmulationTool import TrigEgammaL2ElectronSelectorTool
+  hypos = [
+        TrigEgammaL2ElectronSelectorTool("T0HLTElectronL2") 
+      ]
+  return attach(hypos)
+
 
 
 
@@ -116,28 +136,23 @@ def installElectronL2CaloRingerSelector_v6( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20170505_v6'
-  
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20170505_v6'
+ 
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    return [rings]
+
+ 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v6"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , 
-        Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v6"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , 
-        Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v6"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , 
-        Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v6", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , 
-        Preproc = norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool("T0HLTElectronRingerTight_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'    ,UseOnnx=useOnnx), 
+      RingerSelectorTool("T0HLTElectronRingerMedium_v6"   ,getPatterns,ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ,UseOnnx=useOnnx), 
+      RingerSelectorTool("T0HLTElectronRingerLoose_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ,UseOnnx=useOnnx), 
+      RingerSelectorTool("T0HLTElectronRingerVeryLoose_v6",getPatterns,ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf',UseOnnx=useOnnx), 
     ]
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
+  return attach(hypos)
 
 
 
@@ -148,23 +163,24 @@ def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20180125_v8'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20180125_v8'
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    return [rings]
+
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v8"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v8"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v8"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , Preproc = norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , Preproc = norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v8"   ,getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8",getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
     ]
 
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
+  return attach(hypos)
 
 
 
@@ -176,25 +192,26 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v10'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20200715_v10'
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    return [rings]
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' UseOnnx=useOnnx), 
     ]
 
+  return attach(hypos)
 
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
+
 
 
 
@@ -207,25 +224,67 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v11'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20200715_v11'
+
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    reta = fc.reta()
+    eratio = fc.eratio()
+    f1 = fc.f1()/0.6
+    f3 = fc.f3()0.04
+    weta2 =fc.weta2()/0.02
+    wstot = fc.wstot()
+    if eratio>10.0:
+      eratio = 0.0
+    elif eratio>1.0:
+      eratio=1.0
+    if wstot<-99:
+      wstot=0.0
+
+    return [rings, [reta,eratio,f1,f3,weta2,wstot]]
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v11"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
     ]
 
+  return attach(hypos)
 
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
+
+
+###########################################################
+###################  ZRad v1 tuning   #####################
+###########################################################
+def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
+  '''
+  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
+  '''
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/fastcalo/TrigL2_20200909_v1'
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    return [rings]
+
+
+  hypos = [
+              RingerSelectorTool( "T0HLTPhotonRingerTight_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf' , UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTPhotonRingerMedium_v1",getPatterns  , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf', UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTPhotonRingerLoose_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+    ]
+
+  return attach(hypos)
 
 
 
@@ -238,227 +297,28 @@ def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/TrigL2_20200805_v1'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/fastcalo/TrigL2_20200805_v1'
+
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    return [rings]
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=norm1, UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerTightTriggerConfig.conf'    ,UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   ,getPatterns, ConfigFile=calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ,UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ,UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1",getPatterns, ConfigFile=calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf',UseOnnx=useOnnx), 
     ]
 
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-def installLowEnergyElectronL2CaloRingerSelector_v1_noHAD( useOnnx=False ):
-  '''
-  This is not a tuning without hadronic information, but the v1 with a mask in hadronic layers in preprocessing step
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/TrigL2_20200805_v1'
-
-
-  hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,Preproc=noHad, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,Preproc=noHad, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,Preproc=noHad, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1", ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,Preproc=noHad, UseOnnx=useOnnx), 
-    ]
-
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-###########################################################
-################### jpsiee v1 legacy  #####################
-###########################################################
-
-def installLowEnergyElectronL2CaloRingerSelector_v1_athena( useOnnx=False ):
-  '''
-  This tuning was emulated in athena and was adjusted to minimize the impact at the final of HLT.
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/test/final_tuning_09032019_athena_onnx'
-
-  hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1_ath"     , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1_ath"    , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1_ath"     , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1_ath" , ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-    ]
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-def installLowEnergyElectronL2CaloRingerSelector_v1_sameCutBased( useOnnx=False ):
-  '''
-  This tuning was adjust in rDev to have the same efficiency as CutBased with respect to a subset of EGAM2 (lh medium) and EGAM7 (!veryloose)
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/test/final_tuning_28022019_sameCutBased_onnx'
-
-
-  hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1_cutbased"     , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1_cutbased"    , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1_cutbased"     , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1_cutbased" , ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-    ]
-
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-
-
-def installLowEnergyElectronL2CaloRingerSelector_v1_freeRinger( useOnnx=False ):
-  '''
-  This tuning was adjusted in order to have the operation points around of the max SP point.
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/test/final_tuning_28022019_puroRinger_onnx'
-
-
-  hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1_freeRinger"     , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1_freeRinger"    , ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1_freeRinger"     , ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1_freeRinger" , ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ,
-        Preproc=norm1, UseOnnx=useOnnx), 
-    ]
-
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
+  return attach(hypos)
 
 
 
 
-def installLowEnergyElectronL2CaloRingerSelector_v1_vmedium( useOnnx=False ):
-  '''
-  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/test/final_tuning_28022019_vmedium_onnx'
-
-  # very medum has only one operation point alocate in tight
-  hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1_vmedium"     , ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf',
-        Preproc=norm1, UseOnnx=useOnnx),
-    ]
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-
-def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
-  '''
-  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/TrigL2_20200909_v1'
-
-  hypos = [
-              RingerSelectorTool( "T0HLTPhotonRingerTight_v1"    , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTPhotonRingerMedium_v1"    , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTPhotonRingerLoose_v1"    , ConfigFile = calibpath+'/PhotonRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-    ]
-
-
-  # very medum has only one operation point alocate in tight
-
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
-
-
-def installZeeSSL2CaloRingerSelector_v1( useOnnx=True ):
-  '''
-  This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
-  '''
-  from TrigEgammaEmulationTool import RingerSelectorTool
-  import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zeess/TrigL2_20200909_v1'
-
-  hypos = [
-              RingerSelectorTool( "T0HLTElectronSSRingerTight_v1"    , ConfigFile = calibpath+'/ElectronSSRingerTightTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTElectronSSRingerMedium_v1"    , ConfigFile = calibpath+'/ElectronSSRingerMediumTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTElectronSSRingerLoose_v1"    , ConfigFile = calibpath+'/ElectronSSRingerLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTElectronSSRingerVeryLoose_v1"    , ConfigFile = calibpath+'/ElectronSSRingerVeryLooseTriggerConfig.conf'     ,Preproc=norm1, UseOnnx=useOnnx), 
-    ]
-
-
-  # very medum has only one operation point alocate in tight
-
-
-  from Gaugi import ToolSvc
-  emulator = ToolSvc.retrieve( "Emulator" )
-  names = []
-  for hypo in hypos:
-    names.append( hypo.name() )
-    if not emulator.isValid( hypo.name() ):
-      emulator+=hypo
-  return names
 
 

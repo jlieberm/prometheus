@@ -59,18 +59,24 @@ class TriggerInfo(Logger):
       MSG_INFO(self, "This chain don't use any Ringer as Selector turn off Ringer" )
       self.__ringer = False
 
-    self.__ringerVersion = None
+
+    self.__ringerVersion = { "fastcalo":None, "fastelectron":None }
 
     if self.__ringer:
+
       for version in chainDict['ringerVersion']:
         if version in trigger:
-          self.__ringerVersion = version
+          self.__ringerVersion["fastcalo"] = version
 
       for extraInfo in chainDict['ringerExtraInfo']:
         if extraInfo in trigger:
-          self.__ringerVersion += '_' + extraInfo
+          self.__ringerVersion["fastcalo"] += '_' + extraInfo
 
-   
+      for version in chainDict['ringerVersion_trk']:
+        if version in trigger:
+          self.__ringerVersion["fastelectron"] = version.replace('trk','v')
+
+
     self.__isolationType=None
     self.__isolated = False
 
@@ -103,8 +109,10 @@ class TriggerInfo(Logger):
   #
   # Get the ringer tuning version
   #
-  def ringerVersion(self):
-    return self.__ringerVersion
+  def ringerVersion(self, step="fastcalo"):
+    return self.__ringerVersion[step]
+
+  
 
   #
   # Get the chain name

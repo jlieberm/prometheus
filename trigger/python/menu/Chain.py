@@ -51,27 +51,38 @@ class Chain( Algorithm ):
         names = configure(version)
         # define like tight, medium, loose and vloose
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
+
+
+        version = self.__trigInfo.ringerVersion("fastelectron"):
+        if version is not None:
+          names = configure( version, step="fastelectron" )
+          self.__l2Item = names[self.__trigInfo.pidnameIdx()]
+        else:
+          from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
+          self.__l2Item = configure( self.__trigger )
+
       else:
         # Configure the L2Calo hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
         self.__l2caloItem = configure( self.__trigger )
     
-
-      # Configure the EFCalo hypo step
-      from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
-      self.__l2Item = configure( self.__trigger )
+        # Configure the L2 hypo step
+        from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
+        self.__l2Item = configure( self.__trigger )
     
+
+
       # Configure the HLT hypo step
       from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
       self.__hltItem = configure( self.__trigger )
      
-
       if self.__trigInfo.isolated():
         self.__applyIsolation=True
         from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
         self.__hltIsoItem = configure( self.__trigger )
       else:
         self.__applyIsolation=False
+
 
     elif self.__trigInfo.signature() == 'photon':
       
@@ -82,6 +93,7 @@ class Chain( Algorithm ):
         names = configure(version)
         # define like tight, medium, loose and vloose
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
+      
       else:
         # Configure the L2Calo hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure

@@ -17,14 +17,13 @@ class RingerSelectorTool(Algorithm):
 
   __property = [
                 "ConfigFile",
-                "Preproc",
                 "UseOnnx",
                 ]
 
   #
   # Constructor
   #
-  def __init__(self, name, **kw  ):
+  def __init__(self, name, generator ,**kw  ):
 
     Algorithm.__init__(self, name)
    
@@ -37,6 +36,7 @@ class RingerSelectorTool(Algorithm):
 
     self.__models = []
     self.__thresholds = []
+    self.__generator = generator
  
 
   #
@@ -195,22 +195,8 @@ class RingerSelectorTool(Algorithm):
       return accept
 
     # Until here, we have all to run it!
-
-    # apply the normalization step
-    preproc = self.getProperty("Preproc")
-    # normalize the inpur data
-    rings = preproc( fc.ringsE() )
-   
-
-    if self.__useShowerShapes:
-      reta = fc.reta()
-      rphi = fc.rphi()
-      eratio = fc.eratio()
-      weta2= fc.weta2()
-      f1 = fc.f1()
-      data = [rings , [reta,rphi,eratio,weta2,f1] ]
-    else:
-      data = rings
+    
+    data = self.__generator( context )
 
     # compute the output
     output = model.predict( data )

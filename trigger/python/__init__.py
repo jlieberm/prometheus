@@ -33,6 +33,10 @@ from . import TrigEgammaL2ElectronHypoTool
 __all__.extend(TrigEgammaL2ElectronHypoTool.__all__)
 from .TrigEgammaL2ElectronHypoTool import *
 
+from . import TrigEgammaL2ElectronSelectorTool
+__all__.extend(TrigEgammaL2ElectronSelectorTool.__all__)
+from .TrigEgammaL2ElectronSelectorTool import *
+
 from . import RingerSelectorTool
 __all__.extend(RingerSelectorTool.__all__)
 from .RingerSelectorTool import *
