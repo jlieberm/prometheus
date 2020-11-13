@@ -53,7 +53,7 @@ class Chain( Algorithm ):
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
 
 
-        version = self.__trigInfo.ringerVersion("fastelectron"):
+        version = self.__trigInfo.ringerVersion("fastelectron")
         if version is not None:
           names = configure( version, step="fastelectron" )
           self.__l2Item = names[self.__trigInfo.pidnameIdx()]

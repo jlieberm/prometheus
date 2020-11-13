@@ -203,10 +203,14 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf',     
+          UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf',    
+          UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf',     
+          UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf', 
+          UseOnnx=useOnnx), 
     ]
 
   return attach(hypos)
@@ -235,7 +239,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
     reta = fc.reta()
     eratio = fc.eratio()
     f1 = fc.f1()/0.6
-    f3 = fc.f3()0.04
+    f3 = fc.f3()/0.04
     weta2 =fc.weta2()/0.02
     wstot = fc.wstot()
     if eratio>10.0:
