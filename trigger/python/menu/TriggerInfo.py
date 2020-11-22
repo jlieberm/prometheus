@@ -63,18 +63,24 @@ class TriggerInfo(Logger):
     self.__ringerVersion = { "fastcalo":None, "fastelectron":None }
 
     if self.__ringer:
+      # temp trigger name
+      name = trigger
+      
+      # this must be first to avoid problems
+      for version in chainDict['ringerVersion_el']:
+        if version in name:
+          self.__ringerVersion["fastelectron"] = version
+          name = name.replace( version, '' )
 
+      # Let's try to find the fast calo version by name
       for version in chainDict['ringerVersion']:
-        if version in trigger:
+        if version in name:
           self.__ringerVersion["fastcalo"] = version
 
+      # Let's try to find the fast calo extra info by name
       for extraInfo in chainDict['ringerExtraInfo']:
-        if extraInfo in trigger:
+        if extraInfo in name:
           self.__ringerVersion["fastcalo"] += '_' + extraInfo
-
-      for version in chainDict['ringerVersion_trk']:
-        if version in trigger:
-          self.__ringerVersion["fastelectron"] = version.replace('trk','v')
 
 
     self.__isolationType=None

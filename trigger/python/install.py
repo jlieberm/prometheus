@@ -28,10 +28,10 @@ __all__ =  [
 
 
 
-def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fastcalo"):
+def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fast_calo"):
   
   versions =  {
-                "fastcalo" : {
+                "fast_calo" : {
                   # Zee
                   "v6"                 : installElectronL2CaloRingerSelector_v6(useOnnx),
                   "v8"                 : installElectronL2CaloRingerSelector_v8(useOnnx),
@@ -39,8 +39,8 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fastcalo"):
                   "v11"                : installElectronL2CaloRingerSelector_v11(useOnnx),
                 },
                 
-                "fastelectron" : {
-                  #"v1"                 : installElectronL2RingerSelector_v1(useOnnx),
+                "fast_el" : {
+                  #"v1_el"                 : installElectronL2RingerSelector_v1_el(useOnnx),
                   }
 
              }
@@ -50,13 +50,13 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fastcalo"):
 
 
 
-def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fastcalo"):
+def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fast_calo"):
   
   versions =  {
-               "fastcalo" : {
+               "fast_calo" : {
                 'v1'                 : installPhotonL2CaloRingerSelector_v1(useOnnx)
                 },
-               "fastphoton" : {
+               "fast_ph" : {
 
                 }
               }
@@ -67,14 +67,14 @@ def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fastcalo"):
 
 
 
-def installElectronRingerJpsieeFromVersion( key , useOnnx=True, step="fastcalo" ):
+def installElectronRingerJpsieeFromVersion( key , useOnnx=True, step="fast_calo" ):
   
   versions =  {
-                "fastcalo" : {
+                "fast_calo" : {
                   # Jpsiee
                   'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(useOnnx),
                 },
-                "fastelectron" : {
+                "fast_el" : {
                 
                 }
               }
@@ -136,7 +136,7 @@ def installElectronL2CaloRingerSelector_v6( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20170505_v6'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20170505_v6'
  
   def getPatterns( context ):
     def norm1( data ):
@@ -163,7 +163,7 @@ def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20180125_v8'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20180125_v8'
 
   def getPatterns( context ):
     def norm1( data ):
@@ -192,7 +192,7 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20200715_v10'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v10'
 
   def getPatterns( context ):
     def norm1( data ):
@@ -228,7 +228,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/fastcalo/TrigL2_20200715_v11'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v11'
 
 
   def getPatterns( context ):
@@ -272,7 +272,7 @@ def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
   '''
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/fastcalo/TrigL2_20200909_v1'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/TrigL2_20200909_v1'
 
   def getPatterns( context ):
     def norm1( data ):
@@ -301,7 +301,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/fastcalo/TrigL2_20200805_v1'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/jpsiee/TrigL2_20200805_v1'
 
 
   def getPatterns( context ):
