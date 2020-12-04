@@ -8,7 +8,11 @@ __all__ =  [
             # Zee for electrons signatures
             "installElectronL2CaloRingerSelector_v6",
             "installElectronL2CaloRingerSelector_v8",
+            "installElectronL2CaloRingerSelector_v9",
             "installElectronL2CaloRingerSelector_v10",
+            "installElectronL2CaloRingerSelector_v11",
+            "installElectronL2CaloRingerSelector_v1_el",
+            "installElectronL2CaloRingerSelector_v2_el",
             
             #jpsiee for electron signatures
             'installLowEnergyElectronL2CaloRingerSelector_v1',
@@ -35,12 +39,14 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fast_calo"):
                   # Zee
                   "v6"                 : installElectronL2CaloRingerSelector_v6(useOnnx),
                   "v8"                 : installElectronL2CaloRingerSelector_v8(useOnnx),
+                  "v9"                 : installElectronL2CaloRingerSelector_v9(useOnnx),
                   "v10"                : installElectronL2CaloRingerSelector_v10(useOnnx),
                   "v11"                : installElectronL2CaloRingerSelector_v11(useOnnx),
                 },
                 
                 "fast_el" : {
-                  #"v1_el"                 : installElectronL2RingerSelector_v1_el(useOnnx),
+                  "v1_el"                 : installElectronL2RingerSelector_v1_el(useOnnx),
+                  "v2_el"                 : installElectronL2RingerSelector_v2_el(useOnnx),
                   }
 
              }
@@ -183,6 +189,48 @@ def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
   return attach(hypos)
 
 
+###########################################################
+################## Testing 2020 tuning  ###################
+###########################################################
+def installElectronL2CaloRingerSelector_v9( useOnnx=False ):
+
+  # Using shower shapes + rings here
+
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v9'
+
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    reta = fc.reta()
+    eratio = fc.eratio()
+    f1 = fc.f1()/0.6
+    f3 = fc.f3()/0.04
+    weta2 =fc.weta2()/0.02
+    wstot = fc.wstot()
+    if eratio>10.0:
+      eratio = 0.0
+    elif eratio>1.0:
+      eratio=1.0
+    if wstot<-99:
+      wstot=0.0
+
+    return [rings, [reta,eratio,f1,f3,weta2,wstot]]
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v9"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v9", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+    ]
+
+  return attach(hypos)
+
 
   
 ###########################################################
@@ -192,7 +240,8 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v10'
+  #calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v10'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v10'
 
   def getPatterns( context ):
     def norm1( data ):
@@ -228,7 +277,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20200715_v11'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v11'
 
 
   def getPatterns( context ):
@@ -257,6 +306,109 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
       RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
       RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
       RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+    ]
+
+  return attach(hypos)
+
+
+###########################################################
+################## Testing 2020 tuning  ###################
+###########################################################
+def installElectronL2CaloRingerSelector_v1_el( useOnnx=False ):
+
+  # Using shower shapes + rings here
+
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v1_el'
+
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    reta = fc.reta()
+    eratio = fc.eratio()
+    f1 = fc.f1()/0.6
+    f3 = fc.f3()/0.04
+    weta2 =fc.weta2()/0.02
+    wstot = fc.wstot()
+    if eratio>10.0:
+      eratio = 0.0
+    elif eratio>1.0:
+      eratio=1.0
+    if wstot<-99:
+      wstot=0.0
+
+    el = context.getHandler("HLT__FastElectronContainer" )
+    el.setToBeClosestThanCluster()
+
+    deta = el.trkClusDeta()
+    dphi = el.trkClusDphi()
+    etOverPt = el.etOverPt()
+
+
+    return [rings, [reta,eratio,f1,f3,weta2,wstot], [etOverPt, deta, dphi] ] 
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v1_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v1_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+    ]
+
+  return attach(hypos)
+
+
+
+###########################################################
+################## Testing 2020 tuning  ###################
+###########################################################
+def installElectronL2CaloRingerSelector_v2_el( useOnnx=False ):
+
+  # Using shower shapes + rings here
+
+  from TrigEgammaEmulationTool import RingerSelectorTool
+  import os
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v2_el'
+
+
+  def getPatterns( context ):
+    def norm1( data ):
+      return (data/abs(sum(data))).reshape((1,100))
+    fc = context.getHandler("HLT__FastCaloContainer")
+    rings = norm1( fc.ringsE() )
+    reta = fc.reta()
+    eratio = fc.eratio()
+    f1 = fc.f1()/0.6
+    f3 = fc.f3()/0.04
+    weta2 =fc.weta2()/0.02
+    wstot = fc.wstot()
+    if eratio>10.0:
+      eratio = 0.0
+    elif eratio>1.0:
+      eratio=1.0
+    if wstot<-99:
+      wstot=0.0
+
+    el = context.getHandler("HLT__FastElectronContainer" )
+    el.setToBeClosestThanCluster()
+
+    deta = el.trkClusDeta()
+    dphi = el.trkClusDphi()
+    etOverPt = el.etOverPt()
+
+
+    return [rings, [reta,eratio,f1,f3,weta2,wstot], [etOverPt, deta, dphi] ] 
+
+
+  hypos = [
+      RingerSelectorTool( "T0HLTElectronRingerTight_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v2_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v2_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
     ]
 
   return attach(hypos)
