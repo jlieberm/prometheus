@@ -65,6 +65,7 @@ class Collector( Algorithm ):
                                 'L2Calo_weta2', # new
                                 'L2Calo_wstot', # new
                                 'L2Calo_e2tsts1', # new
+                                'L2Electron_hastrack',
                                 'L2Electron_pt',
                                 'L2Electron_eta',
                                 'L2Electron_phi',
