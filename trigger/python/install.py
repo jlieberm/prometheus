@@ -11,8 +11,8 @@ __all__ =  [
             "installElectronL2CaloRingerSelector_v9",
             "installElectronL2CaloRingerSelector_v10",
             "installElectronL2CaloRingerSelector_v11",
-            "installElectronL2CaloRingerSelector_v1_el",
-            "installElectronL2CaloRingerSelector_v2_el",
+            "installElectronL2RingerSelector_v1_el",
+            "installElectronL2RingerSelector_v2_el",
             
             #jpsiee for electron signatures
             'installLowEnergyElectronL2CaloRingerSelector_v1',
@@ -29,7 +29,7 @@ __all__ =  [
 
 
 
-
+import numpy as np
 
 
 def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fast_calo"):
@@ -219,7 +219,7 @@ def installElectronL2CaloRingerSelector_v9( useOnnx=False ):
     if wstot<-99:
       wstot=0.0
 
-    return [rings, [reta,eratio,f1,f3,weta2,wstot]]
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]])]
 
 
   hypos = [
@@ -298,7 +298,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
     if wstot<-99:
       wstot=0.0
 
-    return [rings, [reta,eratio,f1,f3,weta2,wstot]]
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]])]
 
 
   hypos = [
@@ -314,7 +314,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v1_el( useOnnx=False ):
+def installElectronL2RingerSelector_v1_el( useOnnx=False ):
 
   # Using shower shapes + rings here
 
@@ -349,7 +349,7 @@ def installElectronL2CaloRingerSelector_v1_el( useOnnx=False ):
     etOverPt = el.etOverPt()
 
 
-    return [rings, [reta,eratio,f1,f3,weta2,wstot], [etOverPt, deta, dphi] ] 
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ] 
 
 
   hypos = [
@@ -366,14 +366,13 @@ def installElectronL2CaloRingerSelector_v1_el( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v2_el( useOnnx=False ):
+def installElectronL2RingerSelector_v2_el( useOnnx=False ):
 
   # Using shower shapes + rings here
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
   calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20201204_v2_el'
-
 
   def getPatterns( context ):
     def norm1( data ):
@@ -395,13 +394,11 @@ def installElectronL2CaloRingerSelector_v2_el( useOnnx=False ):
 
     el = context.getHandler("HLT__FastElectronContainer" )
     el.setToBeClosestThanCluster()
-
     deta = el.trkClusDeta()
     dphi = el.trkClusDphi()
     etOverPt = el.etOverPt()
 
-
-    return [rings, [reta,eratio,f1,f3,weta2,wstot], [etOverPt, deta, dphi] ] 
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ] 
 
 
   hypos = [

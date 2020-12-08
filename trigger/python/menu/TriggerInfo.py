@@ -60,7 +60,7 @@ class TriggerInfo(Logger):
       self.__ringer = False
 
 
-    self.__ringerVersion = { "fastcalo":None, "fastelectron":None }
+    self.__ringerVersion = { "fast_calo":None, "fast_el":None }
 
     if self.__ringer:
       # temp trigger name
@@ -69,18 +69,18 @@ class TriggerInfo(Logger):
       # this must be first to avoid problems
       for version in chainDict['ringerVersion_el']:
         if version in name:
-          self.__ringerVersion["fastelectron"] = version
+          self.__ringerVersion["fast_el"] = version
           name = name.replace( version, '' )
 
       # Let's try to find the fast calo version by name
       for version in chainDict['ringerVersion']:
         if version in name:
-          self.__ringerVersion["fastcalo"] = version
+          self.__ringerVersion["fast_calo"] = version
 
       # Let's try to find the fast calo extra info by name
       for extraInfo in chainDict['ringerExtraInfo']:
         if extraInfo in name:
-          self.__ringerVersion["fastcalo"] += '_' + extraInfo
+          self.__ringerVersion["fast_calo"] += '_' + extraInfo
 
 
     self.__isolationType=None
@@ -115,7 +115,7 @@ class TriggerInfo(Logger):
   #
   # Get the ringer tuning version
   #
-  def ringerVersion(self, step="fastcalo"):
+  def ringerVersion(self, step="fast_calo"):
     return self.__ringerVersion[step]
 
   

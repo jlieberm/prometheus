@@ -7,7 +7,7 @@ from Gaugi import StatusCode
 from Gaugi.messenger.macros import *
 from EventAtlas import Accept
 import numpy as np
-
+import tensorflow as tf
 
 
 #
@@ -49,36 +49,19 @@ class RingerSelectorTool(Algorithm):
     #
     # Onnx model inference
     #
-    class OnnxModel(object):
+    class Model(object):
 
-      def __init__( self, modelPath, etmin, etmax, etamin, etamax, useOnnx=False):
+      def __init__( self, path, etmin, etmax, etamin, etamax):
         self.__etmin=etmin; self.__etmax=etmax; self.__etamin=etamin; self.__etamax=etamax
-
-        self.__useOnnx=useOnnx
-
-        if useOnnx:
-          import onnxruntime as rt
-          self.__session = rt.InferenceSession(modelPath)
-          self.__input_name = self.__session.get_inputs()[0].name
-          self.__input_shape = self.__session.get_inputs()[0].shape
-          self.__input_type = self.__session.get_inputs()[0].type
-          self.__output_name = self.__session.get_outputs()[0].name
-
-        else:
-          path = modelPath.replace('.onnx','')
-          from tensorflow.keras.models import model_from_json
-          with open(path+'.json', 'r') as json_file:
-            self.__model = model_from_json(json_file.read())
-            # load weights into new model
-            self.__model.load_weights(path+".h5")        
- 
-
+        from tensorflow.keras.models import model_from_json
+        with open(path+'.json', 'r') as json_file:
+          self.__model = model_from_json(json_file.read())
+          # load weights into new model
+          self.__model.load_weights(path+".h5")        
+      
       def predict( self, input ):
-        if self.__useOnnx:
-          return self.__session.run([self.__output_name], {self.__input_name: input})[0][0][0]
-        else: 
-          return self.__model.predict(input)[0][0]
-
+          #return self.__model.predict(input)[0][0] # too slow
+          return self.__model(input)[0][0].numpy() # tensorflow 2.3.1 >
 
       def etmin(self):
         return self.__etmin
@@ -131,7 +114,8 @@ class RingerSelectorTool(Algorithm):
     paths = treat_string( env, 'Model__path' )
     
     for idx, path in enumerate( paths ):
-      model = OnnxModel( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx], self.__useOnnx) 
+      path = path.replace('.onnx','')
+      model = Model( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx]) 
       self.__models.append(model)
 
     number_of_thresholds = env.GetValue("Threshold__size", 0)
@@ -197,10 +181,9 @@ class RingerSelectorTool(Algorithm):
     # Until here, we have all to run it!
     
     data = self.__generator( context )
-
+    #data = tf.data.Dataset.from_tensor_slices(data).batch(1)
     # compute the output
     output = model.predict( data )
-
     accept.setDecor("discriminant", output)
 
     # If the output is below of the cut, reprove it

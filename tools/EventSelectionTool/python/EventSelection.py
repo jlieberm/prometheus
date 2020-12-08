@@ -50,6 +50,8 @@ class SelectionType(EnumStringification):
   SelectionOfflineWithRings = 7
   # @brief: Select by PID
   SelectionPID = 8
+  # @brief: Select events with trig electron container > 0
+  SelectionOnlineWithTrigElectrons = 9
 
 
 
@@ -96,6 +98,7 @@ class EventSelection( Algorithm ):
       elCont    = context.getHandler( "ElectronContainer" )
 
     fc        = context.getHandler( "HLT__FastCaloContainer" )
+    fc_el     = context.getHandler( "HLT__FastElectronContainer" )
     mc        = context.getHandler( "MonteCarloContainer")
     eventInfo = context.getHandler( "EventInfoContainer" )
 
@@ -144,6 +147,12 @@ class EventSelection( Algorithm ):
       elif key is SelectionType.SelectionOnlineWithRings and not fc.isGoodRinger():
         self.wtd = StatusWTD.ENABLE
         MSG_DEBUG( self, 'Event dont contain the online ringer rings values. skip...')
+        return StatusCode.SUCCESS
+      
+      # Is good trig electrons
+      elif key is SelectionType.SelectionOnlineWithTrigElectrons and fc_el.size() == 0:
+        self.wtd = StatusWTD.ENABLE
+        MSG_DEBUG( self, 'Event dont contain the online trigger electrons objects. skip...')
         return StatusCode.SUCCESS
 
       # Is good ringer

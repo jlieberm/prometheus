@@ -8,8 +8,8 @@ electron_chainDict = {
     "extraInfo"         : ['ringer', 'noringer'],
     "idInfo"            : ['tight','medium','loose','vloose','lhtight','lhmedium','lhloose','lhvloose', 'etcut'],
     "isoInfo"           : ['ivarloose', 'ivarmedium', 'ivartight', 'iloose', 'icaloloose', 'icalomedium', 'icalotight' ],
-    "ringerVersion"     : ['v1','v2','v6','v7','v8','v10','v11'], # for fastcalo
-    "ringerVersion_el"  : ['v1_el'], # for fastelectron
+    "ringerVersion"     : ['v1','v2','v6','v7','v8','v9','v10','v11'], # for fastcalo
+    "ringerVersion_el"  : ['v1_el', 'v2_el'], # for fastelectron
     "ringerExtraInfo"   : [],
     }
 

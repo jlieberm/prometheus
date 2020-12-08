@@ -53,9 +53,9 @@ class Chain( Algorithm ):
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
 
 
-        version = self.__trigInfo.ringerVersion("fastelectron")
+        version = self.__trigInfo.ringerVersion("fast_el")
         if version is not None:
-          names = configure( version, step="fastelectron" )
+          names = configure( version, step="fast_el" )
           self.__l2Item = names[self.__trigInfo.pidnameIdx()]
         else:
           from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
@@ -196,8 +196,14 @@ class Chain( Algorithm ):
     accept.setCutResult( 'L2Calo' , True )
   
     
-    # Is passed by L2 electron/photon
-    passedL2 = bool(dec.accept( self.__l2Item ))
+
+    if self.__trigInfo.signature() == 'electron':
+      cont = context.getHandler("HLT__FastElectronContainer")
+    else:
+      cont = context.getHandler("HLT__FastPhotonContainer")
+      
+    # Is passed by L2 electron/photon, treat events with container with size equal zero 
+    passedL2 = bool(dec.accept( self.__l2Item )) if cont.size() > 0 else False
 
     if not passedL2:
       return accept
