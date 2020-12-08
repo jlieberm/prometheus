@@ -1,4 +1,4 @@
-# Tools:
+# prometheus tools:
 
 This directory is dedicated to all tools implemented to run for each event during the main loop.
 Each tool must have `initialize`, `execute` and `finalize` methods. The `execute` method will be call
