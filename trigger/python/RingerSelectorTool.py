@@ -17,7 +17,6 @@ class RingerSelectorTool(Algorithm):
 
   __property = [
                 "ConfigFile",
-                "UseOnnx",
                 ]
 
   #
@@ -26,7 +25,7 @@ class RingerSelectorTool(Algorithm):
   def __init__(self, name, generator ,**kw  ):
 
     Algorithm.__init__(self, name)
-   
+
     # Set all properties
     for key, value in kw.items():
       if key in self.__property:
@@ -37,17 +36,15 @@ class RingerSelectorTool(Algorithm):
     self.__models = []
     self.__thresholds = []
     self.__generator = generator
- 
+
 
   #
   # Inialize the selector
   #
   def initialize(self):
 
-    self.__useOnnx = self.getProperty("UseOnnx")
-
     #
-    # Onnx model inference
+    # Model inference
     #
     class Model(object):
 
@@ -57,8 +54,8 @@ class RingerSelectorTool(Algorithm):
         with open(path+'.json', 'r') as json_file:
           self.__model = model_from_json(json_file.read())
           # load weights into new model
-          self.__model.load_weights(path+".h5")        
-      
+          self.__model.load_weights(path+".h5")
+
       def predict( self, input ):
           #return self.__model.predict(input)[0][0] # too slow
           return self.__model(input)[0][0].numpy() # tensorflow 2.3.1 >
@@ -72,7 +69,7 @@ class RingerSelectorTool(Algorithm):
       def etamax(self):
         return self.__etamax
 
-    # 
+    #
     # Threshold model class
     #
     class Threshold(object):
@@ -88,11 +85,11 @@ class RingerSelectorTool(Algorithm):
         return self._etamax
       def __call__(self, avgmu):
         return avgmu*self.slope + self.offset
-    
+
 
     def treat_float( env, key ):
       return [float(value) for value in  env.GetValue(key, '').split('; ')]
-    
+
     def treat_string( env, key ):
       return [str(value) for value in  env.GetValue(key, '').split('; ')]
 
@@ -104,7 +101,7 @@ class RingerSelectorTool(Algorithm):
 
     from ROOT import TEnv
     env = TEnv( configPath )
-    
+
     version = env.GetValue("__version__", '')
     number_of_models = env.GetValue("Model__size", 0)
     etmin_list = treat_float( env, 'Model__etmin' )
@@ -112,10 +109,10 @@ class RingerSelectorTool(Algorithm):
     etamin_list = treat_float( env, 'Model__etamin' )
     etamax_list = treat_float( env, 'Model__etamax' )
     paths = treat_string( env, 'Model__path' )
-    
+
     for idx, path in enumerate( paths ):
       path = path.replace('.onnx','')
-      model = Model( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx]) 
+      model = Model( basepath+'/models/'+path, etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx])
       self.__models.append(model)
 
     number_of_thresholds = env.GetValue("Threshold__size", 0)
@@ -126,23 +123,14 @@ class RingerSelectorTool(Algorithm):
     etamax_list = treat_float( env, 'Threshold__etamax' )
     slopes = treat_float( env, 'Threshold__slope' )
     offsets = treat_float( env, 'Threshold__offset' )
- 
-
-
-    # To be tested in the new ringer tuning config versions
-    try:
-      self.__useShowerShapes = env.GetValue("Input__useShowerShapes", False)
-    except:
-      self.__useShowerShapes=False
-
 
 
     for idx, slope in enumerate(slopes):
-      threshold = Threshold( slope, offsets[idx], etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] ) 
+      threshold = Threshold( slope, offsets[idx], etmin_list[idx], etmax_list[idx], etamin_list[idx], etamax_list[idx] )
       self.__thresholds.append(threshold)
 
     MSG_INFO( self, "Tuning version: %s" , version )
-    MSG_INFO( self, "Loaded %d models using onnx runtime for inference." , number_of_models)
+    MSG_INFO( self, "Loaded %d models for inference." , number_of_models)
     MSG_INFO( self, "Loaded %d threshold for decision" , number_of_thresholds)
     MSG_INFO( self, "Max Average mu equal %1.2f", self.__maxAverageMu )
 
@@ -165,13 +153,13 @@ class RingerSelectorTool(Algorithm):
 
     # get the model for inference
     model = self.__getModel(et,eta)
-    
+
     # If not fount, return false
     if not model:
       return accept
-    
-    
-    # get the threshold 
+
+
+    # get the threshold
     threshold = self.__getThreshold( et, eta )
 
     # If not fount, return false
@@ -179,11 +167,15 @@ class RingerSelectorTool(Algorithm):
       return accept
 
     # Until here, we have all to run it!
-    
+
     data = self.__generator( context )
-    #data = tf.data.Dataset.from_tensor_slices(data).batch(1)
     # compute the output
-    output = model.predict( data )
+    if data:
+      output = model.predict( data )
+    else:
+      return accept
+
+
     accept.setDecor("discriminant", output)
 
     # If the output is below of the cut, reprove it
@@ -206,8 +198,8 @@ class RingerSelectorTool(Algorithm):
         if eta > obj.etamin() and eta <= obj.etamax():
           model=obj; break
     return model
-  
-   
+
+
   #
   # Get the correct threshold given all phase spaces
   #
@@ -223,7 +215,7 @@ class RingerSelectorTool(Algorithm):
   # Get the accept object
   #
   def __getAcceptInfo( self ):
-    
+
     accept = Accept(self.name())
     self.output=-999
     accept.setCutResult( "Pass", False )

@@ -1,7 +1,7 @@
 
 __all__ = ['Chain']
 
-from Gaugi import Algorithm 
+from Gaugi import Algorithm
 from Gaugi import StatusCode
 from Gaugi import GeV
 from Gaugi.messenger.macros import *
@@ -19,7 +19,7 @@ class Chain( Algorithm ):
   # Constructor
   #
   def __init__(self, name, L1Item, chain):
-    
+
     Algorithm.__init__(self, name)
     self.__trigInfo = TriggerInfo(chain)
     self.__l1item = L1Item
@@ -31,7 +31,7 @@ class Chain( Algorithm ):
   # Initialize method
   #
   def initialize(self):
-    
+
     self.__signature = self.__trigInfo.signature()
 
     # Configure the L2Calo hypo step
@@ -65,17 +65,17 @@ class Chain( Algorithm ):
         # Configure the L2Calo hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
         self.__l2caloItem = configure( self.__trigger )
-    
+
         # Configure the L2 hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2ElectronHypoTool import configure
         self.__l2Item = configure( self.__trigger )
-    
+
 
 
       # Configure the HLT hypo step
       from TrigEgammaEmulationTool.TrigEgammaElectronHypoTool import configure
       self.__hltItem = configure( self.__trigger )
-     
+
       if self.__trigInfo.isolated():
         self.__applyIsolation=True
         from TrigEgammaEmulationTool.TrigEgammaElectronIsolationHypoTool import configure
@@ -85,7 +85,7 @@ class Chain( Algorithm ):
 
 
     elif self.__trigInfo.signature() == 'photon':
-      
+
       # Configure L2Calo step
       if self.__trigInfo.ringer():
         from TrigEgammaEmulationTool import installPhotonRingerZradFromVersion as configure
@@ -93,17 +93,17 @@ class Chain( Algorithm ):
         names = configure(version)
         # define like tight, medium, loose and vloose
         self.__l2caloItem = names[self.__trigInfo.pidnameIdx()]
-      
+
       else:
         # Configure the L2Calo hypo step
         from TrigEgammaEmulationTool.TrigEgammaL2CaloHypoTool import configure
         self.__l2caloItem = configure( self.__trigger )
- 
-      
+
+
       # Configure the EFCalo hypo step
       from TrigEgammaEmulationTool.TrigEgammaL2PhotonHypoTool import configure
       self.__l2Item = configure( self.__trigger )
-      
+
       # Configure the HLT hypo step
       from TrigEgammaEmulationTool.TrigEgammaPhotonHypoTool import configure
       self.__hltItem = configure( self.__trigger )
@@ -194,15 +194,15 @@ class Chain( Algorithm ):
       return accept
 
     accept.setCutResult( 'L2Calo' , True )
-  
-    
+
+
 
     if self.__trigInfo.signature() == 'electron':
       cont = context.getHandler("HLT__FastElectronContainer")
     else:
       cont = context.getHandler("HLT__FastPhotonContainer")
-      
-    # Is passed by L2 electron/photon, treat events with container with size equal zero 
+
+    # Is passed by L2 electron/photon, treat events with container with size equal zero
     passedL2 = bool(dec.accept( self.__l2Item )) if cont.size() > 0 else False
 
     if not passedL2:
@@ -226,7 +226,7 @@ class Chain( Algorithm ):
 
     accept.setCutResult( 'EFCalo' , True )
 
-    
+
 
     # Is passed by HLT electron/photon et cut
     passedHLT_etcut = False
@@ -246,7 +246,7 @@ class Chain( Algorithm ):
     else:
       MSG_FATAL( self, "signature not reconized to emulate the HLT et cut step" )
 
-    
+
     if not passedHLT_etcut:
       return accept
 
@@ -254,7 +254,7 @@ class Chain( Algorithm ):
     # check the HLT decision
     passedHLT = bool( dec.accept( self.__hltItem ) )
 
-    if passedHLT and self.__applyIsolation: 
+    if passedHLT and self.__applyIsolation:
       # Apply the isolation cut and overwrite the HLT previus decision
       passedHLT = bool( dec.accept( self.__hltIsoItem ) )
 

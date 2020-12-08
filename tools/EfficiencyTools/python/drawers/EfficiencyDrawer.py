@@ -4,10 +4,10 @@ __all__ = ["PlotProfiles"]
 from Gaugi.monet.PlotFunctions import *
 from Gaugi.monet.TAxisFunctions import *
 from Gaugi.monet.AtlasStyle import SetAtlasStyle
-from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor
+from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor,gStyle
 
-# force atlas style
 SetAtlasStyle()
+
 
 local_these_colors = [kBlack,kBlue-4,kGray+2, kRed-2,kAzure+2,kGreen-2,kMagenta+1,kCyan+1,kOrange+1
                 ,kBlack+2,kRed+3,kBlue+3,kGreen+3,kMagenta+3,kCyan+3,kOrange+3

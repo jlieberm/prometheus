@@ -13,7 +13,7 @@ __all__ =  [
             "installElectronL2CaloRingerSelector_v11",
             "installElectronL2RingerSelector_v1_el",
             "installElectronL2RingerSelector_v2_el",
-            
+
             #jpsiee for electron signatures
             'installLowEnergyElectronL2CaloRingerSelector_v1',
 
@@ -32,21 +32,21 @@ __all__ =  [
 import numpy as np
 
 
-def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fast_calo"):
-  
+def installElectronRingerZeeFromVersion( key , =False, step="fast_calo"):
+
   versions =  {
                 "fast_calo" : {
                   # Zee
-                  "v6"                 : installElectronL2CaloRingerSelector_v6(useOnnx),
-                  "v8"                 : installElectronL2CaloRingerSelector_v8(useOnnx),
-                  "v9"                 : installElectronL2CaloRingerSelector_v9(useOnnx),
-                  "v10"                : installElectronL2CaloRingerSelector_v10(useOnnx),
-                  "v11"                : installElectronL2CaloRingerSelector_v11(useOnnx),
+                  "v6"                 : installElectronL2CaloRingerSelector_v6(),
+                  "v8"                 : installElectronL2CaloRingerSelector_v8(),
+                  "v9"                 : installElectronL2CaloRingerSelector_v9(),
+                  "v10"                : installElectronL2CaloRingerSelector_v10(),
+                  "v11"                : installElectronL2CaloRingerSelector_v11(),
                 },
-                
+
                 "fast_el" : {
-                  "v1_el"                 : installElectronL2RingerSelector_v1_el(useOnnx),
-                  "v2_el"                 : installElectronL2RingerSelector_v2_el(useOnnx),
+                  "v1_el"                 : installElectronL2RingerSelector_v1_el(),
+                  "v2_el"                 : installElectronL2RingerSelector_v2_el(),
                   }
 
              }
@@ -56,11 +56,11 @@ def installElectronRingerZeeFromVersion( key , useOnnx=False, step="fast_calo"):
 
 
 
-def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fast_calo"):
-  
+def installPhotonRingerZradFromVersion( key , =True, step="fast_calo"):
+
   versions =  {
                "fast_calo" : {
-                'v1'                 : installPhotonL2CaloRingerSelector_v1(useOnnx)
+                'v1'                 : installPhotonL2CaloRingerSelector_v1()
                 },
                "fast_ph" : {
 
@@ -73,15 +73,15 @@ def installPhotonRingerZradFromVersion( key , useOnnx=True, step="fast_calo"):
 
 
 
-def installElectronRingerJpsieeFromVersion( key , useOnnx=True, step="fast_calo" ):
-  
+def installElectronRingerJpsieeFromVersion( key , =True, step="fast_calo" ):
+
   versions =  {
                 "fast_calo" : {
                   # Jpsiee
-                  'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(useOnnx),
+                  'v1'                 : installLowEnergyElectronL2CaloRingerSelector_v1(),
                 },
                 "fast_el" : {
-                
+
                 }
               }
 
@@ -127,7 +127,7 @@ def installTrigEgammaL2ElectronSelectors():
 
   from TrigEgammaEmulationTool import TrigEgammaL2ElectronSelectorTool
   hypos = [
-        TrigEgammaL2ElectronSelectorTool("T0HLTElectronL2") 
+        TrigEgammaL2ElectronSelectorTool("T0HLTElectronL2")
       ]
   return attach(hypos)
 
@@ -138,12 +138,12 @@ def installTrigEgammaL2ElectronSelectors():
 ###########################################################
 ################## Official 2017 tuning ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v6( useOnnx=False ):
+def installElectronL2CaloRingerSelector_v6( =False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
   calibpath = os.environ['PRT_PATH'] + '/trigger/data/zee/TrigL2_20170505_v6'
- 
+
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
@@ -151,12 +151,12 @@ def installElectronL2CaloRingerSelector_v6( useOnnx=False ):
     rings = norm1( fc.ringsE() )
     return [rings]
 
- 
+
   hypos = [
-      RingerSelectorTool("T0HLTElectronRingerTight_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'    ,UseOnnx=useOnnx), 
-      RingerSelectorTool("T0HLTElectronRingerMedium_v6"   ,getPatterns,ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ,UseOnnx=useOnnx), 
-      RingerSelectorTool("T0HLTElectronRingerLoose_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ,UseOnnx=useOnnx), 
-      RingerSelectorTool("T0HLTElectronRingerVeryLoose_v6",getPatterns,ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf',UseOnnx=useOnnx), 
+      RingerSelectorTool("T0HLTElectronRingerTight_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'    ),
+      RingerSelectorTool("T0HLTElectronRingerMedium_v6"   ,getPatterns,ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ),
+      RingerSelectorTool("T0HLTElectronRingerLoose_v6"    ,getPatterns,ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ),
+      RingerSelectorTool("T0HLTElectronRingerVeryLoose_v6",getPatterns,ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf'),
     ]
   return attach(hypos)
 
@@ -165,7 +165,7 @@ def installElectronL2CaloRingerSelector_v6( useOnnx=False ):
 ###########################################################
 ################## Official 2018 tuning ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
+def installElectronL2CaloRingerSelector_v8( =False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -180,10 +180,10 @@ def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v8"   ,getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8",getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v8"   ,getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v8"    ,getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v8",getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
@@ -192,7 +192,7 @@ def installElectronL2CaloRingerSelector_v8( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v9( useOnnx=False ):
+def installElectronL2CaloRingerSelector_v9( =False ):
 
   # Using shower shapes + rings here
 
@@ -223,20 +223,20 @@ def installElectronL2CaloRingerSelector_v9( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v9"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v9", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v9"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v9"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v9", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
 
 
-  
+
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
+def installElectronL2CaloRingerSelector_v10( =False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -252,14 +252,10 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf',     
-          UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf',    
-          UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf',     
-          UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf', 
-          UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v10"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v10"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v10", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf'),
     ]
 
   return attach(hypos)
@@ -271,7 +267,7 @@ def installElectronL2CaloRingerSelector_v10( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
+def installElectronL2CaloRingerSelector_v11( =False ):
 
   # Using shower shapes + rings here
 
@@ -302,10 +298,10 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v11"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v11"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v11", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
@@ -314,7 +310,7 @@ def installElectronL2CaloRingerSelector_v11( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2RingerSelector_v1_el( useOnnx=False ):
+def installElectronL2RingerSelector_v1_el( =False ):
 
   # Using shower shapes + rings here
 
@@ -342,21 +338,23 @@ def installElectronL2RingerSelector_v1_el( useOnnx=False ):
       wstot=0.0
 
     el = context.getHandler("HLT__FastElectronContainer" )
-    el.setToBeClosestThanCluster()
+    # treat cases where we have container but it's empty. In this case, we are not be able to propagate.
+    if el.size() == 0:
+        return None
 
+    el.setToBeClosestThanCluster()
     deta = el.trkClusDeta()
     dphi = el.trkClusDphi()
     etOverPt = el.etOverPt()
 
-
-    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ] 
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ]
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v1_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v1_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v1_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v1_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v1_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
@@ -366,7 +364,7 @@ def installElectronL2RingerSelector_v1_el( useOnnx=False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2RingerSelector_v2_el( useOnnx=False ):
+def installElectronL2RingerSelector_v2_el( =False ):
 
   # Using shower shapes + rings here
 
@@ -393,19 +391,24 @@ def installElectronL2RingerSelector_v2_el( useOnnx=False ):
       wstot=0.0
 
     el = context.getHandler("HLT__FastElectronContainer" )
+
+    # treat cases where we have container but it's empty. In this case, we are not be able to propagate.
+    if el.size() == 0:
+      return None
+
     el.setToBeClosestThanCluster()
     deta = el.trkClusDeta()
     dphi = el.trkClusDphi()
     etOverPt = el.etOverPt()
 
-    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ] 
+    return [rings, np.array([[reta,eratio,f1,f3,weta2,wstot]]), np.array([[etOverPt, deta, dphi]]) ]
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTElectronRingerTight_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerMedium_v2_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerLoose_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     , UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v2_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTElectronRingerTight_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerTightTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerMedium_v2_el"   , getPatterns, ConfigFile = calibpath+'/ElectronRingerMediumTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTElectronRingerLoose_v2_el"    , getPatterns, ConfigFile = calibpath+'/ElectronRingerLooseTriggerConfig.conf'     ),
+      RingerSelectorTool( "T0HLTElectronRingerVeryLoose_v2_el", getPatterns, ConfigFile = calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
@@ -415,7 +418,7 @@ def installElectronL2RingerSelector_v2_el( useOnnx=False ):
 ###########################################################
 ###################  ZRad v1 tuning   #####################
 ###########################################################
-def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
+def installPhotonL2CaloRingerSelector_v1( =True ):
   '''
   This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
   '''
@@ -432,9 +435,9 @@ def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
 
 
   hypos = [
-              RingerSelectorTool( "T0HLTPhotonRingerTight_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf' , UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTPhotonRingerMedium_v1",getPatterns  , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf', UseOnnx=useOnnx), 
-              RingerSelectorTool( "T0HLTPhotonRingerLoose_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerLooseTriggerConfig.conf' , UseOnnx=useOnnx), 
+              RingerSelectorTool( "T0HLTPhotonRingerTight_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf' ),
+              RingerSelectorTool( "T0HLTPhotonRingerMedium_v1",getPatterns  , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf'),
+              RingerSelectorTool( "T0HLTPhotonRingerLoose_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerLooseTriggerConfig.conf' ),
     ]
 
   return attach(hypos)
@@ -446,7 +449,7 @@ def installPhotonL2CaloRingerSelector_v1( useOnnx=True ):
 ###########################################################
 ################### jpsiee v1 tuning  #####################
 ###########################################################
-def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
+def installLowEnergyElectronL2CaloRingerSelector_v1( =False ):
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -462,10 +465,10 @@ def installLowEnergyElectronL2CaloRingerSelector_v1( useOnnx=False ):
 
 
   hypos = [
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerTightTriggerConfig.conf'    ,UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   ,getPatterns, ConfigFile=calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ,UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ,UseOnnx=useOnnx), 
-      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1",getPatterns, ConfigFile=calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf',UseOnnx=useOnnx), 
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerTight_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerTightTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerMedium_v1"   ,getPatterns, ConfigFile=calibpath+'/ElectronRingerMediumTriggerConfig.conf'   ),
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerLoose_v1"    ,getPatterns, ConfigFile=calibpath+'/ElectronRingerLooseTriggerConfig.conf'    ),
+      RingerSelectorTool( "T0HLTLowEnergyElectronRingerVeryLoose_v1",getPatterns, ConfigFile=calibpath+'/ElectronRingerVeryLooseTriggerConfig.conf'),
     ]
 
   return attach(hypos)
