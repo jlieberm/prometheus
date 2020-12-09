@@ -32,7 +32,7 @@ __all__ =  [
 import numpy as np
 
 
-def installElectronRingerZeeFromVersion( key , =False, step="fast_calo"):
+def installElectronRingerZeeFromVersion( key , step="fast_calo"):
 
   versions =  {
                 "fast_calo" : {
@@ -56,7 +56,7 @@ def installElectronRingerZeeFromVersion( key , =False, step="fast_calo"):
 
 
 
-def installPhotonRingerZradFromVersion( key , =True, step="fast_calo"):
+def installPhotonRingerZradFromVersion( key , step="fast_calo"):
 
   versions =  {
                "fast_calo" : {
@@ -73,7 +73,7 @@ def installPhotonRingerZradFromVersion( key , =True, step="fast_calo"):
 
 
 
-def installElectronRingerJpsieeFromVersion( key , =True, step="fast_calo" ):
+def installElectronRingerJpsieeFromVersion( key , step="fast_calo" ):
 
   versions =  {
                 "fast_calo" : {
@@ -138,7 +138,7 @@ def installTrigEgammaL2ElectronSelectors():
 ###########################################################
 ################## Official 2017 tuning ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v6( =False ):
+def installElectronL2CaloRingerSelector_v6():
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -165,7 +165,7 @@ def installElectronL2CaloRingerSelector_v6( =False ):
 ###########################################################
 ################## Official 2018 tuning ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v8( =False ):
+def installElectronL2CaloRingerSelector_v8():
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -192,7 +192,7 @@ def installElectronL2CaloRingerSelector_v8( =False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v9( =False ):
+def installElectronL2CaloRingerSelector_v9():
 
   # Using shower shapes + rings here
 
@@ -236,7 +236,7 @@ def installElectronL2CaloRingerSelector_v9( =False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v10( =False ):
+def installElectronL2CaloRingerSelector_v10():
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
@@ -267,7 +267,7 @@ def installElectronL2CaloRingerSelector_v10( =False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2CaloRingerSelector_v11( =False ):
+def installElectronL2CaloRingerSelector_v11():
 
   # Using shower shapes + rings here
 
@@ -310,7 +310,7 @@ def installElectronL2CaloRingerSelector_v11( =False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2RingerSelector_v1_el( =False ):
+def installElectronL2RingerSelector_v1_el():
 
   # Using shower shapes + rings here
 
@@ -364,7 +364,7 @@ def installElectronL2RingerSelector_v1_el( =False ):
 ###########################################################
 ################## Testing 2020 tuning  ###################
 ###########################################################
-def installElectronL2RingerSelector_v2_el( =False ):
+def installElectronL2RingerSelector_v2_el():
 
   # Using shower shapes + rings here
 
@@ -418,7 +418,7 @@ def installElectronL2RingerSelector_v2_el( =False ):
 ###########################################################
 ###################  ZRad v1 tuning   #####################
 ###########################################################
-def installPhotonL2CaloRingerSelector_v1( =True ):
+def installPhotonL2CaloRingerSelector_v1():
   '''
   This tuning is the very medium tuning which was adjusted to operate in the knee of the ROC curve given the best balance between PD and FR.
   '''
@@ -449,7 +449,7 @@ def installPhotonL2CaloRingerSelector_v1( =True ):
 ###########################################################
 ################### jpsiee v1 tuning  #####################
 ###########################################################
-def installLowEnergyElectronL2CaloRingerSelector_v1( =False ):
+def installLowEnergyElectronL2CaloRingerSelector_v1():
 
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
