@@ -1,6 +1,3 @@
-<!-- [![Build Status](https://travis-ci.com/jodafons/prometheus.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)
--->
-
 # prometheus 
 
 In 2017 the ATLAS experiment implemented an ensemble of neural networks (NeuralRinger algorithm) dedicated to improving the performance of filtering events containing electrons in the high-input rate online environment of the Large Hadron Collider at CERN, Geneva. The ensemble employs a concept of calorimetry rings. The training procedure and final structure of the ensemble are used to minimize fluctuations from detector response, according to the particle energy and position of incidence. This reposiroty is dedicated to hold all analysis scripts for each subgroup in the ATLAS e/g trigger group.
@@ -13,13 +10,14 @@ We should include some description here.
 
 Download the prometheus local image to your home:
 ```bash
-singularity pull docker://jodafons/prometheus:local
+singularity pull docker://jodafons/prometheus:base
 ```
 
 After donwload it, just execute the `run` command:
 ```bash
-singularity run prometheus_local.sif
+singularity run prometheus_base.sif
 ```
+**NOTE**: Use `--nv` after `run` argument to attach the gpu into the container if you have it.
 
 Inside of the singularity enviroment, just setup all prometheus dependencies using:
 ```bash
@@ -37,6 +35,10 @@ cd prometheus && mkdir build && cd build && cmake .. && make && cd ..
 source setup.sh
 ```
 
+## Framework status:
 
+|  Branch    | Build Status |
+| ---------- | ------------ |
+|   Master   | [![Build Status](https://travis-ci.com/jodafons/prometheus.svg?branch=master)](https://travisci.org/jodafons/lorenzetti) |
 
 
