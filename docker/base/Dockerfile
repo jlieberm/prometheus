@@ -11,7 +11,7 @@ ENV TERM screen
 
 RUN ls
 # Install Gaugi
-RUN pip install --upgrade gaugi saphyra future numpy onnxruntime
+RUN pip install --upgrade gaugi saphyra future numpy onnxruntime pandas jupyterlab
 
 # Make images Grid / Singularity compatible
 #RUN mkdir -p /alrb /cvmfs /afs /eos /data
@@ -26,10 +26,6 @@ RUN ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
     && apt-get install texlive-latex-base texlive-latex-extra texlive-fonts-recommended xzdec -y \
     && rm -rf /var/lib/apt/lists/*
 
-<<<<<<< HEAD:docker/local/Dockerfile
-=======
-
->>>>>>> 9a978f3b9db3ef4340a5c60965e116d4869800b0:docker/local/Dockerfile
 
 
 COPY setup_envs.sh /
