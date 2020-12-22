@@ -68,7 +68,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
   # Emulation method
   #
   def emulation(self, context):
-   
+
     # get all properties from the local store
     hadeTthr        = self.getProperty('HADETthr'				)
     carcorethr      = self.getProperty('CARCOREthr'			)
@@ -85,7 +85,7 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     F3thr				    = self.getProperty('F3thr'					)
 
 
-    pClus = context.getHandler( "HLT__FastCaloContainer" )
+    pClus = context.getHandler( "HLT__TrigEMClusterContainer" )
     # get the equivalent L1 EmTauRoi object in athena
     emTauRoi = pClus.emTauRoI()
     PassedCuts=0

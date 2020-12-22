@@ -42,11 +42,11 @@ class TrigEgammaPhotonHypoTool( Algorithm ):
 
   #
   # Accept method
-  # 
+  #
   def accept(self, context):
 
     ph= context.getHandler("HLT__PhotonContainer")
-  
+
     branch = self.getProperty("Branch")
 
     if not ph.checkBody( branch ):

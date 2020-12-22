@@ -85,7 +85,7 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   # Generate the decision given the cluster threshold to select the apropriated L2Calo selector
   #
   def accept(self, context):
-    fc = context.getHandler( "HLT__FastCaloContainer" )
+    fc = context.getHandler( "HLT__TrigEMClusterContainer" )
     et = fc.et()
     passed = False
 

@@ -12,21 +12,21 @@ from . import Electron
 __all__.extend(Electron.__all__)
 from .Electron import *
 
-from . import FastElectron
-__all__.extend(FastElectron.__all__)
-from .FastElectron import *
+from . import TrigElectron
+__all__.extend(TrigElectron.__all__)
+from .TrigElectron import *
 
 from . import Photon
 __all__.extend(Photon.__all__)
 from .Photon import *
 
-from . import FastPhoton
-__all__.extend(FastPhoton.__all__)
-from .FastPhoton import *
+from . import TrigPhoton
+__all__.extend(TrigPhoton.__all__)
+from .TrigPhoton import *
 
-from . import FastCalo
-__all__.extend(FastCalo.__all__)
-from .FastCalo import *
+from . import TrigEMCluster
+__all__.extend(TrigEMCluster.__all__)
+from .TrigEMCluster import *
 
 from . import EmTauRoI
 __all__.extend(EmTauRoI.__all__)

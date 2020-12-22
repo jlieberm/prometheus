@@ -1,5 +1,5 @@
 
-__all__ = ['FastCalo', 'CaloSampling']
+__all__ = ['TrigEMCluster', 'CaloSampling']
 
 from Gaugi import EDM
 from prometheus.enumerations  import Dataframe as DataframeEnum
@@ -49,9 +49,9 @@ class CaloSampling(object):
                 MINIFCAL3    =  27
 
 # FastCalo object is similar to TrigEmCluster in xAOD framework
-class FastCalo(EDM):
+class TrigEMCluster(EDM):
     # set branches here!
-    __eventBranches = { 
+    __eventBranches = {
 
             'v1': # for photon and electron
             [
@@ -148,7 +148,7 @@ class FastCalo(EDM):
         return eratio
 
 
-        
+
     def e237(self):
         """
         Retrieve the e237 information from Physval or SkimmedNtuple
@@ -188,7 +188,7 @@ class FastCalo(EDM):
         else:
             self._logger.warning("Impossible to retrieve the value of emaxs1. Unknow dataframe")
             return -999
-        
+
     def weta2(self):
         """
           Retrieve the weta2 information from Physval or SkimmedNtuple
@@ -297,7 +297,7 @@ class FastCalo(EDM):
     def accept( self,  pidname ):
         if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
             # Dictionary to acess the physval dataframe
-            if pidname in self.__eventBranches['PhysVal']:
+            if pidname in self.__eventBranches['v1']:
                 # the default selector branches is a vector
                 return bool(getattr(self._event, pidname)[self.getPos()])
             elif pidname in self.decorations():

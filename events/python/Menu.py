@@ -18,7 +18,7 @@ import collections
 # EDM Menu
 #
 class Menu(EDM):
-    
+
   #
   # Constructor
   #
@@ -36,7 +36,7 @@ class Menu(EDM):
 
     return StatusCode.SUCCESS
 
-  
+
   #
   # Execute method
   #
@@ -44,7 +44,7 @@ class Menu(EDM):
     MSG_DEBUG( self, "Clear all decorations..." )
     self.clearDecorations()
     return StatusCode.SUCCESS
-  
+
 
   #
   # Finalize method
@@ -52,7 +52,7 @@ class Menu(EDM):
   def finalize(self):
     return StatusCode.SUCCESS
 
-  
+
   #
   # Accept method
   #
@@ -90,11 +90,11 @@ class Menu(EDM):
       accept.setCutResult( 'pass', passed )
       self.setDecor( key, accept )
       return accept
-    
+
     # This name is not in metadata and not in cache, let's access the emulation svc and run it!
-    else:  
+    else:
       emulator = ToolSvc.retrieve( "Emulator" )
-      
+
       if emulator.isValid( key ):
         accept = emulator.accept( self.getContext(), key )
         self.setDecor( key, accept )
@@ -109,7 +109,7 @@ class Menu(EDM):
 #
 class EmulationTool( Algorithm ):
 
-  
+
   #
   # Constructor
   #
@@ -130,7 +130,7 @@ class EmulationTool( Algorithm ):
   #
   def retrieve(self, key):
     return self.__tools[key] if self.isValid(key) else None
-    
+
 
 
   #
@@ -150,7 +150,7 @@ class EmulationTool( Algorithm ):
 
     return StatusCode.SUCCESS
 
-  
+
   #
   # Execute method
   #
@@ -208,7 +208,7 @@ class Accept( object ):
   def __init__(self, name, results=[] ):
     self.__name = name
     self.__results = collections.OrderedDict()
-    
+
     for (key,value) in results:
       self.__results[key] = value
 
@@ -259,7 +259,7 @@ class Accept( object ):
   def setDecor( self, key, value ):
     self.__decoration[key] = value
 
-  
+
   #
   # Get decoration
   #

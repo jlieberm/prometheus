@@ -72,7 +72,7 @@ class TDT(EDM):
         self._metadataName = 'tdt'
         # decision core (default)
         self._core = DecisionCore.TriggerDecisionTool
-        
+
 
     def core(self, core):
         if core is (DecisionCore.TriggerDecisionTool) or (DecisionCore.TrigEgammaEmulationTool):
@@ -91,7 +91,7 @@ class TDT(EDM):
         else:
             MSG_WARNING( self, 'Not possible to initialize this metadata using this dataframe. skip!')
             return StatusCode.SUCCESS
-        
+
 
         inputFile = self._metadataParams['file']
         # Check if file exists
@@ -99,7 +99,7 @@ class TDT(EDM):
         if not f or f.IsZombie():
             MSG_WARNING( self, 'Couldn''t open file: %s', inputFile)
             return StatusCode.FAILURE
-        
+
         # Inform user whether TTree exists, and which options are available:
         MSG_DEBUG( self, "Adding file: %s", inputFile)
         treePath = self._metadataParams['basepath'] + '/' + self._metadataName
@@ -176,7 +176,7 @@ class TDT(EDM):
                 return bool(self._event.trig_tdt_EF_el_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_el_accept[idx])
               if self._dataframe is DataframeEnum.Photon_v1:
                 return bool(self._event.trig_tdt_EF_ph_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_ph_accept[idx])
-          
+
           else:
               MSG_ERROR( self, 'Trigger type not suppported.')
         else:

@@ -34,12 +34,12 @@ class TrigEgammaL2ElectronSelectorTool( Algorithm ):
     # take from hypo config
     from TrigEgammaEmulationTool import TrigEgammaL2ElectronHypoTool
     self.__hypo = TrigEgammaL2ElectronHypoTool(name,
-                                        EtCut                =   0, 
-                                        TrackPt              =   1*GeV, 
-                                        CaloTrackdETA        =   0.2  , 
-                                        CaloTrackdPHI        =   0.3  , 
-                                        CaloTrackdEoverPLow  =   0    , 
-                                        CaloTrackdEoverPHigh =   999  , 
+                                        EtCut                =   0,
+                                        TrackPt              =   1*GeV,
+                                        CaloTrackdETA        =   0.2  ,
+                                        CaloTrackdPHI        =   0.3  ,
+                                        CaloTrackdEoverPLow  =   0    ,
+                                        CaloTrackdEoverPHigh =   999  ,
                                         TRTRatio             =   -999 )
 
     if self.__hypo.initialize().isFailure():
@@ -55,7 +55,7 @@ class TrigEgammaL2ElectronSelectorTool( Algorithm ):
   #
   def accept(self, context):
 
-    fc = context.getHandler( "HLT__FastElectronContainer" )
+    fc = context.getHandler( "HLT__TrigElectronContainer" )
     et = fc.et()
     passed = False
 

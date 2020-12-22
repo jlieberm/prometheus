@@ -25,7 +25,7 @@ class EventATLAS( TEventLoop ):
   # Initialize all services
   def initialize( self ):
 
-      
+
     MSG_INFO( self, 'Initializing EventATLAS...')
     if super(EventATLAS,self).initialize().isFailure():
       MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
@@ -44,8 +44,8 @@ class EventATLAS( TEventLoop ):
     # Allocating containers
     from EventAtlas import Electron
     from EventAtlas import Photon
-    from EventAtlas import FastCalo
-    from EventAtlas import FastElectron
+    from EventAtlas import TrigEMCluster
+    from EventAtlas import TrigElectron
     from EventAtlas import CaloCluster
     from EventAtlas import TrackParticle
     from EventAtlas import EmTauRoI
@@ -53,36 +53,28 @@ class EventATLAS( TEventLoop ):
     from EventAtlas import MonteCarlo
     from EventAtlas import TDT
     from EventAtlas import Menu
-   
-    
+
+
     # Initialize the base of this container.
     # Do not change this key names!
     self._containersSvc  = {
                             # event dataframe containers
                             'EventInfoContainer'         : EventInfo(),
                             'MonteCarloContainer'        : MonteCarlo(),
-                            # 'ElectronContainer'          : Electron(),
-                            # 'PhotonContainer'            : Photon(),
                             'CaloClusterContainer'       : CaloCluster(),
-                            # 'TrackParticleContainer'     : TrackParticle(),
                             'MenuContainer'              : Menu(),
                            }
 
     self._containersSvc.update({
-                            'HLT__FastCaloContainer'     : FastCalo(),
-                            # 'HLT__FastElectronContainer' : FastElectron(),
-                            # 'HLT__ElectronContainer'     : Electron(),
-                            # 'HLT__FastPhotonContainer'   : FastPhoton(),
-                            # 'HLT__PhotonContainer'       : Photon(),
+                            'HLT__TrigEMClusterContainer': TrigEMCluster(),
                             'HLT__CaloClusterContainer'  : CaloCluster(),
-                            # 'HLT__TrackParticleContainer': TrackParticle(),
                             'HLT__EmTauRoIContainer'     : EmTauRoI(),
                             })
 
     if self._dataframe is DataframeEnum.Electron_v1:
       self._containersSvc.update({  'ElectronContainer'           : Electron(),
                                     'TrackParticleContainer'      : TrackParticle(),
-                                    'HLT__FastElectronContainer'  : FastElectron(),
+                                    'HLT__TrigElectronContainer'  : TrigElectron(),
                                     'HLT__ElectronContainer'      : Electron(),
                                     'HLT__TrackParticleContainer' : TrackParticle(),
                                 })
@@ -135,8 +127,6 @@ class EventATLAS( TEventLoop ):
 
     self.getContext().initialize()
 
-
-
     MSG_INFO( self, 'Initializing all tools...')
     from Gaugi import ToolSvc as toolSvc
     self._alg_tools = toolSvc.getTools()
@@ -153,5 +143,7 @@ class EventATLAS( TEventLoop ):
       if alg.initialize().isFailure():
         MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
 
-
     return StatusCode.SUCCESS
+
+
+

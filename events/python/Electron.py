@@ -220,10 +220,6 @@ class Electron(EDM):
                           'el_etCone',
                           'el_ptCone',
 
-                          # Extra for boosted
-                          'el_DeltaR',
-                          'el_eeMass',
-
                         ],
                         'HLT__Electron':[
 

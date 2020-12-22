@@ -13,7 +13,7 @@ class EventInfo(EDM):
                 'avgmu',
                 'LumiBlock',
                 'el_nPileupPrimaryVtx'],
-        
+
             'Photon_v1':
             [ 'RunNumber',
                 'avgmu',
@@ -21,7 +21,7 @@ class EventInfo(EDM):
                 'ph_nPileupPrimaryVtx'],
             }
 
-   
+
     def __init__(self):
         EDM.__init__(self)
 
@@ -48,7 +48,7 @@ class EventInfo(EDM):
             return self._event.el_nPileupPrimaryVtx
         elif self._dataframe is DataframeEnum.Photon_v1:
             return self._event.ph_nPileupPrimaryVtx
-            
+
         else:
             self._logger.warning("Impossible to retrieve the value of nvtx. Unknow dataframe.")
 

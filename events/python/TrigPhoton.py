@@ -1,12 +1,12 @@
 
-__all__ = ['FastPhoton']
+__all__ = ['TrigPhoton']
 
 from Gaugi import EDM
 from Gaugi  import StatusCode
 from prometheus.enumerations  import Dataframe as DataframeEnum
 from Gaugi import stdvector_to_list
 
-class FastPhoton(EDM):
+class TrigPhoton(EDM):
 
     __eventBranches = {
                       'Photon_v1':
@@ -35,14 +35,14 @@ class FastPhoton(EDM):
         else:
             self._logger.warning( "Can not initialize the FastPhoton object. Dataframe not available." )
             return StatusCode.FAILURE
-        
+
 
 
     def pt(self):
         """
           Retrieve the pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_pt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of pt. Unknow dataframe")
@@ -52,7 +52,7 @@ class FastPhoton(EDM):
         """
         Retrieve the eta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_eta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of eta. Unknow dataframe")
@@ -61,7 +61,7 @@ class FastPhoton(EDM):
         """
         Retrieve the phi information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_phi[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of phi. Unknow dataframe")
@@ -70,7 +70,7 @@ class FastPhoton(EDM):
         """
         Retrieve the caloEta information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_caloEta[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of caloEta. Unknow dataframe")
@@ -79,7 +79,7 @@ class FastPhoton(EDM):
         """
         Retrieve the number of TRT hits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_nTRTHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHits. Unknow dataframe")
@@ -88,7 +88,7 @@ class FastPhoton(EDM):
         """
         Retrieve the number of TRT high thresholdhits information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_nTRTHiThresholdHits[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of nTRTHiThrehsoldHits. Unknow dataframe")
@@ -98,10 +98,31 @@ class FastPhoton(EDM):
         """
         Retrieve the et/pt information from Physval or SkimmedNtuple
         """
-        if self._dataframe is DataframeEnum.Electron_v1:
+        if self._dataframe is DataframeEnum.Photon_v1:
             return self._event.trig_L2_ph_etOverPt[self.getPos()]
         else:
             self._logger.warning("Impossible to retrieve the value of et/pt. Unknow dataframe")
 
     def size(self):
         return self._event.trig_L2_el_pt.size()
+
+
+
+    def setToBeClosestThanCluster( self ):
+      idx = 0; minDeltaR = 999
+      for trk in self:
+        dR = self.deltaR( 0.0, 0.0, trk.trkClusDeta(), trk.trkClusDphi() )
+        if dR < minDeltaR:
+          minDeltaR = dR
+          idx = self.getPos()
+      self.setPos(idx)
+
+
+    def deltaR( self, eta1, phi1, eta2, phi2 ):
+      deta = abs( eta1 - eta2 )
+      dphi = abs( phi1 - phi2 ) if abs(phi1 - phi2) < np.pi else (2*np.pi-abs(phi1-phi2))
+      return np.sqrt( deta*deta + dphi*dphi )
+
+
+
+

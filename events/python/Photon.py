@@ -13,7 +13,7 @@ class PhotonPid(EnumStringification):
       Tight    = 0
       Medium   = 1
       Loose    = 2
-      
+
 class EgammaParameters(EnumStringification):
 
       # brief uncalibrated energy (sum of cells) in presampler in a 1x1 window in cells in eta X phi
@@ -124,7 +124,7 @@ class EgammaParameters(EnumStringification):
 
 class Photon(EDM):
 
-  __eventBranches = { 
+  __eventBranches = {
         'Photon_v1':{'Photon':[ 'ph_hasCalo',
                               'ph_hasTrack',
                               'ph_e',

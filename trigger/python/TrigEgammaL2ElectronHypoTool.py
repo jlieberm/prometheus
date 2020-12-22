@@ -28,7 +28,7 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
   # Constructor
   #
   def __init__(self, name, **kw):
-    
+
     Algorithm.__init__(self, name)
 
     # Set all properties
@@ -60,11 +60,11 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
   #
   def accept( self, context ):
 
-    elCont = context.getHandler( "HLT__FastElectronContainer" )
+    elCont = context.getHandler( "HLT__TrigElectronContainer" )
     current = elCont.getPos()
-  
+
     bitAccept = [False for _ in range(elCont.size())]
-    
+
     etThr                   =  self.getProperty( 'EtCut'                 )
     trackPtthr              =  self.getProperty( 'TrackPt'               )
     calotrackdeta           =  self.getProperty( 'CaloTrackdETA'         )
@@ -77,8 +77,8 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
       # Retrieve all quantities
       dPhiCalo    = el.trkClusDphi();
       dEtaCalo    = el.trkClusDeta();
-      pTcalo      = el.pt();       
-      eTOverPt    = el.etOverPt();         
+      pTcalo      = el.pt();
+      eTOverPt    = el.etOverPt();
       NTRHits     = el.numberOfTRTHits();
       NStrawHits  = el.numberOfTRTHiThresholdHits()
       TRTHitRatio = 1e10 if NStrawHits==0 else NTRHits/float(NStrawHits)
@@ -91,8 +91,8 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
               if ( eTOverPt < calotrackdeoverp_high ):
                 if (TRTHitRatio > trtratio):
                   # TrigElectron passed all cuts: set flags
-                  bitAccept[el.getPos()] = True 
-                  MSG_DEBUG( self,  "Event accepted !" )         
+                  bitAccept[el.getPos()] = True
+                  MSG_DEBUG( self,  "Event accepted !" )
                 #TRTHitRatio
               #etOverPt
             #dphi
@@ -100,13 +100,13 @@ class TrigEgammaL2ElectronHypoTool( Algorithm ):
         #pt
       #apply cuts
     # Loop over electrons
-    
+
     elCont.setPos( current )
     # got this far => passed!
     passed = any( bitAccept )
     return Accept( self.name(), [("Pass", passed)] )
 
-     
+
 
 
 
@@ -127,12 +127,12 @@ def configure( trigger ):
   if not emulator.isValid(name):
 
     hypo = TrigEgammaL2ElectronHypoTool(name,
-                                        EtCut                =   (etthr - 3)*GeV, 
-                                        TrackPt              =   1*GeV, 
-                                        CaloTrackdETA        =   0.2  , 
-                                        CaloTrackdPHI        =   0.3  , 
-                                        CaloTrackdEoverPLow  =   0    , 
-                                        CaloTrackdEoverPHigh =   999  , 
+                                        EtCut                =   (etthr - 3)*GeV,
+                                        TrackPt              =   1*GeV,
+                                        CaloTrackdETA        =   0.2  ,
+                                        CaloTrackdPHI        =   0.3  ,
+                                        CaloTrackdEoverPLow  =   0    ,
+                                        CaloTrackdEoverPHigh =   999  ,
                                         TRTRatio             =   -999 )
 
     if etthr < 15:
@@ -143,9 +143,9 @@ def configure( trigger ):
       hypo.TrackPt = 3*GeV
     else:
       hypo.TrackPt = 5*GeV
-      hypo.CaloTrackdETA = 999 
+      hypo.CaloTrackdETA = 999
       hypo.CaloTrackdPHI = 999
-      
+
     emulator+=hypo
 
   return name

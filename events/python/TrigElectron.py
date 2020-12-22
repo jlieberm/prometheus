@@ -1,5 +1,5 @@
 
-__all__ = ['FastElectron']
+__all__ = ['TrigElectron']
 
 from Gaugi import EDM
 from Gaugi  import StatusCode
@@ -8,9 +8,9 @@ from Gaugi import stdvector_to_list
 import numpy as np
 
 
-class FastElectron(EDM):
+class TrigElectron(EDM):
 
-    __eventBranches = { 
+    __eventBranches = {
                       'Electron_v1':
                     [
                       'trig_L2_el_trackAlgID',
@@ -41,7 +41,7 @@ class FastElectron(EDM):
         else:
            self._logger.warning( "Can not initialize the FastElectron object. Dataframe not available." )
            return StatusCode.FAILURE
-        
+
 
 
     def pt(self):

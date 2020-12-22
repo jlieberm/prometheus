@@ -8,7 +8,7 @@ from Gaugi import stdvector_to_list
 
 class EmTauRoI(EDM):
 
-    __eventBranches = [ 
+    __eventBranches = [
                 'trig_L1_eta',
                 'trig_L1_phi',
                 'trig_L1_emClus',

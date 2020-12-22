@@ -12,46 +12,46 @@ from Gaugi import stdvector_to_list
 class TrackCaloMatchType(EnumStringification):
 
   # brief difference between the cluster eta (presampler) and
-  # the eta of the track extrapolated to the presampler 
+  # the eta of the track extrapolated to the presampler
   deltaEta0 = 0
-  # brief difference between the cluster eta (first sampling) and the eta of the track extrapolated to the 
-  # first sampling: |eta_stripscluster -eta_ID|, where eta_stripscluster is computed 
-  # in the first sampling of the electromagnetic calorimeter, where the granularity is very fine, and eta_ID is the pseudo-rapidity 
-  # of the track extrapolated to the calorimeter 
+  # brief difference between the cluster eta (first sampling) and the eta of the track extrapolated to the
+  # first sampling: |eta_stripscluster -eta_ID|, where eta_stripscluster is computed
+  # in the first sampling of the electromagnetic calorimeter, where the granularity is very fine, and eta_ID is the pseudo-rapidity
+  # of the track extrapolated to the calorimeter
   deltaEta1 = 1,
-  # brief difference between the cluster eta (second sampling) and the eta of the track extrapolated to the second sampling 
+  # brief difference between the cluster eta (second sampling) and the eta of the track extrapolated to the second sampling
   deltaEta2 = 2,
   # brief difference between the cluster eta (3rd sampling) and
-  # the eta of the track extrapolated to the 3rd sampling 
+  # the eta of the track extrapolated to the 3rd sampling
   deltaPhi0 = 4,
   # brief difference between the cluster eta (1st sampling) and
-  # the eta of the track extrapolated to the 1st sampling (strips) 
+  # the eta of the track extrapolated to the 1st sampling (strips)
   deltaPhi1 = 5,
   # brief difference between the cluster phi (second sampling) and the phi of the track
   # extrapolated to the second sampling : |phi_middlecluster -phi_ID|, where phi_middlecluster
   # is computed in the second compartment of the electromagnetic calorimeter and phi_ID is the
-  # azimuth of the track extrapolated to the calorimeter 
+  # azimuth of the track extrapolated to the calorimeter
   deltaPhi2 = 6,
   # brief difference between the cluster phi (presampler) and
   # the eta of the track extrapolated to the presampler  from the perigee with a rescaled
-  # momentum. 
+  # momentum.
   deltaPhiRescaled0 = 9,
   # brief difference between the cluster eta (1st sampling) and
   # the eta of the track extrapolated to the 1st sampling (strips) from the perigee with a rescaled
-  # momentum. 
+  # momentum.
   deltaPhiRescaled1 = 10,
   # brief difference between the cluster phi (second sampling) and the phi of the track
   # extrapolated to the second sampling from the perigee with a rescaled
-  # momentum. 
+  # momentum.
   deltaPhiRescaled2 = 11,
 
 
 
-# Enumerates the different types of information stored in Summary. 
+# Enumerates the different types of information stored in Summary.
 # Please note that the values have specific types - i.e. some are float # whilst most are uint8_t.
 # When adding a new transient information type # please make sure to increase numberOfTrackSummaryTypes.*/
 class SummaryType(EnumStringification):
-  
+
   numberOfBLayerHits                            =  0 #  //!< these are the hits in the first pixel layer, i.e. b-layer [unit8_t].
   numberOfBLayerOutliers                        =  1 #  //!< number of blayer outliers [unit8_t].
   numberOfPixelHits                             =  2 #  //!< these are the pixel hits, including the b-layer [unit8_t].
@@ -68,18 +68,18 @@ class SummaryType(EnumStringification):
   expectBLayerHit                               = 13 #  //!< Do we expect a b-layer hit for this track? [unit8_t] (should be [bool])
   expectNextToInnermostPixelLayerHit            = 14 #  //!< Do we expect a 1st-layer hit for this track?
   numberOfNextToInnermostPixelLayerHits         = 15 #  //!< these are the hits in the 1st pixel layer
-  numberOfNextToInnermostPixelLayerOutliers     = 16 #  //!< number of 1st pixel layer outliers  
+  numberOfNextToInnermostPixelLayerOutliers     = 16 #  //!< number of 1st pixel layer outliers
   #  --- Inner Detector
   numberOfContribPixelLayers                    = 17 #  //!< number of contributing layers of the pixel detector [unit8_t].
   numberOfBLayerSharedHits                      = 18 #  //!< number of Pixel b-layer hits shared by several tracks [unit8_t].
   numberOfBLayerSplitHits                       = 19 #  //!< number of Pixel b-layer hits split by cluster splitting [unit8_t].
   expectInnermostPixelLayerHit                  = 20 #  //!< Do we expect a 0th-layer hit for this track?
   numberOfInnermostPixelLayerHits               = 21 #  //!< these are the hits in the 0th pixel layer?
-  numberOfInnermostPixelLayerOutliers           = 22 #  //!< number of 0th layer outliers  
+  numberOfInnermostPixelLayerOutliers           = 22 #  //!< number of 0th layer outliers
   numberOfInnermostPixelLayerSharedHits         = 23 #  //!< number of Pixel 0th layer hits shared by several tracks.
-  numberOfInnermostPixelLayerSplitHits          = 24 #  //!< number of Pixel 0th layer hits split by cluster splitting 
+  numberOfInnermostPixelLayerSplitHits          = 24 #  //!< number of Pixel 0th layer hits split by cluster splitting
   numberOfNextToInnermostPixelLayerSharedHits   = 25 #  //!< number of Pixel 1st layer hits shared by several tracks.
-  numberOfNextToInnermostPixelLayerSplitHits    = 26 #  //!< number of Pixel 1st layer hits split by cluster splitting 
+  numberOfNextToInnermostPixelLayerSplitHits    = 26 #  //!< number of Pixel 1st layer hits split by cluster splitting
   numberOfDBMHits                               = 27 # //!< these are the number of DBM hits [unit8_t].
   numberOfPixelHoles                            = 28 #  //!< number of pixel layers on track with absence of hits [unit8_t].
   numberOfPixelSharedHits                       = 29 #  //!< number of Pixel all-layer hits shared by several tracks [unit8_t].
@@ -107,7 +107,7 @@ class SummaryType(EnumStringification):
   numberOfOutliersOnTrack                       = 50 #  //!< number of measurements flaged as outliers in TSOS [unit8_t].
   standardDeviationOfChi2OS                     = 51 #  //!< 100 times the standard deviation of the chi2 from the surfaces [unit8_t].
   eProbabilityComb                              = 52 #  //!< Electron probability from combining the below probabilities [float].
-  eProbabilityHT                                = 53 #  //!< Electron probability from  High Threshold (HT) information [float].   
+  eProbabilityHT                                = 53 #  //!< Electron probability from  High Threshold (HT) information [float].
   pixeldEdx                                     = 54 #  //!< the dE/dx estimate, calculated using the pixel clusters [?]
 
 
@@ -143,14 +143,14 @@ class TrackParticle(EDM):
                           'trig_EF_el_trk_deltaPOverP',
                           'trig_EF_el_trk_qOverP',
                           'trig_EF_el_trk_summaryValues'
- 
-                          ] 
+
+                          ]
                           }
                 }
 
   def __init__(self):
     EDM.__init__(self)
- 
+
 
   def initialize(self):
     """
@@ -194,7 +194,7 @@ class TrackParticle(EDM):
       self._logger.warning("Impossible to retrieve the value of Eta. Unknow dataframe.")
       return -999
 
-  
+
   def charge(self):
     """
       Retrieve the charge information from Physval or SkimmedNtuple
@@ -214,7 +214,7 @@ class TrackParticle(EDM):
     if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_d0[self.getPos()]
-      else:  
+      else:
         return self._event.el_trk_d0
     else:
       self._logger.warning("Impossible to retrieve the value of d0. Unknow dataframe")
@@ -238,7 +238,7 @@ class TrackParticle(EDM):
     if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_sigd0[self.getPos()]
-      else:  
+      else:
         return self._event.el_trk_sigd0
     else:
       self._logger.warning("Impossible to retrieve the value of sigd0. Unknow dataframe")
@@ -264,7 +264,7 @@ class TrackParticle(EDM):
     if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_transformed_eProbabilityHT[self.getPos()]
-      else:  
+      else:
         return self._event.el_trk_transformed_eProbabilityHT
     else:
       self._logger.warning("Impossible to retrieve the value of TRT_PID. Unknow dataframe")
@@ -276,7 +276,7 @@ class TrackParticle(EDM):
     if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_deltaPOverP[self.getPos()]
-      else:  
+      else:
         return self._event.el_trk_deltaPOverP
     else:
       self._logger.warning("Impossible to retrieve the value of eProbabilityHT. Unknow dataframe")
@@ -288,7 +288,7 @@ class TrackParticle(EDM):
     if self._dataframe is DataframeEnum.Electron_v1:
       if self._is_hlt:
         return self._event.trig_EF_el_trk_qOverP[self.getPos()]
-      else:  
+      else:
         return self._event.el_trk_qOverP
     else:
       self._logger.warning("Impossible to retrieve the value of qOverP. Unknow dataframe")
@@ -301,14 +301,14 @@ class TrackParticle(EDM):
         Retrieve the summary track value from the ntuple
     """
     if self._dataframe is DataframeEnum.Electron_v1:
-      if self._is_hlt:  
+      if self._is_hlt:
         offset = ( self._event.trig_EF_el_trk_summaryValues.size()/ float(self.size()) ) * self.getPos()
         if offset+summaryType > self._event.trig_EF_el_trk_summaryValues.size():
           self._logger.error('SummaryType outside of range. Can not retrieve %s from the PhysVal', SummaryType.tostring(summaryType))
           return -999
         else:
           return ord(self._event.trig_EF_el_trk_summaryValues.at(int(offset+summaryType)))
-      else: 
+      else:
         if summaryType > self._event.el_trk_summaryValues.size():
           self._logger.error('SummaryType outside of range. Can not retrieve %s from the PhysVal', SummaryType.tostring(summaryType))
           return -999
@@ -342,7 +342,7 @@ class TrackParticle(EDM):
 
   def numberOfTRTOutliers(self):
     return self.summaryValue(  SummaryType.numberOfTRTOutliers )
-  
+
   def numberOfTRTHighThresholdHits(self):
     return self.summaryValue( SummaryType.numberOfTRTHighThresholdHits )
 
@@ -373,11 +373,11 @@ class TrackParticle(EDM):
   def numberOfNextToInnermostPixelLayerHits(self):
     return self.summaryValue( SummaryType.numberOfNextToInnermostPixelLayerHits )
 
-  def numberOfNextToInnermostPixelLayerOutliers(self):    
+  def numberOfNextToInnermostPixelLayerOutliers(self):
     return self.summaryValue( SummaryType.numberOfNextToInnermostPixelLayerOutliers )
-      
+
   def size(self):
-    """		
+    """
     	Retrieve the TrackParticle container size
     """
     if self._dataframe is DataframeEnum.Electron_v1:
@@ -387,7 +387,7 @@ class TrackParticle(EDM):
         return 1
     else:
       self._logger.warning("Impossible to retrieve the TrackParticle container size. Unknow dataframe")
- 
+
   def empty(self):
     return False if self.size()>0 else True
 

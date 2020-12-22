@@ -8,7 +8,7 @@ from Gaugi import stdvector_to_list
 
 class Muon(EDM):
 
-  __eventBranches = { 
+  __eventBranches = {
                       'MuonPhysVal':
                     [
                     ]
@@ -16,7 +16,7 @@ class Muon(EDM):
 
   def __init__(self):
     EDM.__init__(self)
- 
+
 
   def initialize(self):
     return StatusCode.SUCCESS

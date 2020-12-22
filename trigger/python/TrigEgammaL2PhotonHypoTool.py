@@ -22,7 +22,7 @@ class TrigEgammaL2PhotonHypoTool( Algorithm ):
   # Constructor
   #
   def __init__(self, name, **kw):
-    
+
     Algorithm.__init__(self, name)
 
     # Set all properties
@@ -54,17 +54,17 @@ class TrigEgammaL2PhotonHypoTool( Algorithm ):
   #
   def accept( self, context ):
 
-    phCont = context.getHandler( "HLT__PhotonContainer" )
+    phCont = context.getHandler( "HLT__PhotonContainer" ) # beware, this should be review!
     current = phCont.getPos()
-  
+
     bitAccept = [False for _ in range(phCont.size())]
     etThr =  self.getProperty('EtCut')
     for ph in phCont:
       # Retrieve all quantities
-      # pTcalo      = ph.pt();       
-      bitAccept[ph.getPos()] = True 
-      MSG_DEBUG( self,  "Event accepted !" )         
-   
+      # pTcalo      = ph.pt();
+      bitAccept[ph.getPos()] = True
+      MSG_DEBUG( self,  "Event accepted !" )
+
     phCont.setPos( current )
     passed = any( bitAccept )
     return Accept( self.name(), [("Pass", passed)] )

@@ -31,8 +31,8 @@ class CaloCluster(EDM):
                               'trig_EF_calo_lhvloose',
                               'trig_EF_calo_lhloose',
                               'trig_EF_calo_lhmedium',
-                              'trig_EF_calo_lhtight', 
-                              ] 
+                              'trig_EF_calo_lhtight',
+                              ]
                             },
 
           "Photon_v1"      : {
@@ -55,19 +55,19 @@ class CaloCluster(EDM):
                               'trig_EF_calo_lhvloose',
                               'trig_EF_calo_lhloose',
                               'trig_EF_calo_lhmedium',
-                              'trig_EF_calo_lhtight', 
-                              ] 
+                              'trig_EF_calo_lhtight',
+                              ]
                               }
                     }
-    
-    
-  
+
+
+
   def __init__(self):
     EDM.__init__(self)
-    
-    
+
+
   def initialize(self):
-  
+
     if self._dataframe is DataframeEnum.Electron_v1:
       self.link( self.__eventBranches["Electron_v1"]['HLT__CaloCluster'] if self._is_hlt else self.__eventBranches["Electron_v1"]["CaloCluster"] )
     elif self._dataframe is DataframeEnum.Photon_v1:
@@ -178,7 +178,7 @@ class CaloCluster(EDM):
       For now, this is only available into the PhysVal dataframe.
     """
     if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
-      cluster = self.getContext().getHandler('HLT__FastCalo')
+      cluster = self.getContext().getHandler('HLT__TrigEMClusterContainer')
       cluster.setPos(self.getPos())
       return cluster
     else:
@@ -186,9 +186,9 @@ class CaloCluster(EDM):
       return None
 
 
-      
+
   def size(self):
-    """		
+    """
     	Retrieve the TrackParticle container size
     """
     if self._dataframe is DataframeEnum.Electron_v1:
@@ -203,7 +203,7 @@ class CaloCluster(EDM):
         return 1
     else:
       self._logger.warning("Impossible to retrieve the TrackParticle container size. Unknow dataframe")
- 
+
   def empty(self):
     return False if self.size()>0 else True
 

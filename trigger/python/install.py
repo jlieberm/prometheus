@@ -147,7 +147,7 @@ def installElectronL2CaloRingerSelector_v6():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
 
@@ -174,7 +174,7 @@ def installElectronL2CaloRingerSelector_v8():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
 
@@ -204,7 +204,7 @@ def installElectronL2CaloRingerSelector_v9():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     reta = fc.reta()
     eratio = fc.eratio()
@@ -246,7 +246,7 @@ def installElectronL2CaloRingerSelector_v10():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
 
@@ -279,7 +279,7 @@ def installElectronL2CaloRingerSelector_v11():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     reta = fc.reta()
     eratio = fc.eratio()
@@ -322,7 +322,7 @@ def installElectronL2RingerSelector_v1_el():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     reta = fc.reta()
     eratio = fc.eratio()
@@ -337,7 +337,7 @@ def installElectronL2RingerSelector_v1_el():
     if wstot<-99:
       wstot=0.0
 
-    el = context.getHandler("HLT__FastElectronContainer" )
+    el = context.getHandler("HLT__TrigElectronContainer" )
     # treat cases where we have container but it's empty. In this case, we are not be able to propagate.
     if el.size() == 0:
         return None
@@ -375,7 +375,7 @@ def installElectronL2RingerSelector_v2_el():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     reta = fc.reta()
     eratio = fc.eratio()
@@ -390,7 +390,7 @@ def installElectronL2RingerSelector_v2_el():
     if wstot<-99:
       wstot=0.0
 
-    el = context.getHandler("HLT__FastElectronContainer" )
+    el = context.getHandler("HLT__TrigElectronContainer" )
 
     # treat cases where we have container but it's empty. In this case, we are not be able to propagate.
     if el.size() == 0:
@@ -429,7 +429,7 @@ def installPhotonL2CaloRingerSelector_v1():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
 
@@ -459,7 +459,7 @@ def installLowEnergyElectronL2CaloRingerSelector_v1():
   def getPatterns( context ):
     def norm1( data ):
       return (data/abs(sum(data))).reshape((1,100))
-    fc = context.getHandler("HLT__FastCaloContainer")
+    fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
 
