@@ -44,3 +44,6 @@ source setup.sh
 |   Master   | [![Build Status](https://travis-ci.com/jodafons/prometheus.svg?branch=master)](https://travisci.org/jodafons/lorenzetti) |
 
 
+## Notes:
+
+
