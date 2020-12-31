@@ -620,7 +620,7 @@ class Electron(EDM):
       if self._is_hlt:
         return -999
       else:
-        return self._event.el_eeMass
+        return -999
     else:
       self._logger.warning("Impossible to retrieve the value of eeMass. Unknow dataframe.")
       return -999
@@ -634,7 +634,7 @@ class Electron(EDM):
       if self._is_hlt:
         return -999
       else:
-        return self._event.el_DeltaR
+        return -999
     else:
       self._logger.warning("Impossible to retrieve the value of deltaR. Unknow dataframe.")
       return -999
