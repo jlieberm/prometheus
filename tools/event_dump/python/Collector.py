@@ -164,7 +164,7 @@ class Collector( Algorithm ):
       trkCont   = elCont.trackParticle()
       hasTrack = True if trkCont.size()>0 else False
    
-      fcElCont = context.getHandler("HLT__FastElectronContainer" )
+      fcElCont = context.getHandler("HLT__TrigElectronContainer" )
       hasFcTrack = True if fcElCont.size()>0 else False
 
     elif self._dataframe is DataframeEnum.Photon_v1:
@@ -173,12 +173,12 @@ class Collector( Algorithm ):
       hasTrack  = False
 
     eventInfo = context.getHandler( "EventInfoContainer" )
-    fc        = context.getHandler( "HLT__FastCaloContainer" )
+    fc        = context.getHandler( "HLT__TrigEMClusterContainer" )
     
 
 
 
-    from PileupCorrectionTools.utilities import RetrieveBinningIdx
+    from EventSelectionTool import RetrieveBinningIdx
     etBinIdx, etaBinIdx = RetrieveBinningIdx( fc.et()/1000., abs(fc.eta()), self._etbins, self._etabins, logger=self._logger )
     if etBinIdx < 0 or etaBinIdx < 0:
       return StatusCode.SUCCESS

@@ -97,8 +97,8 @@ class EventSelection( Algorithm ):
     else:
       elCont    = context.getHandler( "ElectronContainer" )
 
-    fc        = context.getHandler( "HLT__FastCaloContainer" )
-    fc_el     = context.getHandler( "HLT__FastElectronContainer" )
+    fc        = context.getHandler( "HLT__TrigEMClusterContainer" )
+    fc_el     = context.getHandler( "HLT__TrigElectronContainer" )
     mc        = context.getHandler( "MonteCarloContainer")
     eventInfo = context.getHandler( "EventInfoContainer" )
 
