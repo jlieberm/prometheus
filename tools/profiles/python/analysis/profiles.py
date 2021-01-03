@@ -12,7 +12,7 @@ from Gaugi import progressbar
 from copy import copy
 from itertools import product
 import numpy as np
-import arrayls
+import array
 import os
 
 
@@ -75,34 +75,7 @@ class profiles(Logger):
     #
     # Fill all histograms
     #
-    def fill(self, generator , paths):
-
-        hists = { branch:[[{} for _ in range(len(self.__etabins)-1)] for __ in range(len(self.__etbins)-1)] for branch in self.__hist.keys()}
-
-        # Prepare all histograms
-        for et_bin in range(len(self.__etbins)-1):
-            
-            for eta_bin in range(len(self.__etabins)-1):
-
-                MSG_INFO(self, 'Reading %s', paths[et_bin][eta_bin] )
-                data, features = generator(paths[et_bin][eta_bin])
-
-                for branch, hist in self.__hist.items(): 
-                    th1 = TH1F( branch+'_et'+str(et_bin)+'_eta'+str(eta_bin), "",  hist['bins'], hist['xmin'], hist['xmax'] )
-                    values = data[:, features.index(branch)] 
-                    w = array.array( 'd', np.ones_like(values) )
-                    th1.FillN( len(values), array.array('d',  values.tolist()),  w)
-                    d = copy(hist)
-                    d['th1'] = th1 
-                    hists[branch][et_bin][eta_bin] = d
-
-        return hists
-        
-
-    #
-    # plot and create the beamer report
-    #
-    def dump_beamer_report(self, hists, output_pdf, output_dir, title=''):
+    def fill(self, generator , paths, output_dir):
 
         SetAtlasStyle()
 
@@ -114,57 +87,39 @@ class profiles(Logger):
             MSG_WARNING( self,'The director %s exist.', localpath)
 
 
+        hists = { branch:[[{} for _ in range(len(self.__etabins)-1)] for __ in range(len(self.__etbins)-1)] for branch in self.__hist.keys()}
 
-        # Slide maker
-        with BeamerTexReportTemplate1( theme = 'Berlin'
-                                     , _toPDF = True
-                                     , title = title
-                                     , outputFile = output_pdf
-                                     , font = 'structurebold' ):
+        # Prepare all histograms
+        for et_bin, eta_bin in progressbar(product(range(len(self.__etbins)-1),range(len(self.__etabins)-1)),
+                                           (len(self.__etbins)-1)*(len(self.__etabins)-1), prefix = "Reading... " ):
+
+            data, features = generator(paths[et_bin][eta_bin])
+
+            for branch, hist in self.__hist.items(): 
+                th1 = TH1F( branch+'_et'+str(et_bin)+'_eta'+str(eta_bin), "",  hist['bins'], hist['xmin'], hist['xmax'] )
+                values = data[:, features.index(branch)] 
+                w = array.array( 'd', np.ones_like(values) )
+                th1.FillN( len(values), array.array('d',  values.tolist()),  w)
+                d = copy(hist)
+                d['th1'] = th1 
+                hists[branch][et_bin][eta_bin] = d
 
 
-            for branch in hists.keys():
+        # Prepare all histograms
+        for branch in progressbar(hists.keys(),len(hists.keys()), prefix = "Plotting... " ):
 
-                with BeamerSection( name = branch.replace('_','\_') ):
-                    
-                    # prepare figures
-                    with BeamerSubSection( name = 'Eta comps'):
 
-                        for et_bin in range(len(self.__etbins)-1):
-                            paths = []
-                            hist_list = [ hists[branch][et_bin][eta_bin]['th1'] for eta_bin in range(len(self.__etabins)-1) ]
-                            outname = localpath + '/%s_et%d_etaComp'%(branch,et_bin)
-                            output = self.plot_hist( hist_list, hists[branch][0][0]['xlabel'], outname, self.__etbins, self.__etabins, et_bin )
-                            paths.append(output)
-                            BeamerMultiFigureSlide( title = branch.replace('_','\_')
-                                , paths = paths
-                                , nDivWidth = len(paths) # x
-                                , nDivHeight = 1 # y
-                                , texts=None
-                                , fortran = False
-                                , usedHeight = 0.6
-                                , usedWidth = 1.
-                                )
+            for et_bin in range(len(self.__etbins)-1):
+                hist_list = [ hists[branch][et_bin][eta_bin]['th1'] for eta_bin in range(len(self.__etabins)-1) ]
+                outname = localpath + '/%s_et%d_etaComp'%(branch,et_bin)
+                output = self.plot_hist( hist_list, hists[branch][0][0]['xlabel'], outname, self.__etbins, self.__etabins, et_bin )
+            for eta_bin in range(len(self.__etabins)-1):
+                paths = []
+                hist_list = [ hists[branch][et_bin][eta_bin]['th1'] for et_bin in range(len(self.__etbins)-1) ]
+                outname = localpath + '/%s_eta%d_etComp'%(branch,eta_bin)
+                output = self.plot_hist( hist_list, hists[branch][0][0]['xlabel'], outname, self.__etbins, self.__etabins, eta_bin, False)
 
-                    # prepare figures
-                    with BeamerSubSection( name = 'Et comps'):
-                    
-                        for eta_bin in range(len(self.__etabins)-1):
-                            paths = []
-                            hist_list = [ hists[branch][et_bin][eta_bin]['th1'] for et_bin in range(len(self.__etbins)-1) ]
-                            outname = localpath + '/%s_eta%d_etComp'%(branch,eta_bin)
-                            output = self.plot_hist( hist_list, hists[branch][0][0]['xlabel'], outname, self.__etbins, self.__etabins, eta_bin, False)
-                            paths.append(output)
-                            BeamerMultiFigureSlide( title = branch.replace('_','\_')
-                                , paths = paths
-                                , nDivWidth = len(paths) # x
-                                , nDivHeight = 1 # y
-                                , texts=None
-                                , fortran = False
-                                , usedHeight = 0.6
-                                , usedWidth = 1.
-                                )
-
+        return hists
 
 
 
@@ -232,7 +187,7 @@ class profiles(Logger):
             TexLabel(0.2, 0.80, toStrBin(etaidx=idx, etalist=etabins), textsize=0.03)
 
         # Format and save
-        FormatCanvasAxes(canvas, XLabelSize=16, YLabelSize=16, XTitleOffset=0.87, ZLabelSize=16,ZTitleSize=16, YTitleOffset=1.30, ZTitleOffset=1.1)
+        FormatCanvasAxes(canvas, XLabelSize=16, YLabelSize=16, XTitleOffset=0.87, ZLabelSize=16,ZTitleSize=16, YTitleOffset=1.70, ZTitleOffset=1.1)
         SetAxisLabels(canvas,xlabel, 'counts/bin (norm by counts)')
         MakeLegend(canvas,.60,.75,.98,.95,option='F',textsize=14, names=legends, ncolumns=1, squarebox=True, doFixLength=False)
         canvas.SaveAs(outname+'.pdf')
