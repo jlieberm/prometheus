@@ -12,7 +12,7 @@ from Gaugi.tex.BeamerAPI    import *
 from Gaugi.monet.AtlasStyle import SetAtlasStyle
 
 # tool includes
-from PileupCorrectionTools.utilities import RetrieveBinningIdx
+from EventSelectionTool import RetrieveBinningIdx
 from ProfileTools.constants import *
 from QuadrantTools.drawers import *
 from ROOT import TH1F

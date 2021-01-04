@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.7
 
 from ROOT import kBlack,kBlue,kRed,kAzure,kGreen,kMagenta,kCyan,kOrange,kGray,kYellow,kWhite,TColor
 from Gaugi.messenger import LoggingLevel, Logger
@@ -183,7 +183,7 @@ if args.reference:
 objects_test = GetHistogramFromMany(files_test, paths_test, keys, prefix='Getting test...', logger=mainLogger)
 
 
-
+print(objects_test.keys())
 
 idx=0
 values = []

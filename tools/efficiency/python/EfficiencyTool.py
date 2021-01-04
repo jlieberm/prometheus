@@ -12,7 +12,7 @@ from prometheus import Dataframe as DataframeEnum
 
 # External
 from ROOT import TH1F, TH2F, TProfile, TProfile2D
-from ProfileTools.constants import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
+from ProfileTools import zee_etbins, jpsiee_etbins, default_etabins, nvtx_bins, high_nvtx_bins
 from TrigEgammaEmulationTool import Chain, Group, TDT
 import numpy as np
 

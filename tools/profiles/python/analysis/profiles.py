@@ -25,7 +25,7 @@ ROOT.gErrorIgnoreLevel=ROOT.kFatal
 
 # Create default color definitions
 from ROOT import TCanvas, TLatex, TH1F,  kRed, kBlue, kBlack,TLine,kBird, kOrange,kGray, kYellow, kViolet, kGreen, kAzure
-from Gaugi.monet.utilities import getColor, NormHist
+from Gaugi.monet.utils import getColor, NormHist
 fill_colors = [ getColor(color, 0.5) for color in [kYellow-9, kOrange+6, kViolet-4, kGreen-6, kAzure-9] ]
 line_colors = [kYellow-4, kOrange+7, kViolet+1, kGreen+1, kAzure+1]
 
