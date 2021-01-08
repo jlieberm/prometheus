@@ -13,7 +13,7 @@ from Gaugi.monet.AtlasStyle import SetAtlasStyle
 
 # tool includes
 from EventSelectionTool import RetrieveBinningIdx
-from ProfileTools.constants import *
+from ProfileTools.analysis.constants import *
 from QuadrantTools.drawers import *
 from ROOT import TH1F
 from functools import reduce

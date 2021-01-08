@@ -58,12 +58,8 @@ def PlotProfiles( hists, xlabel, these_colors, these_transcolors, these_markers,
     SetAxisLabels(canvas,xlabel,ylabel,rlabel)
     return canvas
      
-
-
-
-def GetHistogramFromMany( basepath, paths, keys , prefix='Loading...' , logger=None):
+def GetHistogramFromMany( basepath, paths, keys ,  prefix='Loading...' , logger=None):
   
-    from Gaugi.monet.utils import sumHists as SumHists
     from Gaugi import progressbar, expandFolders
     from copy import deepcopy     
     # internal open function
@@ -71,8 +67,8 @@ def GetHistogramFromMany( basepath, paths, keys , prefix='Loading...' , logger=N
         from ROOT import TFile
         f = TFile(path, 'read')
         if len(f.GetListOfKeys())>0:
-            run_number = f.GetListOfKeys()[0].GetName()
-            return f, run_number
+            run_numbers = [ key.GetName() for key in  f.GetListOfKeys() ]
+            return f, run_numbers
         else:
             return f, None
     # internal close function
@@ -88,30 +84,41 @@ def GetHistogramFromMany( basepath, paths, keys , prefix='Loading...' , logger=N
             
         except:
             return None
+    # internal integration
+    def SumHists(histList):
+        totalHist = None
+        for hist in histList:
+            if hist is None:
+                continue
+            if totalHist is None:
+                totalHist=deepcopy(hist.Clone())
+            else:
+                totalHist.Add( hist )
+        return totalHist
 
     files = expandFolders(basepath)
     hists = {}
     for f in progressbar(files, len(files), prefix=prefix, logger=logger):
-        
         try:
-            _f, _run_number = Open(f)
+            _f, _run_numbers = Open(f)
         except:
             continue
-        if _run_number is None:
+        if _run_numbers is None:
             continue
         for idx, _path in enumerate(paths):
-            hist = GetHistogram(_f, _run_number, _path)
-            
-            if (hist is not None):
-                if not keys[idx] in hists.keys():
-                    hists[keys[idx]]=[deepcopy(hist.Clone())]
-                else:
-                    hists[keys[idx]].append(deepcopy(hist.Clone()))
-       
+            for _run_number in _run_numbers:
+                hist = GetHistogram(_f, _run_number, _path)
+                if (hist is not None):
+                    if not keys[idx] in hists.keys():
+                        hists[keys[idx]]=[deepcopy(hist.Clone())]
+                    else:
+                        hists[keys[idx]].append(deepcopy(hist.Clone()))
         Close(_f)
-  
+
     for key in hists.keys():
         hists[key]=SumHists(hists[key])
+    #from pprint import pprint
+    #pprint(hists)
     return hists
 
 

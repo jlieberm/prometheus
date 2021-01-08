@@ -11,7 +11,7 @@ import ROOT
 
 def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', etlist = None
                      , etalist = None, etidx = None, etaidx = None, legTextSize=10
-                     , runLabel = '', extraText1 = None, legendY1=.68, legendY2=.93
+                     , runLabel = '', extraText1 = None, legendY1=.66, legendY2=.97
                      , maxLegLength = 19, logger=None):
     text_lines = []
     text_lines += [GetAtlasInternalText()]
@@ -22,7 +22,7 @@ def AddTopLabels(can,legend, legOpt = 'p', quantity_text = '', etlist = None
     if extraText1: text_lines.append( extraText1 )
     DrawText(can,text_lines,.40,.68,.70,.93,totalentries=4)
     if legend:
-        MakeLegend( can,.73,legendY1,.89,legendY2,textsize=legTextSize
+        MakeLegend( can,.67,legendY1,.93,legendY2,textsize=legTextSize
                   , names=legend, option = legOpt, squarebox=False
                   , totalentries=0, maxlength=maxLegLength )
     try:
@@ -78,7 +78,7 @@ def PlotQuantities( sg, basepath, key, outname, legends, drawopt='hist', divide=
   ROOT.gErrorIgnoreLevel=ROOT.kWarning
   ROOT.TH1.AddDirectory(ROOT.kFALSE)
 
-  from Gaugi.monet.utilities import sumHists
+  from Gaugi.monet.utils import sumHists
 
 
   if (etidx is not None) and (etaidx is not None):
@@ -126,11 +126,13 @@ def PlotQuantities( sg, basepath, key, outname, legends, drawopt='hist', divide=
   for idx, hist in enumerate(hists):
     
     hist.SetMarkerStyle(20)
-    hist.SetMarkerSize(0.35)
+    hist.SetMarkerSize(0.55)
     hist.SetLineColor(these_colors[idx])
     hist.SetMarkerColor(these_colors[idx])
     hist.SetFillColor(these_transcolors[idx])
+    #hist.SetFillColor(ROOT.TColor.GetColorTransparent( these_colors[idx], .5)  )
     AddHistogram( pad_top, hist, 'histE2 L same', False, None, None)
+    #AddHistogram( pad_top, hist, 'hist L same', False, None, None)
 
 
     div = hist.Clone(); div.Divide(div,ref_hist,1.,1.,'b'); div.Scale(100.); collect.append(div)
@@ -144,7 +146,7 @@ def PlotQuantities( sg, basepath, key, outname, legends, drawopt='hist', divide=
     #if idx == 2: AddHistogram( pad_bot, div , 'p', False, None, None)
 
 
-  AddTopLabels(outcan, legends, runLabel=runLabel, legOpt='p',
+  AddTopLabels(outcan, legends, runLabel=runLabel, legOpt='p',legTextSize=12,
                etlist=etBins,etalist=etaBins,etidx=etidx,etaidx=etaidx)
 
   SetAxisLabels(outcan,xlabel,'Count','Disagreement [%]')
@@ -172,7 +174,7 @@ def PlotQuantities( sg, basepath, key, outname, legends, drawopt='hist', divide=
 def GetStatistics( sg ,basepath, key, etidx=None, etaidx=None, etBins=[], etaBins=[] ):
   
   # get all quadrant histograms
-  from Gaugi.monet.utilities import sumHists
+  from Gaugi.monet.utils import sumHists
   if (etidx is not None) and (etaidx is not None):
     hists = [
               sg.histogram(basepath+'/passed_passed/'+key),
