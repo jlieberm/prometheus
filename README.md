@@ -39,7 +39,7 @@ cd prometheus && mkdir build && cd build && cmake .. && make && cd ..
 source setup.sh
 ```
 
-**NOTE**: Neet to have ROOT and Gaugi installed.
+**NOTE**: Need to have ROOT and Gaugi installed.
 
 ## Framework status:
 
