@@ -171,6 +171,7 @@ class Collector( Algorithm ):
       elCont    = context.getHandler( "PhotonContainer" )
       trkCont   = None
       hasTrack  = False
+      hasFcTrack = False
 
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__TrigEMClusterContainer" )
