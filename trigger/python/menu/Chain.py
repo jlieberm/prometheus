@@ -126,7 +126,6 @@ class Chain( Algorithm ):
 
     from Gaugi import ToolSvc
     emulator = ToolSvc.retrieve("Emulator")
-
     if emulator.retrieve( self.__l1caloItem ).initialize().isFailure():
       MSG_FATAL( self, "It's not possible to initialize the tool with name %s", self.__l1caloItem )
     if emulator.retrieve( self.__l2caloItem ).initialize().isFailure():

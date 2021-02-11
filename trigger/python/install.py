@@ -424,7 +424,7 @@ def installPhotonL2CaloRingerSelector_v1():
   '''
   from TrigEgammaEmulationTool import RingerSelectorTool
   import os
-  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/TrigL2_20200909_v1'
+  calibpath = os.environ['PRT_PATH'] + '/trigger/data/zrad/TrigL2_20211102_v1'
 
   def getPatterns( context ):
     def norm1( data ):
@@ -432,8 +432,7 @@ def installPhotonL2CaloRingerSelector_v1():
     fc = context.getHandler("HLT__TrigEMClusterContainer")
     rings = norm1( fc.ringsE() )
     return [rings]
-
-
+  
   hypos = [
               RingerSelectorTool( "T0HLTPhotonRingerTight_v1" ,getPatterns  , ConfigFile = calibpath+'/PhotonRingerTightTriggerConfig.conf' ),
               RingerSelectorTool( "T0HLTPhotonRingerMedium_v1",getPatterns  , ConfigFile = calibpath+'/PhotonRingerMediumTriggerConfig.conf'),
