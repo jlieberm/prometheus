@@ -178,6 +178,7 @@ class TDT(EDM):
                 return bool(self._event.trig_tdt_EF_ph_accept[idx] if self._core is DecisionCore.TriggerDecisionTool else self._event.trig_tdt_emu_EF_ph_accept[idx])
 
           else:
+              print(trigItem)
               MSG_ERROR( self, 'Trigger type not suppported.')
         else:
             MSG_WARNING( self, 'Trigger %s not storage in TDT metadata.',trigItem)
