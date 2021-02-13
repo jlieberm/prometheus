@@ -45,14 +45,19 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   def initialize(self):
 
     # take from hypo config
-    from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps
+    from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps, L2CaloPhotonCutMaps
     thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
 
     def same(value):
       return [value]*9
 
     for idx, threshold in enumerate(thrs):
-      cuts = L2CaloCutMaps(threshold)
+        if self._dataframe is DataFrameEnum.Electron_v1:
+            cuts = L2CaloCutMaps(threshold)
+        elif self._dataframe is DataFrameEnum.Photon_v1:
+            cuts = L2CaloPhotonCutMaps(threshold)
+        else:
+            cuts = L2CaloCutMaps(threshold)
       hypo  = TrigEgammaL2CaloHypoTool(self._name+"_"+str(idx),
         dETACLUSTERthr = 0.1,
         dPHICLUSTERthr = 0.1,
