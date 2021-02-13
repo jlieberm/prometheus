@@ -108,23 +108,23 @@ def attach( hypos ):
 
 
 
-def installTrigEgammaL2CaloSelectors():
+def installTrigEgammaL2CaloSelectors(signature):
 
   from TrigEgammaEmulationTool import TrigEgammaL2CaloSelectorTool
-  if self._dataframe is DataframeEnum.Electron_v1:
+  if signature is 'electron':
         hypos = [
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloTight"   , OperationPoint ='lhtight'  ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloMedium"  , OperationPoint ='lhmedium' ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloLoose"   , OperationPoint ='lhloose'  ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloVLoose"  , OperationPoint ='lhvloose' ) ,
         ]
-   elif self._dataframe is DataframeEnum.Photon_v1:
+  elif signature is 'photon':
         hypos = [
             TrigEgammaL2CaloSelectorTool("T0HLTPhotonT2CaloTight"   , OperationPoint ='tight'  ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTPhotonT2CaloMedium"  , OperationPoint ='medium' ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTPhotonT2CaloLoose"   , OperationPoint ='loose'  ) ,
       ]
-   else:
+  else:
         hypos = [
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloTight"   , OperationPoint ='lhtight'  ) ,
             TrigEgammaL2CaloSelectorTool("T0HLTElectronT2CaloMedium"  , OperationPoint ='lhmedium' ) ,

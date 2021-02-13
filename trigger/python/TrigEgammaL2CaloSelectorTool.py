@@ -52,13 +52,14 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
       return [value]*9
 
     for idx, threshold in enumerate(thrs):
-        if self._dataframe is DataFrameEnum.Electron_v1:
-            cuts = L2CaloCutMaps(threshold)
-        elif self._dataframe is DataFrameEnum.Photon_v1:
-            cuts = L2CaloPhotonCutMaps(threshold)
-        else:
-            cuts = L2CaloCutMaps(threshold)
-      hypo  = TrigEgammaL2CaloHypoTool(self._name+"_"+str(idx),
+#        if self._dataframe is DataFrameEnum.Electron_v1:
+#            cuts = L2CaloCutMaps(threshold)
+#        elif self._dataframe is DataFrameEnum.Photon_v1:
+#            cuts = L2CaloPhotonCutMaps(threshold)
+#        else:
+#            cuts = L2CaloCutMaps(threshold)
+        cuts = L2CaloPhotonCutMaps(threshold)       
+        hypo  = TrigEgammaL2CaloHypoTool(self._name+"_"+str(idx),
         dETACLUSTERthr = 0.1,
         dPHICLUSTERthr = 0.1,
         EtaBins        = [0.0, 0.6, 0.8, 1.15, 1.37, 1.52, 1.81, 2.01, 2.37, 2.47],
@@ -75,10 +76,10 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
         CAERATIOthr    = cuts.MapsCAERATIOthr[self.getProperty("OperationPoint")],
         )
 
-      if hypo.initialize().isFailure():
-        return StatusCode.FAILURE
+        if hypo.initialize().isFailure():
+            return StatusCode.FAILURE
 
-      self.__hypos.append(hypo)
+        self.__hypos.append(hypo)
 
 
     self.init_lock()
