@@ -48,8 +48,11 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
     from TrigEgammaEmulationTool import TrigEgammaL2CaloHypoTool, L2CaloCutMaps, L2CaloPhotonCutMaps
     from prometheus import Dataframe as DataFrameEnum
 
-    thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
-
+    if self._dataframe is DataFrameEnum.Electron_v1:
+      thrs = [0.0, 15.0, 28] # dummy thrsholds to select the energy range inside of L2CaloCutMaps
+    elif self._dataframe is DataFrameEnum.Photon_v1:
+      thrs = [0.0, 12.0,17.0,22.0,32.0,44.0]
+    
     def same(value):
       return [value]*9
 
@@ -77,12 +80,10 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
                                         CARCOREthr     = cuts.MapsCARCOREthr[self.getProperty("OperationPoint")],
                                         CAERATIOthr    = cuts.MapsCAERATIOthr[self.getProperty("OperationPoint")],
                                       )
-
       if hypo.initialize().isFailure():
         return StatusCode.FAILURE
 
       self.__hypos.append(hypo)
-
 
     self.init_lock()
     return StatusCode.SUCCESS
@@ -93,16 +94,33 @@ class TrigEgammaL2CaloSelectorTool( Algorithm ):
   # Generate the decision given the cluster threshold to select the apropriated L2Calo selector
   #
   def accept(self, context):
+    from prometheus import Dataframe as DataFrameEnum
+
     fc = context.getHandler( "HLT__TrigEMClusterContainer" )
     et = fc.et()
     passed = False
+    if(self._dataframe is DataFrameEnum.Electron_v1):
+      if et < 12*GeV:
+        passed = self.__hypos[0].accept(context)
+      elif et>=12*GeV and et < 22*GeV:
+        passed = self.__hypos[1].accept(context)
+      else:
+        passed =  self.__hypos[2].accept(context)
 
-    if et < 12*GeV:
-      passed = self.__hypos[0].accept(context)
-    elif et>=12*GeV and et < 22*GeV:
-      passed = self.__hypos[1].accept(context)
-    else:
-      passed =  self.__hypos[2].accept(context)
+    elif(self._dataframe is DataFrameEnum.Photon_v1):
+      if et < 10*GeV:
+        passed = self.__hypos[0].accept(context)
+      elif et>=10*GeV and et < 15*GeV:
+        passed = self.__hypos[1].accept(context)
+      elif et>=15*GeV and et < 20*GeV:
+        passed = self.__hypos[2].accept(context)
+      elif et>=20*GeV and et < 30*GeV:
+        passed = self.__hypos[3].accept(context)
+      elif et>=30*GeV and et < 40*GeV:
+        passed = self.__hypos[4].accept(context)
+      else:
+        passed =  self.__hypos[5].accept(context)
+
     return passed
 
 

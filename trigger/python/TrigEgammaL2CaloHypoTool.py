@@ -99,7 +99,6 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     Wstot         = -1.0
     F3            = -1.0
     F1            = -1.0
-
     # fill local variables for RoI reference position
     phiRef = emTauRoi.phi()
     etaRef = emTauRoi.eta()
@@ -160,7 +159,6 @@ class TrigEgammaL2CaloHypoTool( Algorithm ):
     #eallsamples = float(e0+e1+e2+e3)
     #F3= e3/eallsamples if math.fabs(eallsamples)>0. else 0.
     F3 = pClus.f3()
-
     # apply cuts: DeltaEta(clus-ROI)
     if ( math.fabs(pClus.eta() - etaRef) > detacluster ):
       return False
@@ -248,7 +246,6 @@ def configure( trigger ):
   emulator = ToolSvc.retrieve("Emulator")
   pidname = info.pidname()
   name = 'Hypo__L2Calo__' + info.signature()[0]+str(int(etthr)) + '_' + info.pidname()
-
   if not emulator.isValid(name):
 
     def same(value):
