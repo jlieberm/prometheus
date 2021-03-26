@@ -188,8 +188,9 @@ class EventSelection( Algorithm ):
         MSG_DEBUG( self, 'Photon: is not Photon! reject')
         return StatusCode.SUCCESS
 
-      elif key is SelectionType.SelectionJet and not mc.isTruthJetFromAny() and mc.origin() == 0:
+      elif key is SelectionType.SelectionJet and (not mc.isTruthJetFromAny() or mc.origin() == 0 ):
         self.wtd = StatusWTD.ENABLE
+        print('MC Origin: ' + str(mc.origin()))
         MSG_DEBUG( self, 'Jet: is not Jet! reject')
         return StatusCode.SUCCESS
 
