@@ -190,7 +190,6 @@ class EventSelection( Algorithm ):
 
       elif key is SelectionType.SelectionJet and (not mc.isTruthJetFromAny() or mc.origin() == 0 ):
         self.wtd = StatusWTD.ENABLE
-        print('MC Origin: ' + str(mc.origin()))
         MSG_DEBUG( self, 'Jet: is not Jet! reject')
         return StatusCode.SUCCESS
 
