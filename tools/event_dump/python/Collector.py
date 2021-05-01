@@ -128,6 +128,11 @@ class Collector( Algorithm ):
                                 'ph_tight',
                                 'ph_medium',
                                 'ph_loose',
+                                'mc_origin',
+                                'mc_type',
+                                'trig_EF_ph_tight',
+                                'trig_EF_ph_medium',
+                                'trig_EF_ph_loose',
                                 ] )
     else:
       self._event_label.extend( [
@@ -174,6 +179,7 @@ class Collector( Algorithm ):
 
     eventInfo = context.getHandler( "EventInfoContainer" )
     fc        = context.getHandler( "HLT__TrigEMClusterContainer" )
+    mc        = context.getHandler( "MonteCarloContainer")
     
 
 
@@ -276,7 +282,15 @@ class Collector( Algorithm ):
       event_row.append( elCont.accept( "ph_tight"  ) )
       event_row.append( elCont.accept( "ph_medium" ) )
       event_row.append( elCont.accept( "ph_loose"  ) )
-      
+      event_row.append( mc.origin() )
+      event_row.append( mc.type() )
+      blabla = context.getHandler("HLT__PhotonContainer" )
+
+      event_row.append( blabla.accept( "trig_EF_ph_tight"  ) )
+      event_row.append( blabla.accept( "trig_EF_ph_medium"  ) )
+      event_row.append( blabla.accept( "trig_EF_ph_loose"  ) )
+
+
     dec = context.getHandler("MenuContainer")
 
     for feature in self._extra_features:

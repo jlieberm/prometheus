@@ -1,5 +1,5 @@
 
-__all__ = ['EventSelection', 'EtCutType', 'SelectionType']
+__all__ = ['EventSelection', 'EtCutType', 'SelectionType', 'AvgMuCutType']
 
 
 from Gaugi import GeV
@@ -27,7 +27,10 @@ class EtCutType(EnumStringification):
   HLTAbove     =  4
   HLTBelow     = -4
 
-
+class AvgMuCutType(EnumStringification):
+  Above =  1
+  Below = -1
+  
 #
 # Enumeration selection type
 #
@@ -152,6 +155,15 @@ class EventSelection( Algorithm ):
           MSG_DEBUG( self, 'Reproved by Et cut value. Et = %1.3f and EtCut = %1.3f',el.et()/GeV,value)
           return StatusCode.SUCCESS
 
+      elif key is AvgMuCutType.Above and eventInfo.avgmu() < value:
+        self.wtd = StatusWTD.ENABLE
+        MSG_DEBUG( self, 'Reproved by AvgMu cut value. AvgMu = %1.3f and AvgMuCut = %1.3f',eventInfo.avgmu(),value)
+        return StatusCode.SUCCESS
+      
+      elif key is AvgMuCutType.Below and eventInfo.avgmu() > value:
+        self.wtd = StatusWTD.ENABLE
+        MSG_DEBUG( self, 'Reproved by AvgMu cut value. AvgMu = %1.3f and AvgMuCut = %1.3f',eventInfo.avgmu(),value)
+        return StatusCode.SUCCESS
 
       # Is good ringer
       elif key is SelectionType.SelectionOnlineWithRings and not fc.isGoodRinger():
@@ -188,7 +200,7 @@ class EventSelection( Algorithm ):
         MSG_DEBUG( self, 'Photon: is not Photon! reject')
         return StatusCode.SUCCESS
 
-      elif key is SelectionType.SelectionJet and (not mc.isTruthJetFromAny() or mc.origin() == 0 ):
+      elif key is SelectionType.SelectionJet and (mc.origin()==37 or mc.origin()==38):
         self.wtd = StatusWTD.ENABLE
         MSG_DEBUG( self, 'Jet: is not Jet! reject')
         return StatusCode.SUCCESS

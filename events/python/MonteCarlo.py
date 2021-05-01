@@ -15,8 +15,6 @@ class MonteCarlo(EDM):
                       'mc_isTruthElectronFromZ',
                       'mc_isTruthElectronFromW',
                       'mc_isTruthElectronFromJpsi',
-                      'mc_isTruthJetFromAny',
-                      'mc_isTruthPhotonFromAny',
                       'mc_type',
                       'mc_origin',
                       ],
@@ -67,20 +65,6 @@ class MonteCarlo(EDM):
 
     if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
       return self._event.mc_isTruthElectronFromAny
-    else:
-      self._logger.warning("Impossible to retrieve the value of Et.")
-
-  def isTruthJetFromAny(self):
-
-    if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
-      return self._event.mc_isTruthJetFromAny
-    else:
-      self._logger.warning("Impossible to retrieve the value of Et.")
-
-  def isTruthPhotonFromAny(self):
-
-    if self._dataframe is DataframeEnum.Electron_v1 or DataframeEnum.Photon_v1:
-      return self._event.mc_isTruthPhotonFromAny
     else:
       self._logger.warning("Impossible to retrieve the value of Et.")
   
